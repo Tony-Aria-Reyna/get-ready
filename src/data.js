@@ -161,14 +161,13 @@ const AGE_GROUPS = [
 
 // Overseas: layover cities (map centre) and NZ missions (address from NZ SafeTravel; pin positions approximate).
 const AWAY_CITIES = [
-  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Vancouver', 49.28, -123.12], ['na', 'Honolulu', 21.31, -157.86],
-  ['na', 'Houston', 29.76, -95.37], ['na', 'Chicago', 41.88, -87.63], ['na', 'New York', 40.71, -74.01],
-  ['jp', 'Tokyo', 35.68, 139.76], ['jp', 'Osaka', 34.69, 135.50],
-  ['au', 'Sydney', -33.87, 151.21], ['au', 'Melbourne', -37.81, 144.96], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Gold Coast', -28.02, 153.40], ['au', 'Perth', -31.95, 115.86],
-  ['pac', 'Nadi (Fiji)', -17.78, 177.44], ['pac', 'Suva (Fiji)', -18.14, 178.44], ['pac', 'Apia (Samoa)', -13.83, -171.76], ['pac', 'Nukuʻalofa (Tonga)', -21.14, -175.20],
-  ['pac', 'Rarotonga', -21.21, -159.78], ['pac', 'Port Vila (Vanuatu)', -17.73, 168.32], ['pac', 'Nouméa', -22.27, 166.44], ['pac', 'Papeete (Tahiti)', -17.54, -149.57], ['pac', 'Niue', -19.06, -169.92],
-];
-const AWAY_REGION_NAMES = { na: '🇺🇸 North America', jp: '🇯🇵 Japan', au: '🇦🇺 Australia', pac: '🌴 South Pacific' };
+  ['jp', 'Narita (airport & crew hotels)', 35.776, 140.318], ['jp', 'Tokyo (central)', 35.68, 139.76],
+  ['au', 'Sydney', -33.87, 151.21], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Perth', -31.95, 115.86],
+  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Houston', 29.76, -95.37], ['na', 'New York', 40.71, -74.01],
+  ['pac', 'Nadi (Fiji)', -17.78, 177.44],
+  ['asia', 'Singapore', 1.29, 103.85], ['asia', 'Bali (Denpasar / Kuta)', -8.72, 115.17], ['asia', 'Taipei', 25.04, 121.56],
+]
+const AWAY_REGION_NAMES = { jp: '🇯🇵 Japan', au: '🇦🇺 Australia', na: '🇺🇸 USA', pac: '🇫🇯 Fiji & Pacific', asia: '🌏 Asia' };
 const NZ_MISSIONS = [
   ['NZ Embassy, Washington DC', '37 Observatory Circle NW, Washington, DC 20008', '+1 202 328 4848', 38.91900, -77.06423],
   ['NZ Consulate-General, Los Angeles', 'Suite 600E, 2425 Olympic Boulevard, Santa Monica, CA 90404', '+1 310 566 6555', 34.02809, -118.47132],
@@ -182,5 +181,8 @@ const NZ_MISSIONS = [
   ['NZ High Commission, Suva', 'Lot 12 Banuve Street, Nasese, Suva', '+679 331 1422', -18.15704, 178.42988],
   ['NZ High Commission, Apia', 'Beach Road, Apia', '+685 21 711', -13.83351, -171.76292],
   ['NZ High Commission, Nukuʻalofa', 'Corner Taufaʻahau and Salote Roads, Nukuʻalofa', '+676 23122', -21.13354, -175.20010],
+  ['NZ High Commission, Singapore', '1 George Street, Level 21-04, Singapore 049145', '+65 6235 9966', 1.28574, 103.84779],
+  ['NZ Embassy, Jakarta (covers Bali)', 'Sentral Senayan 2, 10th Floor, Jl Asia Afrika No 8, Jakarta Pusat 10270', '+62 21 2995 5800', -6.22367, 106.79899],
+  ['NZ Commerce and Industry Office, Taipei', '9F, No. 1, Songzhi Rd, Xinyi District, Taipei 11047', '+886 2 2720 5228', 25.03872, 121.56600],
   ['NZ High Commission, Rarotonga', '1st floor, Philatelic Bureau Building, Takuvaine Road, Avarua', '+682 22 201', -21.20848, -159.77550],
 ];

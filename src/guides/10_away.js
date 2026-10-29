@@ -23,13 +23,13 @@ G({ id: 'away-general', cat: 'away', icon: '✈️', colour: '#0e7490', title: '
 1. NZ consular emergency line, 24/7: **+64 99 20 20 20** (from overseas) · **0800 30 10 30** (from NZ).
 1. Register on **SafeTravel** (safetravel.govt.nz) if stranded more than a day or two — the NZ Government uses it to find and contact New Zealanders in a crisis.
 ## Regions
-- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+- [[away-jp|Japan (Narita, Tokyo)]] · [[away-au|Australia (Sydney, Brisbane, Perth)]] · [[away-na|USA (LA, San Francisco, Houston, New York)]] · [[away-pac|Fiji & Pacific]] · [[away-asia|Singapore, Bali & Taipei]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
 ## Maps
 - Before every trip, download the city in **Organic Maps** so maps work with no signal — [[away-maps]].
 - In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned layover places.
 `);
 
-G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'North America (USA & Canada)', zones: [['Los Angeles · San Francisco · Vancouver', 'America/Los_Angeles'], ['Honolulu', 'Pacific/Honolulu'], ['Dallas · Houston · Chicago', 'America/Chicago'], ['New York', 'America/New_York']],
+G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'USA (LA, San Francisco, Houston, New York)', zones: [['Los Angeles · San Francisco', 'America/Los_Angeles'], ['Houston', 'America/Chicago'], ['New York', 'America/New_York']],
   one: 'Emergency 911. Phone alerts are automatic. Earthquakes and tsunami on the West Coast; hurricanes, wildfire and winter storms elsewhere.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -59,7 +59,7 @@ G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'Nor
 > Crew are in the US on crew visas tied to working the flight. If stranded, make sure the **airline** knows and arranges your status — don't just stay on without them knowing.
 `);
 
-G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Japan', zones: [['Tokyo · Osaka', 'Asia/Tokyo']],
+G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Japan (Narita & Tokyo)', zones: [['Narita · Tokyo', 'Asia/Tokyo']],
   one: 'Police 110, fire & ambulance 119. Install the Safety Tips app. Earthquake alerts give a few seconds\' warning.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -71,6 +71,7 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 - Japanese phones sound a loud, distinctive alarm for **earthquake early warnings** — you may get a few seconds' notice. Drop, Cover, Hold straight away.
 - Evacuation shelters (**避難所**, hinanjo) and tsunami evacuation buildings (**津波避難ビル**) have green signs.
 ## Hazards
+- **Narita:** crew hotels are near the airport, about 60 km from central Tokyo. Narita is inland — not a tsunami area — but trains into Tokyo stop after big earthquakes. Stay at the hotel and follow the crew.
 - **Earthquakes** are frequent. Hotels are built for them. Stay inside during shaking, away from windows; don't use lifts afterwards; put shoes on. Hotel staff are trained — follow them.
 - **Tsunami** — near the coast (including Tokyo Bay and Osaka Bay areas). If there's a tsunami warning (**津波警報**), go to a tsunami evacuation building (high floors) or high ground immediately.
 - **Typhoons** (mainly June–October): trains and flights stop. Stay in the hotel until the all clear.
@@ -94,7 +95,7 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 | Please call an ambulance | 救急車を呼んでください (kyūkyūsha o yonde kudasai) |
 `);
 
-G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Australia', zones: [['Sydney · Melbourne · Brisbane', 'Australia/Sydney'], ['Perth', 'Australia/Perth']],
+G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Australia (Sydney, Brisbane, Perth)', zones: [['Sydney', 'Australia/Sydney'], ['Brisbane', 'Australia/Brisbane'], ['Perth', 'Australia/Perth']],
   one: 'Emergency 000 (112 from mobiles). ABC Local Radio is the emergency broadcaster. Bushfires, cyclones, floods, heat.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -105,7 +106,8 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 - State apps: **Hazards Near Me** (NSW), **VicEmergency** (Victoria), Queensland Disaster Management. Emergency alerts also arrive by text.
 ## Hazards
 - **Bushfires** (mainly spring–summer): if told **"Leave now"**, leave immediately — don't wait. Smoke can close airports.
-- **Cyclones and floods** in Queensland and the north (November–April). Never drive through floodwater.
+- **Cyclones and floods** in Queensland, including Brisbane (November–April). Never drive through floodwater.
+- **Perth:** very hot summers and bushfire smoke; Perth is 2 hours behind Sydney (and 4–5 hours behind NZ).
 - **Heat** — very hot days are dangerous. Stay in air conditioning, drink water, avoid the midday sun.
 - **Sun, surf and wildlife:** swim between the flags; follow local warnings about crocodiles (north), jellyfish and snakes.
 ## Maps
@@ -118,7 +120,7 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 | NZ consular emergency (24/7) | +64 99 20 20 20 |
 `);
 
-G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South Pacific islands', zones: [['Fiji', 'Pacific/Fiji'], ['Samoa', 'Pacific/Apia'], ['Tonga', 'Pacific/Tongatapu'], ['Rarotonga', 'Pacific/Rarotonga'], ['Vanuatu', 'Pacific/Efate'], ['New Caledonia', 'Pacific/Noumea'], ['Tahiti', 'Pacific/Tahiti']],
+G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'Fiji & the South Pacific', zones: [['Nadi (Fiji)', 'Pacific/Fiji']],
   one: 'Cyclones Nov–Apr. Earthquake = go uphill. Hospitals are limited. Local radio and the hotel are your warnings.' }, `
 ## Emergency numbers
 | Country | Numbers |
@@ -152,7 +154,7 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South 
 G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-bag emergency kit',
   one: 'A small kit that lives in the crew bag so {{away}} can look after herself for 3 days anywhere.' }, `
 [ ] Power bank (airline-approved, in the cabin bag) and charging cable
-[ ] Cash: about US$100, ¥10,000 and A$100 in small notes (adjust to the trip)
+[ ] Cash in small notes for the trip: e.g. ¥10,000 (Japan), A$100, US$100, F$100 (Fiji), S$100, NT$2,000 (Taiwan), Rp 1,000,000 (Bali)
 [ ] Photo of passport, crew ID and visa pages on the phone + paper copies
 [ ] Printed card: family numbers, airline crew support number, NZ consular line +64 99 20 20 20, home address
 [ ] This app installed on the phone (works offline) with the region guides
@@ -177,4 +179,38 @@ G({ id: 'away-home', cat: 'away', icon: '🏠', colour: '#0e7490', title: 'Getti
 1. Money: keep cash and two cards. Ask the airline about allowances while stranded.
 1. Medicines: ask a local pharmacy or doctor for more, with your prescription copy.
 1. Keep the daily check-in with home at **{{checkin}} NZ time**.
+`);
+
+G({ id: 'away-asia', cat: 'away', icon: '🌏', colour: '#0e7490', title: 'Singapore, Bali & Taipei', zones: [['Singapore', 'Asia/Singapore'], ['Bali', 'Asia/Makassar'], ['Taipei', 'Asia/Taipei']],
+  one: 'Singapore: 995 ambulance/fire, 999 police. Bali: 112, ambulance 118/119. Taipei: 119 fire/ambulance, 110 police.' }, `
+## Emergency numbers
+| Place | Numbers |
+| Singapore | **995** ambulance & fire · **999** police |
+| Bali (Indonesia) | **112** general · **110** police · **118** ambulance · **119** medical · **113** fire · Bali Tourist Police (0361) 759 687 |
+| Taipei (Taiwan) | **119** fire & ambulance · **110** police |
+## Singapore
+- Very safe, with excellent hospitals.
+- **Heat and humidity:** drink water, rest in air conditioning. Afternoon thunderstorms are common.
+- **Haze** from regional fires some years — stay inside and use an N95 mask if the air is bad.
+- **Strict laws:** don't carry anything for anyone else; drug penalties are severe.
+## Bali
+- **Earthquakes and tsunami:** Bali is in an active zone and most hotels are near the beach. **Long or strong — get gone:** walk inland or uphill straight away. Know the route from the hotel before you need it. See [[tsunami]].
+- **Volcanoes** (Mount Agung, Mount Batur): eruptions can close Denpasar airport for days. Follow exclusion zones and airline advice.
+! **Methanol poisoning:** fake or home-made spirits in Bali have killed tourists — as little as one shot can be fatal. Drink only sealed, branded drinks from licensed venues; avoid cocktails made with local spirits.
+! **Rabies is present in Bali.** Avoid touching dogs, cats and monkeys. Any bite or scratch: wash it with soap and water for 15 minutes and get medical care **the same day**.
+- **Dengue** — use insect repellent day and night.
+- **Scooters** cause many injuries — avoid riding them.
+- New Zealand has **no office in Bali**. Contact the NZ Embassy in Jakarta or the 24/7 consular line below.
+## Taipei
+- **Earthquakes** are common. Buildings are built for them — Drop, Cover, Hold, then use the stairs, not lifts.
+- **Typhoons** (May–November): the city may declare a "typhoon day" — transport and shops close. Stay in the hotel.
+- English news and alerts: **ICRT radio** (International Community Radio Taipei) and the Central Weather Administration.
+## NZ help
+| Office | Phone |
+| NZ High Commission, Singapore (1 George Street, Level 21-04) | +65 6235 9966 |
+| NZ Embassy, Jakarta (covers Bali) | +62 21 2995 5800 |
+| NZ Commerce and Industry Office, Taipei (9F, No. 1 Songzhi Rd, Xinyi) | +886 2 2720 5228 |
+| NZ consular emergency (24/7) | +64 99 20 20 20 |
+## Maps
+- Offline: download **Singapore**, **Bali (Indonesia)** and **Taiwan** in Organic Maps before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 `);

@@ -21,16 +21,20 @@ G({ id: 'away-maps', cat: 'away', icon: '🗺️', colour: '#0e7490', title: 'Ma
 [ ] Nearest hospital to the hotel found and saved
 [ ] Phone and power bank charged
 [ ] The daily check-in time worked out for that city (see the region guide)
-## Regular layover cities to download
-| Region | Download in Organic Maps |
-| USA West Coast | California (Los Angeles, San Francisco) |
-| Hawaii | Hawaii |
-| USA other | Texas (Houston), Illinois (Chicago), New York |
-| Canada | British Columbia (Vancouver) |
-| Japan | Kanto (Tokyo), Kansai (Osaka) |
-| Australia | New South Wales (Sydney), Victoria (Melbourne), Queensland (Brisbane) |
-| Pacific | Fiji, Samoa, Tonga, Cook Islands, Vanuatu, New Caledonia, French Polynesia |
-> Region names in Organic Maps may be grouped slightly differently — search the city and download what it offers.
+## Our layover cities — what to download
+| City | Download in Organic Maps |
+| Narita & Tokyo | Japan → **Kanto** (covers both Narita and Tokyo) |
+| Sydney | Australia → **New South Wales** |
+| Brisbane | Australia → **Queensland** |
+| Perth | Australia → **Western Australia** |
+| Los Angeles, San Francisco | USA → **California** (may be split into north and south — get both) |
+| Houston | USA → **Texas** |
+| New York | USA → **New York** |
+| Nadi | **Fiji** |
+| Singapore | **Singapore** |
+| Bali | Indonesia → **Bali** (or Nusa Tenggara, whichever includes Bali) |
+| Taipei | **Taiwan** |
+> Region names in Organic Maps may be grouped slightly differently — search the city and download what it offers. All of these together are roughly 1.5–3 GB; download just the next trip's city if the phone is short of space.
 ## Other options
 - **Google Maps:** search the city → tap your profile picture → *Offline maps* → *Select your own map*. Offline areas expire after about a year unless updated, and aren't available everywhere.
 - **Apple Maps (iPhone):** search the city → *Download*. Needs a recent iOS.

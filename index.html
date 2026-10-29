@@ -3255,13 +3255,13 @@ G({ id: 'away-general', cat: 'away', icon: '✈️', colour: '#0e7490', title: '
 1. NZ consular emergency line, 24/7: **+64 99 20 20 20** (from overseas) · **0800 30 10 30** (from NZ).
 1. Register on **SafeTravel** (safetravel.govt.nz) if stranded more than a day or two — the NZ Government uses it to find and contact New Zealanders in a crisis.
 ## Regions
-- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+- [[away-jp|Japan (Narita, Tokyo)]] · [[away-au|Australia (Sydney, Brisbane, Perth)]] · [[away-na|USA (LA, San Francisco, Houston, New York)]] · [[away-pac|Fiji & Pacific]] · [[away-asia|Singapore, Bali & Taipei]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
 ## Maps
 - Before every trip, download the city in **Organic Maps** so maps work with no signal — [[away-maps]].
 - In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned layover places.
 `);
 
-G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'North America (USA & Canada)', zones: [['Los Angeles · San Francisco · Vancouver', 'America/Los_Angeles'], ['Honolulu', 'Pacific/Honolulu'], ['Dallas · Houston · Chicago', 'America/Chicago'], ['New York', 'America/New_York']],
+G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'USA (LA, San Francisco, Houston, New York)', zones: [['Los Angeles · San Francisco', 'America/Los_Angeles'], ['Houston', 'America/Chicago'], ['New York', 'America/New_York']],
   one: 'Emergency 911. Phone alerts are automatic. Earthquakes and tsunami on the West Coast; hurricanes, wildfire and winter storms elsewhere.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -3291,7 +3291,7 @@ G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'Nor
 > Crew are in the US on crew visas tied to working the flight. If stranded, make sure the **airline** knows and arranges your status — don't just stay on without them knowing.
 `);
 
-G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Japan', zones: [['Tokyo · Osaka', 'Asia/Tokyo']],
+G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Japan (Narita & Tokyo)', zones: [['Narita · Tokyo', 'Asia/Tokyo']],
   one: 'Police 110, fire & ambulance 119. Install the Safety Tips app. Earthquake alerts give a few seconds\' warning.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -3303,6 +3303,7 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 - Japanese phones sound a loud, distinctive alarm for **earthquake early warnings** — you may get a few seconds' notice. Drop, Cover, Hold straight away.
 - Evacuation shelters (**避難所**, hinanjo) and tsunami evacuation buildings (**津波避難ビル**) have green signs.
 ## Hazards
+- **Narita:** crew hotels are near the airport, about 60 km from central Tokyo. Narita is inland — not a tsunami area — but trains into Tokyo stop after big earthquakes. Stay at the hotel and follow the crew.
 - **Earthquakes** are frequent. Hotels are built for them. Stay inside during shaking, away from windows; don't use lifts afterwards; put shoes on. Hotel staff are trained — follow them.
 - **Tsunami** — near the coast (including Tokyo Bay and Osaka Bay areas). If there's a tsunami warning (**津波警報**), go to a tsunami evacuation building (high floors) or high ground immediately.
 - **Typhoons** (mainly June–October): trains and flights stop. Stay in the hotel until the all clear.
@@ -3326,7 +3327,7 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 | Please call an ambulance | 救急車を呼んでください (kyūkyūsha o yonde kudasai) |
 `);
 
-G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Australia', zones: [['Sydney · Melbourne · Brisbane', 'Australia/Sydney'], ['Perth', 'Australia/Perth']],
+G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Australia (Sydney, Brisbane, Perth)', zones: [['Sydney', 'Australia/Sydney'], ['Brisbane', 'Australia/Brisbane'], ['Perth', 'Australia/Perth']],
   one: 'Emergency 000 (112 from mobiles). ABC Local Radio is the emergency broadcaster. Bushfires, cyclones, floods, heat.' }, `
 ## Emergency numbers
 | Service | Number |
@@ -3337,7 +3338,8 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 - State apps: **Hazards Near Me** (NSW), **VicEmergency** (Victoria), Queensland Disaster Management. Emergency alerts also arrive by text.
 ## Hazards
 - **Bushfires** (mainly spring–summer): if told **"Leave now"**, leave immediately — don't wait. Smoke can close airports.
-- **Cyclones and floods** in Queensland and the north (November–April). Never drive through floodwater.
+- **Cyclones and floods** in Queensland, including Brisbane (November–April). Never drive through floodwater.
+- **Perth:** very hot summers and bushfire smoke; Perth is 2 hours behind Sydney (and 4–5 hours behind NZ).
 - **Heat** — very hot days are dangerous. Stay in air conditioning, drink water, avoid the midday sun.
 - **Sun, surf and wildlife:** swim between the flags; follow local warnings about crocodiles (north), jellyfish and snakes.
 ## Maps
@@ -3350,7 +3352,7 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 | NZ consular emergency (24/7) | +64 99 20 20 20 |
 `);
 
-G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South Pacific islands', zones: [['Fiji', 'Pacific/Fiji'], ['Samoa', 'Pacific/Apia'], ['Tonga', 'Pacific/Tongatapu'], ['Rarotonga', 'Pacific/Rarotonga'], ['Vanuatu', 'Pacific/Efate'], ['New Caledonia', 'Pacific/Noumea'], ['Tahiti', 'Pacific/Tahiti']],
+G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'Fiji & the South Pacific', zones: [['Nadi (Fiji)', 'Pacific/Fiji']],
   one: 'Cyclones Nov–Apr. Earthquake = go uphill. Hospitals are limited. Local radio and the hotel are your warnings.' }, `
 ## Emergency numbers
 | Country | Numbers |
@@ -3384,7 +3386,7 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South 
 G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-bag emergency kit',
   one: 'A small kit that lives in the crew bag so {{away}} can look after herself for 3 days anywhere.' }, `
 [ ] Power bank (airline-approved, in the cabin bag) and charging cable
-[ ] Cash: about US$100, ¥10,000 and A$100 in small notes (adjust to the trip)
+[ ] Cash in small notes for the trip: e.g. ¥10,000 (Japan), A$100, US$100, F$100 (Fiji), S$100, NT$2,000 (Taiwan), Rp 1,000,000 (Bali)
 [ ] Photo of passport, crew ID and visa pages on the phone + paper copies
 [ ] Printed card: family numbers, airline crew support number, NZ consular line +64 99 20 20 20, home address
 [ ] This app installed on the phone (works offline) with the region guides
@@ -3411,6 +3413,40 @@ G({ id: 'away-home', cat: 'away', icon: '🏠', colour: '#0e7490', title: 'Getti
 1. Keep the daily check-in with home at **{{checkin}} NZ time**.
 `);
 
+G({ id: 'away-asia', cat: 'away', icon: '🌏', colour: '#0e7490', title: 'Singapore, Bali & Taipei', zones: [['Singapore', 'Asia/Singapore'], ['Bali', 'Asia/Makassar'], ['Taipei', 'Asia/Taipei']],
+  one: 'Singapore: 995 ambulance/fire, 999 police. Bali: 112, ambulance 118/119. Taipei: 119 fire/ambulance, 110 police.' }, `
+## Emergency numbers
+| Place | Numbers |
+| Singapore | **995** ambulance & fire · **999** police |
+| Bali (Indonesia) | **112** general · **110** police · **118** ambulance · **119** medical · **113** fire · Bali Tourist Police (0361) 759 687 |
+| Taipei (Taiwan) | **119** fire & ambulance · **110** police |
+## Singapore
+- Very safe, with excellent hospitals.
+- **Heat and humidity:** drink water, rest in air conditioning. Afternoon thunderstorms are common.
+- **Haze** from regional fires some years — stay inside and use an N95 mask if the air is bad.
+- **Strict laws:** don't carry anything for anyone else; drug penalties are severe.
+## Bali
+- **Earthquakes and tsunami:** Bali is in an active zone and most hotels are near the beach. **Long or strong — get gone:** walk inland or uphill straight away. Know the route from the hotel before you need it. See [[tsunami]].
+- **Volcanoes** (Mount Agung, Mount Batur): eruptions can close Denpasar airport for days. Follow exclusion zones and airline advice.
+! **Methanol poisoning:** fake or home-made spirits in Bali have killed tourists — as little as one shot can be fatal. Drink only sealed, branded drinks from licensed venues; avoid cocktails made with local spirits.
+! **Rabies is present in Bali.** Avoid touching dogs, cats and monkeys. Any bite or scratch: wash it with soap and water for 15 minutes and get medical care **the same day**.
+- **Dengue** — use insect repellent day and night.
+- **Scooters** cause many injuries — avoid riding them.
+- New Zealand has **no office in Bali**. Contact the NZ Embassy in Jakarta or the 24/7 consular line below.
+## Taipei
+- **Earthquakes** are common. Buildings are built for them — Drop, Cover, Hold, then use the stairs, not lifts.
+- **Typhoons** (May–November): the city may declare a "typhoon day" — transport and shops close. Stay in the hotel.
+- English news and alerts: **ICRT radio** (International Community Radio Taipei) and the Central Weather Administration.
+## NZ help
+| Office | Phone |
+| NZ High Commission, Singapore (1 George Street, Level 21-04) | +65 6235 9966 |
+| NZ Embassy, Jakarta (covers Bali) | +62 21 2995 5800 |
+| NZ Commerce and Industry Office, Taipei (9F, No. 1 Songzhi Rd, Xinyi) | +886 2 2720 5228 |
+| NZ consular emergency (24/7) | +64 99 20 20 20 |
+## Maps
+- Offline: download **Singapore**, **Bali (Indonesia)** and **Taiwan** in Organic Maps before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
+`);
+
 // ---------------------------------------------------------------- OVERSEAS MAPS
 G({ id: 'away-maps', cat: 'away', icon: '🗺️', colour: '#0e7490', title: 'Maps overseas — working with no signal',
   one: 'Download the city in Organic Maps before every trip. Pin the crew hotel. Our app shows the NZ embassy and your places.' }, `
@@ -3434,16 +3470,20 @@ G({ id: 'away-maps', cat: 'away', icon: '🗺️', colour: '#0e7490', title: 'Ma
 [ ] Nearest hospital to the hotel found and saved
 [ ] Phone and power bank charged
 [ ] The daily check-in time worked out for that city (see the region guide)
-## Regular layover cities to download
-| Region | Download in Organic Maps |
-| USA West Coast | California (Los Angeles, San Francisco) |
-| Hawaii | Hawaii |
-| USA other | Texas (Houston), Illinois (Chicago), New York |
-| Canada | British Columbia (Vancouver) |
-| Japan | Kanto (Tokyo), Kansai (Osaka) |
-| Australia | New South Wales (Sydney), Victoria (Melbourne), Queensland (Brisbane) |
-| Pacific | Fiji, Samoa, Tonga, Cook Islands, Vanuatu, New Caledonia, French Polynesia |
-> Region names in Organic Maps may be grouped slightly differently — search the city and download what it offers.
+## Our layover cities — what to download
+| City | Download in Organic Maps |
+| Narita & Tokyo | Japan → **Kanto** (covers both Narita and Tokyo) |
+| Sydney | Australia → **New South Wales** |
+| Brisbane | Australia → **Queensland** |
+| Perth | Australia → **Western Australia** |
+| Los Angeles, San Francisco | USA → **California** (may be split into north and south — get both) |
+| Houston | USA → **Texas** |
+| New York | USA → **New York** |
+| Nadi | **Fiji** |
+| Singapore | **Singapore** |
+| Bali | Indonesia → **Bali** (or Nusa Tenggara, whichever includes Bali) |
+| Taipei | **Taiwan** |
+> Region names in Organic Maps may be grouped slightly differently — search the city and download what it offers. All of these together are roughly 1.5–3 GB; download just the next trip's city if the phone is short of space.
 ## Other options
 - **Google Maps:** search the city → tap your profile picture → *Offline maps* → *Select your own map*. Offline areas expire after about a year unless updated, and aren't available everywhere.
 - **Apple Maps (iPhone):** search the city → *Download*. Needs a recent iOS.
@@ -3618,14 +3658,13 @@ const AGE_GROUPS = [
 
 // Overseas: layover cities (map centre) and NZ missions (address from NZ SafeTravel; pin positions approximate).
 const AWAY_CITIES = [
-  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Vancouver', 49.28, -123.12], ['na', 'Honolulu', 21.31, -157.86],
-  ['na', 'Houston', 29.76, -95.37], ['na', 'Chicago', 41.88, -87.63], ['na', 'New York', 40.71, -74.01],
-  ['jp', 'Tokyo', 35.68, 139.76], ['jp', 'Osaka', 34.69, 135.50],
-  ['au', 'Sydney', -33.87, 151.21], ['au', 'Melbourne', -37.81, 144.96], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Gold Coast', -28.02, 153.40], ['au', 'Perth', -31.95, 115.86],
-  ['pac', 'Nadi (Fiji)', -17.78, 177.44], ['pac', 'Suva (Fiji)', -18.14, 178.44], ['pac', 'Apia (Samoa)', -13.83, -171.76], ['pac', 'Nukuʻalofa (Tonga)', -21.14, -175.20],
-  ['pac', 'Rarotonga', -21.21, -159.78], ['pac', 'Port Vila (Vanuatu)', -17.73, 168.32], ['pac', 'Nouméa', -22.27, 166.44], ['pac', 'Papeete (Tahiti)', -17.54, -149.57], ['pac', 'Niue', -19.06, -169.92],
-];
-const AWAY_REGION_NAMES = { na: '🇺🇸 North America', jp: '🇯🇵 Japan', au: '🇦🇺 Australia', pac: '🌴 South Pacific' };
+  ['jp', 'Narita (airport & crew hotels)', 35.776, 140.318], ['jp', 'Tokyo (central)', 35.68, 139.76],
+  ['au', 'Sydney', -33.87, 151.21], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Perth', -31.95, 115.86],
+  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Houston', 29.76, -95.37], ['na', 'New York', 40.71, -74.01],
+  ['pac', 'Nadi (Fiji)', -17.78, 177.44],
+  ['asia', 'Singapore', 1.29, 103.85], ['asia', 'Bali (Denpasar / Kuta)', -8.72, 115.17], ['asia', 'Taipei', 25.04, 121.56],
+]
+const AWAY_REGION_NAMES = { jp: '🇯🇵 Japan', au: '🇦🇺 Australia', na: '🇺🇸 USA', pac: '🇫🇯 Fiji & Pacific', asia: '🌏 Asia' };
 const NZ_MISSIONS = [
   ['NZ Embassy, Washington DC', '37 Observatory Circle NW, Washington, DC 20008', '+1 202 328 4848', 38.91900, -77.06423],
   ['NZ Consulate-General, Los Angeles', 'Suite 600E, 2425 Olympic Boulevard, Santa Monica, CA 90404', '+1 310 566 6555', 34.02809, -118.47132],
@@ -3639,6 +3678,9 @@ const NZ_MISSIONS = [
   ['NZ High Commission, Suva', 'Lot 12 Banuve Street, Nasese, Suva', '+679 331 1422', -18.15704, 178.42988],
   ['NZ High Commission, Apia', 'Beach Road, Apia', '+685 21 711', -13.83351, -171.76292],
   ['NZ High Commission, Nukuʻalofa', 'Corner Taufaʻahau and Salote Roads, Nukuʻalofa', '+676 23122', -21.13354, -175.20010],
+  ['NZ High Commission, Singapore', '1 George Street, Level 21-04, Singapore 049145', '+65 6235 9966', 1.28574, 103.84779],
+  ['NZ Embassy, Jakarta (covers Bali)', 'Sentral Senayan 2, 10th Floor, Jl Asia Afrika No 8, Jakarta Pusat 10270', '+62 21 2995 5800', -6.22367, 106.79899],
+  ['NZ Commerce and Industry Office, Taipei', '9F, No. 1, Songzhi Rd, Xinyi District, Taipei 11047', '+886 2 2720 5228', 25.03872, 121.56600],
   ['NZ High Commission, Rarotonga', '1st floor, Philatelic Bureau Building, Takuvaine Road, Avarua', '+682 22 201', -21.20848, -159.77550],
 ];
 </script>
@@ -5148,7 +5190,7 @@ async function buildPack(on) {
     content.push({ text: 'Our people', style: 'h3' });
     content.push(tbl(['Name', 'Who', 'Phone'], [...S.people.map(p => [p.name || '', p.role || '', p.phone || '']), ...S.contacts.map(c => [c.name, (c.rel || '') + (c.outOfTown ? ' (out of town)' : ''), c.phone || '']), ...(h.backupAdult ? [[h.backupAdult, 'Backup adult for the children', h.backupPhone || '']] : [])], ['*', '*', 110]));
     content.push({ columns: [{ width: '*', stack: [{ text: 'At home', style: 'h3' }, tbl(['', ''], [['Radio channel', S.home.radioCh || '—'], ['Daily check-in when apart', (h.checkin || '19:00') + ' NZ time'], ['Gas shut-off', S.home.gasMeter || '—'], ['Water toby', S.home.waterToby || '—'], ['Main switchboard', S.home.switchboard || '—'], ['Power in a cut', deEmoji(T.car) + ' — see the Power cut guide']], [110, '*'])] },
-      { width: 200, stack: [{ text: deEmoji(AW()) + ' overseas', style: 'h3' }, tbl(['', ''], [['NZ consular 24/7', '+64 99 20 20 20'], ['USA / Canada', '911'], ['Japan', '110 police · 119 fire/ambulance'], ['Australia', '000 (112 mobile)'], ['Fiji', '911 · 917 police'], ['Samoa', '911']], [80, '*'])] }], columnGap: 14 });
+      { width: 200, stack: [{ text: deEmoji(AW()) + ' overseas', style: 'h3' }, tbl(['', ''], [['NZ consular 24/7', '+64 99 20 20 20'], ['Japan', '110 police · 119 fire/ambulance'], ['Australia', '000 (112 mobile)'], ['USA', '911'], ['Fiji', '911 · 917 police'], ['Singapore', '995 · 999 police'], ['Bali', '112 · 118 ambulance'], ['Taipei', '119 · 110 police']], [80, '*'])] }], columnGap: 14 });
   }
   // ---- family plan
   if (on.plan) {

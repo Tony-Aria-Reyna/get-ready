@@ -125,7 +125,7 @@ async function buildPack(on) {
     content.push({ text: 'Our people', style: 'h3' });
     content.push(tbl(['Name', 'Who', 'Phone'], [...S.people.map(p => [p.name || '', p.role || '', p.phone || '']), ...S.contacts.map(c => [c.name, (c.rel || '') + (c.outOfTown ? ' (out of town)' : ''), c.phone || '']), ...(h.backupAdult ? [[h.backupAdult, 'Backup adult for the children', h.backupPhone || '']] : [])], ['*', '*', 110]));
     content.push({ columns: [{ width: '*', stack: [{ text: 'At home', style: 'h3' }, tbl(['', ''], [['Radio channel', S.home.radioCh || '—'], ['Daily check-in when apart', (h.checkin || '19:00') + ' NZ time'], ['Gas shut-off', S.home.gasMeter || '—'], ['Water toby', S.home.waterToby || '—'], ['Main switchboard', S.home.switchboard || '—'], ['Power in a cut', deEmoji(T.car) + ' — see the Power cut guide']], [110, '*'])] },
-      { width: 200, stack: [{ text: deEmoji(AW()) + ' overseas', style: 'h3' }, tbl(['', ''], [['NZ consular 24/7', '+64 99 20 20 20'], ['USA / Canada', '911'], ['Japan', '110 police · 119 fire/ambulance'], ['Australia', '000 (112 mobile)'], ['Fiji', '911 · 917 police'], ['Samoa', '911']], [80, '*'])] }], columnGap: 14 });
+      { width: 200, stack: [{ text: deEmoji(AW()) + ' overseas', style: 'h3' }, tbl(['', ''], [['NZ consular 24/7', '+64 99 20 20 20'], ['Japan', '110 police · 119 fire/ambulance'], ['Australia', '000 (112 mobile)'], ['USA', '911'], ['Fiji', '911 · 917 police'], ['Singapore', '995 · 999 police'], ['Bali', '112 · 118 ambulance'], ['Taipei', '119 · 110 police']], [80, '*'])] }], columnGap: 14 });
   }
   // ---- family plan
   if (on.plan) {
