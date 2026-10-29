@@ -15,6 +15,13 @@ An offline emergency app for our family: what to do in an earthquake, tsunami, e
 ## Without the internet at all
 `index.html` is completely self-contained. Copy it to a laptop or USB stick and open it in any browser.
 
+## Editing content
+- **In the app:** every guide has ✏️ edit buttons, "Add to this section", "Add a note" and "New guide". Edits are saved on the phone and travel with the backup file.
+- **For everyone (in the code):** guides live in `src/guides/*.js` in a simple text format (see the top of `src/guides/00_base.js`).
+
+## Excel
+`family-ready-template.xlsx` — fill in Family, Contacts, Suppliers, Supplies and Places, then import it in the app (⚙️ → Excel).
+
 ## Updating
 Edit files in `src/`, then `npm install && npm run build`, commit and push.
 
