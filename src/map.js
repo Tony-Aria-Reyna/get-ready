@@ -2,28 +2,58 @@
 // MAP
 // ---------------------------------------------------------------------------
 const LINZ_ATTR = 'Topo50 & aerials © <a href="https://www.linz.govt.nz/">Toitū Te Whenua LINZ</a> CC BY 4.0';
-const SETS = { topo: { set: 'topo-raster', name: 'NZ Topo50 map', max: 17, kb: 22 }, aerial: { set: 'aerial', name: 'Aerial photos', max: 19, kb: 38 } };
+const SETS = {
+  topo: { set: 'topo-raster', name: 'NZ Topo50 map', max: 17, kb: 22 },
+  aerial: { set: 'aerial', name: 'Aerial photos', max: 19, kb: 38 },
+  street: { online: true, name: 'Street map (OpenStreetMap)', max: 19, url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' },
+};
+const SAVABLE = Object.entries(SETS).filter(([k, s]) => !s.online);
+let KEYWARNED = false;
+function linzKeyProblem() {
+  if (KEYWARNED) return; KEYWARNED = true;
+  sheet(`<h2>🔑 The LINZ map needs a free access key</h2>
+   <p>LINZ now asks for a key before it sends map pieces. Maps you have already <b>saved</b> keep working without one.</p>
+   <ol class="steps" style="padding-left:0">
+   <li><span class="txt">On this phone, open <b>basemaps.linz.govt.nz</b> in the browser.</span></li>
+   <li><span class="txt">Tap the share/copy link button on that map (or copy the address bar) — the link contains <b>api=c…</b></span></li>
+   <li><span class="txt">Paste the link in the box below and tap Save.</span></li></ol>
+   <div class="row"><input type="text" id="lkQ" placeholder="Paste the LINZ link or key" style="flex:1"><button class="btn primary" id="lkQS">Save</button></div>
+   <p class="small muted" style="margin-top:8px">That key lasts 90 days. For a key that never expires, email <b>basemaps@linz.govt.nz</b> and ask for a free Developer key for a family emergency app. Meanwhile, <b>Street map (OpenStreetMap)</b> in Layers works online without a key.</p>`, el => {
+    $('#lkQS', el).onclick = () => { const v = $('#lkQ', el).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); const k = m ? m[1] : v; if (!k) return; S.set.linzKey = k; persist(); KEYWARNED = false; $('#sheet').innerHTML = ''; setBase(S.set.base); toast('Key saved — map reloading'); };
+  });
+}
 const PT = { // point categories
   H: ['🏥', '#c62828', 'Hospitals'], U: ['🩺', '#e65100', 'Urgent care'], P: ['💊', '#2e7d32', 'Pharmacies'], F: ['🚒', '#b71c1c', 'Fire stations'],
   L: ['🚓', '#1565c0', 'Police'], M: ['🏛️', '#6d4c41', 'Marae'], A: ['❤️', '#ad1457', 'Defibrillators (AED)'], C: ['🏘️', '#546e7a', 'Community centres & halls'],
 };
 const MYPT = { water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
 const DEFAULT_CENTRE = [-36.87, 174.70];
+let FOLLOW = false, MEACC = null, MEACCV = 0;
 let MAP = null, BASE = null, LYR = {}, MEPOS = null, MEMARK = null, WATCH = null, PICK = null, MAPFOCUS = null, OSMDATA = null, TSUNAMI = null;
 const linzKey = () => S.set.linzKey ? '?api=' + encodeURIComponent(S.set.linzKey) : '';
 const linzUrl = set => 'https://basemaps.linz.govt.nz/v1/tiles/' + set + '/WebMercatorQuad/{z}/{x}/{y}.webp' + linzKey();
 const tileKey = (set, z, x, y) => set + '/' + z + '/' + x + '/' + y;
 function makeBase(k) {
-  const def = SETS[k];
+  const def = SETS[k] || SETS.topo;
+  // OpenStreetMap: online viewing only (their rules forbid saving it for offline use); the browser caches what you've looked at.
+  if (def.online) return L.tileLayer(def.url, { maxZoom: 19, maxNativeZoom: def.max, minZoom: 4, attribution: def.attr, crossOrigin: false });
+  // LINZ: saved pieces come from this phone; anything else is fetched and kept, so places you've looked at also work offline.
+  const showBlob = (img, b, done) => { const u = URL.createObjectURL(b); img.onload = () => { URL.revokeObjectURL(u); done(null, img); }; img.onerror = () => done(new Error('bad tile'), img); img.src = u; };
   const Off = L.TileLayer.extend({
     createTile(coords, done) {
       const img = document.createElement('img'); img.alt = ''; img.setAttribute('role', 'presentation');
-      const key = tileKey(def.set, coords.z, coords.x, coords.y);
-      idb.get('tiles', key).then(b => {
-        if (b) { const u = URL.createObjectURL(b); img.onload = () => { URL.revokeObjectURL(u); done(null, img); }; img.onerror = () => done(new Error('bad tile'), img); img.src = u; }
-        else if (navigator.onLine !== false) { img.onload = () => done(null, img); img.onerror = () => done(new Error('net'), img); img.crossOrigin = 'anonymous'; img.src = this.getTileUrl(coords); }
-        else done(new Error('offline'), img);
-      }).catch(() => { img.src = this.getTileUrl(coords); img.onload = () => done(null, img); img.onerror = () => done(new Error('x'), img); });
+      const key = tileKey(def.set, coords.z, coords.x, coords.y); const url = this.getTileUrl(coords);
+      const net = async (tries) => {
+        if (navigator.onLine === false) return done(new Error('offline'), img);
+        try {
+          const r = await fetch(url, { mode: 'cors', credentials: 'omit' });
+          if (r.ok) { const b = await r.blob(); idb.put('tiles', key, b).catch(() => {}); return showBlob(img, b, done); }
+          if (r.status === 400 || r.status === 401 || r.status === 403) { const t = await r.text().catch(() => ''); if (/key/i.test(t) || r.status !== 400) linzKeyProblem(); return done(new Error('key'), img); }
+          if ((r.status === 429 || r.status >= 500) && tries < 2) return setTimeout(() => net(tries + 1), 1500 * (tries + 1));
+          done(new Error('http ' + r.status), img);
+        } catch (e) { if (tries < 2) setTimeout(() => net(tries + 1), 1500 * (tries + 1)); else done(e, img); }
+      };
+      idb.get('tiles', key).then(b => b ? showBlob(img, b, done) : net(0)).catch(() => net(0));
       return img;
     },
   });
@@ -31,7 +61,8 @@ function makeBase(k) {
 }
 function teardownMap() {
   if (WATCH != null && navigator.geolocation) { navigator.geolocation.clearWatch(WATCH); WATCH = null; }
-  if (MAP) { try { MAP.remove(); } catch (e) {} MAP = null; LYR = {}; MEMARK = null; }
+  FOLLOW = false;
+  if (MAP) { try { MAP.remove(); } catch (e) {} MAP = null; LYR = {}; MEMARK = null; MEACC = null; }
 }
 function dotIcon(emoji, colour, big) {
   return L.divIcon({ className: '', html: big ? `<div class="pin" style="background:${colour}"><span>${emoji}</span></div>` : `<div class="dot" style="background:${colour}">${emoji}</div>`, iconSize: big ? [30, 30] : [22, 22], iconAnchor: big ? [15, 30] : [11, 11], popupAnchor: big ? [0, -28] : [0, -10] });
@@ -52,7 +83,10 @@ function vMap(main) {
   const centre = MAPFOCUS ? MAPFOCUS.slice(0, 2) : S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE;
   MAP = L.map('map', { zoomControl: false, attributionControl: true, tap: true }).setView(centre, MAPFOCUS ? MAPFOCUS[2] : 13);
   MAPFOCUS = null;
+  if (SETS[S.set.base] && SETS[S.set.base].online && navigator.onLine === false) S.set.base = 'topo';
   setBase(S.set.base || 'topo');
+  // any pan or zoom by the user stops following the blue dot
+  MAP.on('dragstart', stopFollow); MAP.on('zoomstart', e => { if (!MAP._followZoom) stopFollow(); });
   L.control.zoom({ position: 'bottomright' }).addTo(MAP);
   L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(MAP);
   drawOverlays();
@@ -110,18 +144,24 @@ function sheet(html, onMount) {
 }
 function placeMe() {
   if (!MAP || !MEPOS) return;
-  if (!MEMARK) MEMARK = L.marker(MEPOS, { icon: L.divIcon({ className: '', html: '<div class="me"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 2000 }).addTo(MAP).bindPopup('You are here');
+  if (!MEMARK) MEMARK = L.marker(MEPOS, { icon: L.divIcon({ className: '', html: '<div class="me"></div>', iconSize: [18, 18], iconAnchor: [9, 9] }), zIndexOffset: 2000, interactive: true }).addTo(MAP).bindPopup(() => 'You are here' + (MEACCV ? `<br><span class="small muted">accurate to about ${Math.round(MEACCV)} m</span>` : ''));
   else MEMARK.setLatLng(MEPOS);
+  if (MEACCV) { if (!MEACC) MEACC = L.circle(MEPOS, { radius: MEACCV, color: '#1a73e8', weight: 1, fillOpacity: .08, interactive: false }).addTo(MAP); else MEACC.setLatLng(MEPOS).setRadius(MEACCV); }
 }
+function locBtn() { const b = $('#mLoc'); if (b) { b.textContent = FOLLOW ? '📍 Following' : '📍 Me'; b.classList.toggle('primary', FOLLOW); } }
+function stopFollow() { if (FOLLOW) { FOLLOW = false; locBtn(); } }
+function centreOnMe() { if (!MAP || !MEPOS) return; MAP._followZoom = true; MAP.setView(MEPOS, MAP.getZoom() < 14 ? 16 : MAP.getZoom()); setTimeout(() => { if (MAP) MAP._followZoom = false; }, 400); }
+// Tap once: centre on you and follow. Move the map: it stops following and leaves you free. Tap again: back to you.
 function locate() {
   if (!navigator.geolocation) { toast('Location is not available on this device'); return; }
+  FOLLOW = true; locBtn();
+  if (MEPOS) centreOnMe();
+  if (WATCH != null) return;
   toast('Finding you… (GPS works without mobile signal)');
-  const first = !MEPOS;
-  if (WATCH != null) navigator.geolocation.clearWatch(WATCH);
   WATCH = navigator.geolocation.watchPosition(p => {
-    MEPOS = [p.coords.latitude, p.coords.longitude]; placeMe();
-    if (first && MAP) { MAP.setView(MEPOS, Math.max(MAP.getZoom(), 15)); }
-  }, e => toast(e.code === 1 ? 'Location permission is off — allow it in your phone settings' : 'Could not get your location'), { enableHighAccuracy: true, maximumAge: 15000, timeout: 30000 });
+    const had = !!MEPOS; MEPOS = [p.coords.latitude, p.coords.longitude]; MEACCV = p.coords.accuracy || 0; placeMe();
+    if (FOLLOW && MAP) { if (!had) centreOnMe(); else MAP.panTo(MEPOS, { animate: true }); }
+  }, e => { WATCH = null; FOLLOW = false; locBtn(); toast(e.code === 1 ? 'Location permission is off — allow it in your phone settings' : 'Could not get your location'); }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 30000 });
 }
 function showNearest() {
   const o = MEPOS || (S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : MAP ? [MAP.getCenter().lat, MAP.getCenter().lng] : DEFAULT_CENTRE);
@@ -141,11 +181,12 @@ function showLayers() {
   const on = S.set.layers;
   const row = (k, label) => `<li><span class="tick ${on[k] ? 'on' : ''}" data-ly="${k}" role="checkbox" aria-checked="${!!on[k]}" tabindex="0">${on[k] ? '✓' : ''}</span><span class="grow">${label}</span></li>`;
   sheet(`<h2>Map layers</h2><h3>Background map</h3><div class="row">${Object.entries(SETS).map(([k, s]) => `<button class="btn sm ${S.set.base === k ? 'primary' : ''}" data-base="${k}">${s.name}</button>`).join('')}</div>
+   <p class="small muted" style="margin-top:6px"><b>Street map</b> has the most street names and detail but needs the internet (OpenStreetMap doesn't allow saving it). <b>Topo50</b> and <b>Aerial</b> can be saved for no signal.</p>
    <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
    ${Object.entries(PT).map(([k, v]) => row(k, v[0] + ' ' + v[2] + (!OSMDATA && !['H', 'U', 'P', 'F', 'C'].includes(k) ? ' <span class="pill warn">not downloaded</span>' : ''))).join('')}</ul>
    ${!OSMDATA || !TSUNAMI ? `<button class="btn primary" data-go="data">⬇️ Download emergency map data</button>` : `<p class="small muted">Map data downloaded ${fmtDate(S.meta.layersAt)}. Points © OpenStreetMap contributors (ODbL); tsunami zones © Auckland Council.</p>`}`,
   el => {
-    $$('[data-base]', el).forEach(b => b.onclick = () => { setBase(b.dataset.base); showLayers(); });
+    $$('[data-base]', el).forEach(b => b.onclick = () => { if (SETS[b.dataset.base].online && navigator.onLine === false) toast('Street map needs the internet — showing what this phone has already viewed'); setBase(b.dataset.base); showLayers(); });
     $$('[data-ly]', el).forEach(t => t.onclick = () => { on[t.dataset.ly] = on[t.dataset.ly] ? 0 : 1; persist(false); drawOverlays(); showLayers(); });
   });
 }
@@ -198,7 +239,7 @@ function showSave() {
   const P = presets();
   const savedHtml = S.saved.maps.length ? `<h3>Saved on this device</h3><ul class="list">${S.saved.maps.map((m, i) => `<li><div class="grow"><b>${esc(m.name)}</b><div class="small muted">${SETS[m.k] ? SETS[m.k].name : m.k} · ${m.n.toLocaleString()} pieces · ${MB(m.bytes || 0)} · ${fmtDate(m.at)}</div></div><button class="btn sm ghost" data-show="${i}">Show</button><button class="btn sm ghost" data-rm="${i}" style="color:var(--accent)">✕</button></li>`).join('')}</ul>` : '';
   sheet(`<h2>Save maps for no signal</h2><p class="small">Downloads LINZ Topo50 (or aerial photo) maps onto this phone so the map works in a disaster with no internet. Do it on <b>Wi-Fi</b>. Each phone needs its own copy.</p>
-  <label class="f">Map type</label><select id="svK">${Object.entries(SETS).map(([k, s]) => `<option value="${k}"${k === 'topo' ? ' selected' : ''}>${s.name}${k === 'topo' ? ' (recommended — smaller)' : ''}</option>`).join('')}</select>
+  <label class="f">Map type</label><select id="svK">${SAVABLE.map(([k, s]) => `<option value="${k}"${k === 'topo' ? ' selected' : ''}>${s.name}${k === 'topo' ? ' (recommended — smaller)' : ''}</option>`).join('')}</select>
   <ul class="list">${P.map((p, i) => `<li><div class="grow"><b>${p[1]}</b><div class="small muted">${p[2]} · <span data-est="${i}"></span></div></div><button class="btn sm primary" data-sv="${i}">Save</button></li>`).join('')}</ul>
   <div id="svProg"></div>${savedHtml}`, el => {
     const est = () => { const k = $('#svK', el).value; $$('[data-est]', el).forEach(s => { const p = P[s.dataset.est]; const n = countTiles(p[3], p[4], Math.min(p[5], SETS[k].max)); s.textContent = `about ${MB(n * SETS[k].kb * 1024)} (${n.toLocaleString()} pieces)`; }); };
@@ -226,7 +267,7 @@ async function saveArea(p, k) {
         if (await idb.has('tiles', key)) { skip++; }
         else {
           const r = await fetch(url(z, x, y), { mode: 'cors', credentials: 'omit' });
-          if (r.status === 401 || r.status === 403) { auth = true; break; }
+          if (r.status === 401 || r.status === 403 || (r.status === 400 && /key/i.test(await r.clone().text().catch(() => '')))) { auth = true; break; }
           if (!r.ok) { fail++; } else { const b = await r.blob(); bytes += b.size; await idb.put('tiles', key, b); done++; }
         }
       } catch (e) { fail++; }
@@ -235,14 +276,14 @@ async function saveArea(p, k) {
   }
   await Promise.all(Array.from({ length: 6 }, worker));
   OFF.busy = false; ui();
-  if (auth) { toast('LINZ needs an access key — see Settings → Maps', 7000); return; }
+  if (auth) { linzKeyProblem(); return; }
   if (OFF.cancel) { toast('Cancelled. What downloaded is kept.'); }
   const rec = { name: p[1].replace(/^\S+\s/, ''), k, b: p[3], z0: p[4], z1, n: list.length, bytes, at: Date.now() };
   const ex = S.saved.maps.findIndex(m => m.name === rec.name && m.k === k);
   if (ex >= 0) { rec.bytes += S.saved.maps[ex].bytes || 0; S.saved.maps[ex] = rec; } else S.saved.maps.push(rec);
   persist();
   if (!OFF.cancel) toast(`Saved ${rec.name}: ${MB(bytes)} downloaded${fail ? `, ${fail} pieces not available` : ''}. Works offline now.`, 6000);
-  if (BASE && S.set.base !== k) setBase(k); else if (BASE) BASE.redraw();
+  if (BASE && S.set.base !== k && !SETS[S.set.base].online) setBase(k); else if (BASE) BASE.redraw();
   showSave();
 }
 async function removeArea(i) {
