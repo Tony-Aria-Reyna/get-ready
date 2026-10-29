@@ -1,5 +1,5 @@
 // Keeps the app working with no internet. Map tiles and data live in IndexedDB, not here.
-const VERSION = 'ready-mvtuespz';
+const VERSION = 'ready-mvtuitwb';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'family-ready-template.xlsx'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => Promise.all(SHELL.map(u => c.add(u).catch(() => null)))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== VERSION).map(x => caches.delete(x)))).then(() => self.clients.claim())); });

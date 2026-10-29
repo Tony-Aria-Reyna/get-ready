@@ -194,3 +194,6 @@ textarea.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 
 .catjump{display:flex;flex-wrap:wrap;gap:2px;margin:-4px 0 12px}
 .catcard{scroll-margin-top:70px}
+
+ol.steps li, ul.checks li, .check, .list li:has(> .tick){cursor:pointer;-webkit-tap-highlight-color:rgba(36,82,127,.08)}
+.tick{flex:0 0 30px;height:30px;border-radius:9px}

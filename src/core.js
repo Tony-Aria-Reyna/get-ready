@@ -351,8 +351,12 @@ function readiness() {
     ['away', AW() + ': crew-bag kit packed & Safety Tips app installed', !!S.manual.away, 'g:away-kit', true],
   ];
 }
+function readinessItems() {
+  const ov = S.manual.ovr || {};
+  return readiness().map(i => { const k = i[0]; const auto = i[4] ? null : i[2]; const v = k in ov ? ov[k] : i[2]; return [k, i[1], v, i[3], true, auto]; });
+}
 function vNow(main) {
-  const items = readiness(); const done = items.filter(i => i[2]).length;
+  const items = readinessItems(); const done = items.filter(i => i[2]).length;
   const T = tokens();
   const sc = allGuides().filter(g => g.cat === 'scenario');
   const expiring = expiringItems(45);
@@ -384,7 +388,14 @@ function vNow(main) {
    ${items.map(i => `<div class="check"><span class="tick ${i[2] ? 'on' : ''}" ${i[4] ? `data-manual="${i[0]}" role="checkbox" aria-checked="${!!i[2]}" tabindex="0"` : ''}>${i[2] ? '✓' : ''}</span><div class="grow">${esc(i[1])}${i[0] === 'practise' && S.manual.practise ? ` <span class="small muted">(last ${fmtDate(S.manual.practise)})</span>` : ''}</div>${!i[2] && i[3] ? `<button class="btn sm ghost" data-go="${i[3]}">Do it</button>` : ''}</div>`).join('')}
   </div>
   <p class="small muted" style="text-align:center">Everything you type is stored only on this device and works with no internet.<br>Version ${APP_VERSION}</p>`;
-  $$('[data-manual]', main).forEach(el => el.onclick = () => { const k = el.dataset.manual; if (k === 'practise') S.manual.practise = S.manual.practise && daysSince(S.manual.practise) < 183 ? 0 : Date.now(); else S.manual[k] = !S.manual[k]; persist(); vNow(main); });
+  $$('[data-manual]', main).forEach(el => el.onclick = () => {
+    const k = el.dataset.manual; const it = items.find(i => i[0] === k); const now = !it[2];
+    S.manual.ovr = S.manual.ovr || {};
+    if (k === 'practise') { S.manual.practise = now ? Date.now() : 0; delete S.manual.ovr[k]; }
+    else if (['print', 'away'].includes(k)) { S.manual[k] = now; delete S.manual.ovr[k]; }
+    else if (it[5] === now) delete S.manual.ovr[k]; else S.manual.ovr[k] = now;
+    persist(); vNow(main);
+  });
   $$('[data-showmeet]', main).forEach(b => b.onclick = () => { const m = S.meet.find(x => x.id === b.dataset.showmeet); MAPFOCUS = [m.lat, m.lon, 16]; go('map'); });
 }
 
