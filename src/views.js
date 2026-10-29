@@ -36,7 +36,7 @@ const HOME_F = [
   { k: 'tankNotes', label: 'Tank notes', type: 'textarea' },
   { k: 'oven', label: 'Pizza oven', ph: 'e.g. the Ooni Karu', section: 'Cooking' },
   { k: 'ovenGas', label: 'Does it have the gas burner?', type: 'select', options: [['unknown', "Don't know"], ['yes', 'Yes'], ['no', 'No']] },
-  { k: 'bbq', label: 'Charcoal cooker', ph: 'the Big Green Egg' }, { k: 'stove', label: 'Camp stove / gas BBQ (if any)' },
+  { k: 'bbq', label: 'Charcoal cooker', ph: 'e.g. the Big Green Egg' }, { k: 'stove', label: 'Camp stove / gas BBQ (if any)' },
   { k: 'radios', label: 'Our walkie-talkies', ph: 'e.g. a Baofeng and four Unidens', section: 'Radios' },
   { k: 'radioCh', label: 'Family radio channel and tone', ph: 'e.g. PRS channel 20 (476.900 MHz), tone 100.0 Hz' },
   { k: 'radioNotes', label: 'Radio notes', type: 'textarea' },
@@ -82,7 +82,7 @@ function vPlan(main) {
   $$('[data-p]', main).forEach(li => li.onclick = () => personForm(S.people.find(x => x.id === li.dataset.p)));
   $('#eh', main).onclick = () => formModal('Household', [
     { k: 'name', label: 'Household name' }, { k: 'address', label: 'Home address' },
-    { k: 'homeName', label: 'Name of the parent usually at home', ph: 'e.g. Dad' }, { k: 'awayName', label: 'Name of the parent who travels overseas for work', ph: 'e.g. Mum' },
+    { k: 'homeName', label: 'Name of the adult usually at home', ph: 'e.g. Dad' }, { k: 'awayName', label: 'Name of a family member who often travels overseas (optional)', ph: 'e.g. Mum' },
     { k: 'days', label: 'Days of supplies to aim for', type: 'select', options: [[3, '3 days (bare minimum)'], [7, '7 days'], [14, '14 days'], [30, '30 days (recommended)'], [60, '60 days'], [90, '3 months'], [180, '6 months']] },
     { k: 'checkin', label: 'Daily check-in time when apart (NZ time)', type: 'time' },
     { k: 'backupAdult', label: 'Backup adult who can collect the children', help: 'If neither parent can. Make sure the school has them on the pickup list.' }, { k: 'backupPhone', label: 'Their phone', type: 'tel' },
@@ -230,7 +230,9 @@ async function vData(main) {
    <p>Storage used: <b>${est ? MB(est.usage || 0) : '—'}</b> · Protected from clean-up: <b>${persisted ? 'yes' : 'no'}</b>${!persisted ? ' <button class="btn sm" id="pp">Protect</button>' : ''}</p>
    <div class="grid2" style="grid-template-columns:1fr 1fr"><div><label class="f">Appearance</label><select id="th"><option value="auto">Match phone</option><option value="light">Light</option><option value="dark">Dark (easier at night)</option></select></div>
    <div><label class="f">Text size</label><select id="ts"><option value="normal">Normal</option><option value="large">Large</option><option value="xl">Extra large</option></select></div></div></div>
-  <div class="card"><h2>About</h2><p class="small">Family Ready · version ${APP_VERSION}. Guidance drawn from NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, St John and ANZCOR first aid, MPI, NZ SafeTravel and Smartraveller. This app is a guide, not a replacement for official instructions — always follow Civil Defence and emergency services.</p>
+  <div class="card"><h2>About</h2><p class="small">Family Ready · version ${APP_VERSION}. A free, non-commercial guide for NZ households. Guidance drawn from NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, St John and ANZCOR first aid, MPI, NZ SafeTravel and Smartraveller. <b>This app is a guide, not official advice</b> — always follow Civil Defence, emergency services and official warnings. Everything you type stays on this device.</p>
+   <div class="row" style="margin-bottom:10px"><a class="btn sm" href="${reportUrl('Report: ', 'App version: ' + APP_VERSION + '\n\nWhat is wrong or missing (please don\'t include personal details):\n')}" target="_blank" rel="noopener">🐞 Report a mistake or suggest a change</a><button class="btn sm ghost" id="wAgain">Show the welcome note</button></div>
+   <p class="small muted">Reports go to the app's public GitHub page (a free GitHub account is needed) — don't include personal details.</p>
    <button class="btn ghost" id="wipe" style="color:var(--accent)">Erase everything on this device</button></div>`;
   $('#th', main).value = S.set.theme || 'auto'; $('#ts', main).value = S.set.textSize || 'normal';
   $('#th', main).onchange = e => { S.set.theme = e.target.value; applyTheme(); persist(false); };
@@ -244,5 +246,6 @@ async function vData(main) {
   $('#lkS', main).onclick = () => { const v = $('#lk', main).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); S.set.linzKey = m ? m[1] : v; persist(); toast('Saved'); };
   const inst = $('#inst', main); if (inst) inst.onchange = e => { S.manual.install = e.target.checked; persist(); };
   const pp = $('#pp', main); if (pp) pp.onclick = async () => { const ok = navigator.storage && await navigator.storage.persist(); toast(ok ? 'Protected' : 'The browser said no — installing the app usually fixes this'); vData(main); };
+  $('#wAgain', main).onclick = () => showWelcome(true);
   $('#wipe', main).onclick = e => confirmTwice(e.target, 'Tap again — this cannot be undone', async () => { await idb.clear('kv'); await idb.clear('tiles'); await idb.clear('files'); try { localStorage.removeItem('family-ready-state'); } catch (x) {} S = DEFAULT_STATE(); migrate(); OSMDATA = TSUNAMI = null; toast('Erased'); go('now'); });
 }

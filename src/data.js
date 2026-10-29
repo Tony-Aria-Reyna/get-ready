@@ -55,16 +55,6 @@ const CORE_POINTS = [
   ['U',-36.92238,174.91352,'Eastcare Urgent Care','Botany','09 277 1516',0,''],
   ['U',-36.93365,174.9112,'Botany Medical & Urgent Care','Town Centre Drive, Botany','09 280 1790',0,'Mo-Su 08:00-20:00'],
   ['U',-36.98889,174.8849,'Manukau City Accident & Medical','Manukau','',0,''],
-  ['P',-36.91043,174.65178,'Glen Eden Pharmacy','226 West Coast Road, Glen Eden','09 818 5252',0,'Mo-Fr 08:30-17:30; Sa 09:00-13:00'],
-  ['P',-36.91043,174.64986,'Westview Pharmacy','5 Glendale Road, Glen Eden','09 818 3388',0,'Mo-Fr 08:30-17:30; Sa 09:00-12:30'],
-  ['P',-36.93782,174.65667,'Titirangi Pharmacy','Titirangi','09 817 7658',0,'Mo-Fr 08:30-18:00; Sa 09:00-13:30'],
-  ['P',-36.90883,174.68369,'Health New Lynn Pharmacy','6 McCrae Way, New Lynn','09 827 7214',0,'Mo-Fr 08:00-20:00; Sa-Su 09:00-15:00'],
-  ['F',-36.93397,174.57771,'Waiatarua Fire Station','464A Scenic Drive','09 814 9213',0,''],
-  ['F',-36.96343,174.6289,'Laingholm Fire Station','75 Victory Road','09 817 5475',0,''],
-  ['F',-36.86878,174.49076,'Bethells Valley Fire Station','Bethells Road','09 810 9142',0,''],
-  ['F',-36.84876,174.5442,'Waitākere Fire Station','8 Township Road','09 810 9251',0,''],
-  ['C',-36.9391,174.65587,'Titirangi War Memorial Hall','500 South Titirangi Road','',0,''],
-  ['C',-36.86432,174.60266,'Rānui Community Centre','474 Swanson Road','',0,''],
 ];
 
 
@@ -97,7 +87,7 @@ const SUPPLIES = [
   ['Fruit, veg & extras', 'Sprouting seeds (mung beans, lentils)', 0.5, 'kg', 'home', true],
   ['Cooking & fuel', 'LPG 9 kg gas bottles (one spare, full)', 2, '', 'home', false],
   ['Cooking & fuel', 'Lump charcoal + fire-starter cubes', 2, 'bags', 'home', false],
-  ['Cooking & fuel', 'Dry hardwood split small (for the Ooni)', 1, 'stack', 'home', false],
+  ['Cooking & fuel', 'Dry hardwood split small (pizza oven / wood fire)', 1, 'stack', 'home', false],
   ['Cooking & fuel', 'Butane camp stove + canisters', 1, 'set', 'home', false],
   ['Cooking & fuel', 'Matches / lighters in a sealed bag', 4, '', 'home', false],
   ['Cooking & fuel', 'Manual can openers (2)', 2, '', 'home', false],
@@ -161,13 +151,13 @@ const AGE_GROUPS = [
 
 // Overseas: layover cities (map centre) and NZ missions (address from NZ SafeTravel; pin positions approximate).
 const AWAY_CITIES = [
-  ['jp', 'Narita (airport & crew hotels)', 35.776, 140.318], ['jp', 'Tokyo (central)', 35.68, 139.76],
-  ['au', 'Sydney', -33.87, 151.21], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Perth', -31.95, 115.86],
-  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Houston', 29.76, -95.37], ['na', 'New York', 40.71, -74.01],
-  ['pac', 'Nadi (Fiji)', -17.78, 177.44],
+  ['jp', 'Narita (airport & hotels)', 35.776, 140.318], ['jp', 'Tokyo (central)', 35.68, 139.76],
+  ['au', 'Sydney', -33.87, 151.21], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Perth', -31.95, 115.86], ['au', 'Melbourne', -37.81, 144.96], ['au', 'Gold Coast', -28.02, 153.40],
+  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Houston', 29.76, -95.37], ['na', 'New York', 40.71, -74.01], ['na', 'Honolulu', 21.31, -157.86], ['na', 'Vancouver', 49.28, -123.12],
+  ['pac', 'Nadi (Fiji)', -17.78, 177.44], ['pac', 'Rarotonga', -21.21, -159.78], ['pac', 'Apia (Samoa)', -13.83, -171.76], ['pac', 'Nukuʻalofa (Tonga)', -21.14, -175.20],
   ['asia', 'Singapore', 1.29, 103.85], ['asia', 'Bali (Denpasar / Kuta)', -8.72, 115.17], ['asia', 'Taipei', 25.04, 121.56],
 ]
-const AWAY_REGION_NAMES = { jp: '🇯🇵 Japan', au: '🇦🇺 Australia', na: '🇺🇸 USA', pac: '🇫🇯 Fiji & Pacific', asia: '🌏 Asia' };
+const AWAY_REGION_NAMES = { jp: '🇯🇵 Japan', au: '🇦🇺 Australia', na: '🇺🇸 USA & Canada', pac: '🌴 Pacific', asia: '🌏 Asia' };
 const NZ_MISSIONS = [
   ['NZ Embassy, Washington DC', '37 Observatory Circle NW, Washington, DC 20008', '+1 202 328 4848', 38.91900, -77.06423],
   ['NZ Consulate-General, Los Angeles', 'Suite 600E, 2425 Olympic Boulevard, Santa Monica, CA 90404', '+1 310 566 6555', 34.02809, -118.47132],

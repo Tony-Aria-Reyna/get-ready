@@ -97,7 +97,7 @@ G({ id: 'tsunami', cat: 'scenario', icon: '🌊', colour: '#1d4ed8', title: 'Tsu
 1. Throw out any food or water that touched the floodwater.
 1. Treat drinking water until told it's safe ([[water-treat]]).
 ## Around us
-> Inland West Auckland suburbs are well away from the sea. The danger is when we're **at the coast**: the West Coast beaches (Piha, Karekare, Te Henga/Bethells, Muriwai, Whatipu), and low ground around the Manukau and Waitematā harbours. At a West Coast beach after a long or strong quake: leave the sand and walk straight up the road.
+> Inland suburbs are well away from the sea. The danger is when you're **at the coast** — in Auckland, for example, the West Coast beaches (Piha, Karekare, Te Henga/Bethells, Muriwai, Whatipu), and low ground around the Manukau and Waitematā harbours. At a West Coast beach after a long or strong quake: leave the sand and walk straight up the road.
 > A tsunami from far away (South America, Tonga–Kermadec) gives an hour or more and comes with an official warning. Follow it.
 > Turn on **Tsunami evacuation zones** in Map → Layers to see the Auckland zones. Red = stay out after any tsunami warning. Yellow = leave after a long or strong earthquake or when told.
 `);
@@ -175,7 +175,7 @@ These are the warning signs. **Any one means leave immediately** — don't stop 
 1. Check the water tank for contamination ([[tank-water]]).
 1. Photograph all damage for insurance before you clean.
 1. Air the house; mould grows fast. Pull out wet carpet and underlay.
-> Streams across West Auckland flooded houses in January 2023. If our area floods once, it will again — know the higher route out.
+> Streams across Auckland flooded houses in January 2023. If our area floods once, it will again — know the higher route out.
 `);
 
 G({ id: 'outage', cat: 'scenario', icon: '🔌', colour: '#a16207', title: 'Long power or water outage',
@@ -189,7 +189,7 @@ G({ id: 'outage', cat: 'scenario', icon: '🔌', colour: '#a16207', title: 'Long
 ## First day
 1. If it's going to be more than a few hours: set up the car for power — [[car-power]].
 1. Plug in the fridge and freezer from the car. See the [[tool:power|power calculator]] for what else will fit.
-1. Cook outside: Ooni (gas), Big Green Egg or BBQ — see [[cook-options]].
+1. Cook outside: gas BBQ, {{oven}} or {{bbq}} — see [[cook-options]].
 1. Light: head torches and lanterns. Avoid candles near children, curtains and bedding.
 1. Phones: low-power mode, screen dim. Charge from the car or power banks.
 ! **Carbon monoxide kills.** BBQs, camp stoves, pizza ovens, charcoal and generators must only be used **outdoors**, never in the house, garage, carport or tent. Headache, dizziness, nausea or sleepiness = get into fresh air immediately.

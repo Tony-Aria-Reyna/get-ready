@@ -1,32 +1,32 @@
 // ---------------------------------------------------------------- OVERSEAS
 G({ id: 'away-general', cat: 'away', icon: '✈️', colour: '#0e7490', title: '{{away}} stuck overseas — what to do',
-  one: 'Stay with the crew. Message home once a day at {{checkin}} NZ time. Let {{homeAdult}} handle home.' }, `
+  one: 'Stay with your group and follow local advice. Message home once a day at {{checkin}} NZ time. Let {{homeAdult}} handle home.' }, `
 ## First hours
-1. **Stay with the crew and follow the airline.** Crew on a trip are the airline's responsibility: crew scheduling, the captain and the purser organise hotels, transport and getting everyone home.
+1. **Stay with your group.** If you're travelling for work, follow your employer's arrangements. **Airline crew:** the airline is responsible for you — crew scheduling, the captain and the purser organise hotels, transport and getting everyone home.
 1. Follow local official instructions — do what locals are told to do (see the region guides below).
 1. Message home as soon as you can: *"Safe. [Where]. Battery [%]."* Short texts get through when calls don't.
 1. Save your phone battery: low-power mode, close apps, airplane mode between check-ins.
 ## If you can't get through
 1. Try hotel Wi-Fi with WhatsApp, iMessage or Messenger.
-1. Try the hotel landline, or a crew member's phone (different networks).
+1. Try the hotel landline, or a travel companion's or colleague's phone (different networks).
 1. iPhone **Emergency SOS / Messages via satellite** works with no signal in a growing list of countries — check in Settings before the trip. Go outdoors with a clear view of the sky.
-1. Ask the airline's crew support to pass a message home.
+1. Ask the hotel, your airline or your employer to pass a message home.
 ## Daily check-in
 - **{{checkin}} NZ time**, every day, even just *"All fine, no news."*
-- If a check-in is missed, home waits **12 hours** before worrying — networks may be down. Then {{homeAdult}} contacts the airline's crew support line.
+- If a check-in is missed, home waits **12 hours** before worrying — networks may be down. Then {{homeAdult}} contacts the airline, employer or hotel.
 ## Home is covered
-- {{homeAdult}} looks after our daughter and the household and runs the plan. **{{away}} doesn't need to do anything about home** — just stay safe and get back when it's safe.
-- If both of us are away or cut off, the backup adult ({{backupAdult}}) collects our daughter.
-## If separated from the crew and in trouble
+- {{homeAdult}} looks after the children and the household and runs the plan. **{{away}} doesn't need to do anything about home** — just stay safe and get back when it's safe.
+- If both of us are away or cut off, the backup adult ({{backupAdult}}) collects the children.
+## If separated from your group and in trouble
 1. Local emergency number (see the region guide).
 1. The nearest NZ embassy or consulate (numbers in the region guide).
 1. NZ consular emergency line, 24/7: **+64 99 20 20 20** (from overseas) · **0800 30 10 30** (from NZ).
 1. Register on **SafeTravel** (safetravel.govt.nz) if stranded more than a day or two — the NZ Government uses it to find and contact New Zealanders in a crisis.
 ## Regions
-- [[away-jp|Japan (Narita, Tokyo)]] · [[away-au|Australia (Sydney, Brisbane, Perth)]] · [[away-na|USA (LA, San Francisco, Houston, New York)]] · [[away-pac|Fiji & Pacific]] · [[away-asia|Singapore, Bali & Taipei]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+- [[away-jp|Japan (Narita, Tokyo)]] · [[away-au|Australia (Sydney, Brisbane, Perth)]] · [[away-na|USA (LA, San Francisco, Houston, New York)]] · [[away-pac|Fiji & Pacific]] · [[away-asia|Singapore, Bali & Taipei]] · [[away-maps|Maps overseas]] · [[away-kit|Travel kit]] · [[away-home|Getting home if flights stop]]
 ## Maps
 - Before every trip, download the city in **Organic Maps** so maps work with no signal — [[away-maps]].
-- In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned layover places.
+- In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned places to stay.
 `);
 
 G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'USA (LA, San Francisco, Houston, New York)', zones: [['Los Angeles · San Francisco', 'America/Los_Angeles'], ['Houston', 'America/Chicago'], ['New York', 'America/New_York']],
@@ -56,7 +56,7 @@ G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'USA
 | NZ High Commission, Ottawa (Canada) | +1 613 238 5991 |
 | NZ consular emergency (24/7) | +64 99 20 20 20 |
 ## Visa note
-> Crew are in the US on crew visas tied to working the flight. If stranded, make sure the **airline** knows and arranges your status — don't just stay on without them knowing.
+> **Airline crew** are in the US on crew visas tied to working the flight. If stranded, make sure the **airline** knows and arranges your status — don't just stay on without them knowing.
 `);
 
 G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Japan (Narita & Tokyo)', zones: [['Narita · Tokyo', 'Asia/Tokyo']],
@@ -71,7 +71,7 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 - Japanese phones sound a loud, distinctive alarm for **earthquake early warnings** — you may get a few seconds' notice. Drop, Cover, Hold straight away.
 - Evacuation shelters (**避難所**, hinanjo) and tsunami evacuation buildings (**津波避難ビル**) have green signs.
 ## Hazards
-- **Narita:** crew hotels are near the airport, about 60 km from central Tokyo. Narita is inland — not a tsunami area — but trains into Tokyo stop after big earthquakes. Stay at the hotel and follow the crew.
+- **Narita:** many airport hotels (including crew hotels) are near the airport, about 60 km from central Tokyo. Narita is inland — not a tsunami area — but trains into Tokyo stop after big earthquakes. Stay at the hotel and follow the crew.
 - **Earthquakes** are frequent. Hotels are built for them. Stay inside during shaking, away from windows; don't use lifts afterwards; put shoes on. Hotel staff are trained — follow them.
 - **Tsunami** — near the coast (including Tokyo Bay and Osaka Bay areas). If there's a tsunami warning (**津波警報**), go to a tsunami evacuation building (high floors) or high ground immediately.
 - **Typhoons** (mainly June–October): trains and flights stop. Stay in the hotel until the all clear.
@@ -139,7 +139,7 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'Fiji &
 - **Earthquake and tsunami** — Tonga, Samoa, Vanuatu and Fiji are in very active zones. **Long or strong — get gone:** inland or uphill immediately. Don't wait for sirens. Most resorts are right on the beach — know the route uphill.
 - **Volcanoes** — Tonga and Vanuatu. Ash closes airports, sometimes for days.
 - **Dengue fever** outbreaks are common. Insect repellent, long sleeves at dawn and dusk.
-- Hospitals are limited. Serious cases are flown to NZ or Australia — keep the airline's crew medical/insurance details handy.
+- Hospitals are limited. Serious cases are flown to NZ or Australia — keep your travel insurance (or employer's medical cover) details handy.
 ## Maps
 - Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
@@ -151,12 +151,12 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'Fiji &
 | NZ consular emergency (24/7) | +64 99 20 20 20 |
 `);
 
-G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-bag emergency kit',
-  one: 'A small kit that lives in the crew bag so {{away}} can look after herself for 3 days anywhere.' }, `
+G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Travel emergency kit',
+  one: 'A small kit that lives in the carry-on bag so {{away}} can manage for 3 days anywhere.' }, `
 [ ] Power bank (airline-approved, in the cabin bag) and charging cable
 [ ] Cash in small notes for the trip: e.g. ¥10,000 (Japan), A$100, US$100, F$100 (Fiji), S$100, NT$2,000 (Taiwan), Rp 1,000,000 (Bali)
-[ ] Photo of passport, crew ID and visa pages on the phone + paper copies
-[ ] Printed card: family numbers, airline crew support number, NZ consular line +64 99 20 20 20, home address
+[ ] Photo of passport, work/crew ID and visa pages on the phone + paper copies
+[ ] Printed card: family numbers, airline or employer emergency number, NZ consular line +64 99 20 20 20, home address
 [ ] This app installed on the phone (works offline) with the region guides
 [ ] Prescription medicines for 3 extra days + a copy of the prescription
 [ ] Water purification tablets, electrolyte sachets, a few muesli bars
@@ -164,15 +164,15 @@ G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-b
 [ ] Small torch or head torch
 [ ] Earplugs and eye mask (shelters are noisy and bright)
 [ ] P2/N95 mask (smoke, ash)
-[ ] Organic Maps installed, with every regular layover city downloaded ([[away-maps]])
-[ ] Crew hotel pinned in Family Ready (Map → ➕ Add place → Layover hotel)
+[ ] Organic Maps installed, with every regular destination downloaded ([[away-maps]])
+[ ] Hotel pinned in Family Ready (Map → ➕ Add place → Place to stay overseas)
 [ ] eSIM or roaming that works in each country — know how to switch it on
 [ ] Safety Tips app installed (Japan); notifications on
 `);
 
 G({ id: 'away-home', cat: 'away', icon: '🏠', colour: '#0e7490', title: 'Getting home if flights stop',
   one: 'Wait for the airline or an official flight. Register with SafeTravel. Keep money, medicines and visa status sorted.' }, `
-1. **Stay in touch with the airline** — they will try to reposition crew home on the first available flights, including other airlines.
+1. **Stay in touch with your airline** (and employer) — airlines rebook passengers, and reposition crew, on the first available flights, including on other airlines.
 1. **Register on SafeTravel** and keep your details updated. If borders close or flights stop for a long time, the NZ Government may organise **repatriation flights** and contacts registered New Zealanders first.
 1. **Stay put** somewhere safe rather than trying risky land or sea routes.
 1. Keep your **visa status** sorted through the airline and the NZ embassy — tell them if you're stuck past your allowed stay.

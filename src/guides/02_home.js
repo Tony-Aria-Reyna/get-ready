@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------- OUR HOME
 G({ id: 'car-power', cat: 'home', icon: '⚡', title: 'Power cut: running the house from {{car}}',
   one: 'The car is our battery. Car outside → READY → AC button → transformer → fridge and freezer.' }, `
+> **No PHEV?** A portable power station or a generator does the same job. The same rules apply: generators outdoors only, and never back-feed the house wiring.
 ## Why the solar panels don't help
 ! Our solar{{inverterNote}} is **grid-tied with no battery**. By law it switches itself off the moment the grid goes down, so it can't push power into lines that people may be repairing. The panels can be in full sun and give **nothing**. Don't waste time on it — use the car.
 ## What {{car}} can do
@@ -18,7 +19,7 @@ G({ id: 'car-power', cat: 'home', icon: '⚡', title: 'Power cut: running the ho
 1. Keep the exhaust at least 3 metres from any open window, door or vent.
 1. Get in, foot on the brake, press the **POWER** button until **READY** shows on the dash.
 1. Put the car in **P** (Park) and put the handbrake on.
-1. Press the **AC power button** (on the dash, to the left of the steering wheel). The light on the button comes on.
+1. Switch on the car's **AC power outlet** — on an Outlander PHEV it's the AC/1500W button on the dash, left of the steering wheel; other cars, check the manual. The light on the button comes on.
 1. Plug the transformer into the socket in the boot (it's heavy — put it on the ground next to the car, keep it dry).
 1. Plug the extension lead into the transformer. **Unwind the whole lead** — a coiled lead can overheat.
 1. Run the lead inside through a window or a door you can nearly close. Plug the multi-box in.
@@ -81,7 +82,7 @@ G({ id: 'tank-water', cat: 'home', icon: '🚰', title: 'Water from our tank',
 `);
 
 G({ id: 'cook-options', cat: 'home', icon: '🔥', title: 'Cooking with no power — easiest first',
-  one: 'Car + rice cooker → Ooni on gas → Big Green Egg → wood fire. Always outdoors.' }, `
+  one: 'Electric cooker on {{car}} → {{oven}} on gas → {{bbq}} → wood fire. Always outdoors.' }, `
 ! Every gas, charcoal and wood cooker makes **carbon monoxide**. Use them **outdoors only** — never in the house, garage or under a closed carport.
 ## Pick the easiest one available
 | Cooker | How hard | Use it for |
@@ -92,22 +93,22 @@ G({ id: 'cook-options', cat: 'home', icon: '🔥', title: 'Cooking with no power
 | 5. Hay box | Easy | Finishing rice, beans and stews with no fuel. See [[haybox]]. |
 ## Fuel we should keep
 [ ] 2 full 9 kg LPG gas bottles (one in use, one spare). One bottle cooks for the family for roughly 2–3 weeks if used carefully.
-[ ] 2 bags of lump charcoal for the Egg, plus natural fire-starter cubes.
-[ ] A stack of dry hardwood split small (wrist thickness, 15 cm long) for the Ooni.
+[ ] 2 bags of lump charcoal for {{bbq}}, plus natural fire-starter cubes.
+[ ] A stack of dry hardwood split small (wrist thickness, 15 cm long) for {{oven}}.
 [ ] Matches and lighters in a sealed bag.
 ## Ways to save fuel
 - Put a lid on every pot — it boils in half the time.
 - Soak beans and rice before cooking.
 - Bring things to the boil, then finish them in a hay box ([[haybox]]).
-- Cook several things at once while the Egg or Ooni is hot — bake bread straight after dinner.
+- Cook several things at once while {{bbq}} or pizza oven is hot — bake bread straight after dinner.
 - Boil water for drinking in big batches.
 ## Simple meals
 See [[recipes]] for step-by-step meals made only from the pantry.
 `);
 
-G({ id: 'egg', cat: 'home', icon: '🥚', title: 'Big Green Egg — step by step',
+G({ id: 'egg', cat: 'home', icon: '🥚', title: '{{Bbq}} — step by step',
   one: 'Lump charcoal + fire starters, lid open 10 minutes, then control heat with the two vents.' }, `
-> The Egg is a ceramic charcoal cooker. It holds heat for hours on very little fuel and works like an outdoor oven **and** stove. Once you've done it twice it's easy.
+> A kamado (such as a Big Green Egg) is a ceramic charcoal cooker. It holds heat for hours on very little fuel and works like an outdoor oven **and** stove. Once you've done it twice it's easy.
 ## You'll need
 [ ] Lump charcoal (not briquettes) — or charcoal we've made ([[charcoal]])
 [ ] 2–3 natural fire-starter cubes (or a twist of newspaper dipped in cooking oil)
@@ -134,11 +135,11 @@ G({ id: 'egg', cat: 'home', icon: '🥚', title: 'Big Green Egg — step by step
 1. To go hotter: open the bottom vent a little more. Wait 10 minutes.
 1. To go cooler: close the bottom vent and top a little. Wait 10 minutes. It may take 20–30 minutes to come down.
 ## Opening the lid safely — "burp" it
-! When the Egg is hot, **lift the lid only 5 cm, hold for 3 seconds**, then open fully. Opening it fast lets air rush in and a flash of flame can shoot out at your face and arms.
+! When {{bbq}} is hot, **lift the lid only 5 cm, hold for 3 seconds**, then open fully. Opening it fast lets air rush in and a flash of flame can shoot out at your face and arms.
 ## Cooking on it
 1. Put a **cast-iron pot or frying pan** straight on the grid. It works like a stove top.
 1. To boil water: a 2-litre pot with a lid boils in about 15–20 minutes at 200°C.
-1. Rice: see [[recipes]]. Bring to the boil on the Egg, then move to a hay box to finish.
+1. Rice: see [[recipes]]. Bring to the boil on {{bbq}}, then move to a hay box to finish.
 1. Bread: put the pizza stone on the grid at 200°C. A loaf takes 30–40 minutes. It's done when it sounds hollow when you tap the bottom.
 1. Meat and fish: straight on the grid, lid closed. Fish fillets 6–10 minutes; chicken pieces 35–45 minutes until juices run clear.
 ## Shut it down and save the charcoal
@@ -149,7 +150,7 @@ G({ id: 'egg', cat: 'home', icon: '🥚', title: 'Big Green Egg — step by step
 ! **Never pour water in** — it can crack the ceramic.
 ## When charcoal runs out
 - Make more from garden wood: [[charcoal]].
-- In an emergency, small pieces of dry hardwood can be burnt in the Egg. They burn faster and smokier, so watch it and keep the lid closed.
+- In an emergency, small pieces of dry hardwood can be burnt in {{bbq}}. They burn faster and smokier, so watch it and keep the lid closed.
 `);
 
 G({ id: 'ooni', cat: 'home', icon: '🍕', title: '{{Oven}} — gas and wood',
@@ -183,19 +184,19 @@ G({ id: 'ooni', cat: 'home', icon: '🍕', title: '{{Oven}} — gas and wood',
 
 G({ id: 'charcoal', cat: 'home', icon: '⚫', title: 'Making charcoal (tin method)',
   one: 'Pack wood in a tin with a nail hole, put it in a fire, wait for the flame from the hole to stop, cool sealed.' }, `
-> Charcoal is wood that has been "cooked" without air, so only the carbon is left. It burns hot and clean — exactly what the Egg needs.
+> Charcoal is wood that has been "cooked" without air, so only the carbon is left. It burns hot and clean — exactly what {{bbq}} needs.
 ## You'll need
 [ ] A metal tin with a tight lid: paint tin, biscuit tin or a small steel drum. (Burn a paint tin empty once first to get rid of paint.)
 [ ] A nail and hammer
 [ ] Dry hardwood: mānuka, kānuka, gum, fruit-tree prunings. Pieces thumb- to wrist-thick, cut to fit the tin. Peel the bark off if you can.
-[ ] A good wood fire: the Ooni, a fire pit or a brazier
+[ ] A good wood fire: {{oven}}, a fire pit or a brazier
 [ ] Long tongs or welding gloves
 [ ] A bucket of water nearby (for safety, not for the tin)
 ## Steps
 1. Punch **one small hole** in the centre of the lid with the nail.
 1. Pack the tin tightly full of wood pieces — fewer gaps means more charcoal.
 1. Put the lid on firmly.
-1. Put the tin into the middle of the hot fire, or right into the Ooni after cooking.
+1. Put the tin into the middle of the hot fire, or right into {{oven}} after cooking.
 1. After 10–20 minutes, smoke and then a little **flame will jet out of the nail hole**. That's the wood gas burning. It's normal.
 1. Keep the fire going around the tin. When the flame from the hole **stops completely**, it's done (usually 30–90 minutes, longer for bigger tins).
 1. Lift the tin out with tongs. Put it on bare ground or bricks.
@@ -205,7 +206,7 @@ G({ id: 'charcoal', cat: 'home', icon: '⚫', title: 'Making charcoal (tin metho
 + Good charcoal is black all the way through, light, and snaps cleanly with a "clink". Brown or woody bits weren't cooked long enough — put them in the next batch.
 ## Storing
 - Keep charcoal dry in a lidded bin or sacks off the ground.
-- A 20-litre tin makes enough for one or two cooks on the Egg.
+- A 20-litre tin makes enough for one or two cooks on {{bbq}}.
 > Do this outdoors, away from the house and dry grass, and not on a total fire ban day. Check fire rules at checkitsalright.nz.
 `);
 

@@ -3,6 +3,8 @@
 // ============================================================================
 'use strict';
 const APP_VERSION = '2026-10-30';
+const ISSUES_URL = 'https://github.com/Tony-Aria-Reyna/get-ready/issues/new';
+const reportUrl = (title, body) => ISSUES_URL + '?title=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body || '');
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -55,7 +57,7 @@ const idb = {
 const HOME_DEFAULTS = {
   car: 'our PHEV', carModel: '', carOutlet: 1500, carVolts: 'unknown', carKwh: 12, carFuelL: 45, carNotes: '',
   inverter: '', tankL: 0, tankCount: 1, tapWhere: 'the tank tap', tankNotes: '',
-  oven: 'the pizza oven', ovenGas: 'unknown', bbq: 'the Big Green Egg', stove: '',
+  oven: 'the pizza oven', ovenGas: 'unknown', bbq: 'the kamado', stove: '',
   radios: 'our handheld radios', radioCh: '', radioNotes: '', gasMeter: '', waterToby: '', switchboard: '',
 };
 const DEFAULT_STATE = () => ({
@@ -113,8 +115,8 @@ const peopleCount = () => S.people.length || Number(S.household.people) || 3;
 const adultEq = () => S.people.length ? S.people.reduce((t, p) => t + ((AGE[p.age] || AGE.woman)[3]), 0) : peopleCount();
 const proteinDay = () => S.people.length ? S.people.reduce((t, p) => t + ((AGE[p.age] || AGE.woman)[2]), 0) : peopleCount() * 55;
 const daysTarget = () => Number(S.household.days) || 30;
-const AW = () => S.household.awayName || 'Mum';
-const HA = () => S.household.homeName || 'Dad';
+const AW = () => S.household.awayName || 'Family member';
+const HA = () => S.household.homeName || 'the adult at home';
 function supplyNeed(row) {
   const [, , q, unit, scale] = row; const d = daysTarget();
   let n = scale === 'day' ? q * peopleCount() * d : scale === 'week' ? q * peopleCount() * Math.min(d, 7) : scale === 'month' ? q * adultEq() * d / 30 : scale === 'person' ? q * peopleCount() : q;
@@ -139,11 +141,11 @@ function tokens() {
     carOutlet: String(h.carOutlet || 1500), carKwh: String(h.carKwh || '?'), carFuel: String(h.carFuelL || '?'),
     voltsWarning: h.carVolts === '230' ? 'Our car socket is **230 V** — NZ appliances plug straight in (no transformer needed).'
       : h.carVolts === '100' ? 'Our car is a **Japanese import with 100 V sockets**. NZ appliances need 230 V. **Always plug through the step-up transformer** (100 V → 230 V, rated at least 1,500 W). A fridge plugged straight into 100 V can be damaged.'
-      : '**Check the label on the car\'s power socket.** Japanese-import Outlanders have **100 V** sockets; NZ appliances need **230 V** and must be plugged in through a step-up transformer. Then set the voltage in Our plan → Our home.',
+      : '**Check the label on the car\'s power socket.** Many Japanese-import PHEVs (e.g. Outlanders) have **100 V** sockets; NZ appliances need **230 V** and must be plugged in through a step-up transformer. Then set the voltage in Our plan → Our home.',
     inverter: h.inverter || 'our solar inverter', inverterNote: h.inverter ? ' (' + h.inverter + ')' : '',
     tank: tank ? tank.toLocaleString('en-NZ') + ' L' : 'our tank', tapWhere: h.tapWhere || 'the tank tap',
     tankDays20: tank ? String(Math.floor(tank / (ppl * 20))) : '?', tankDays3: tank ? String(Math.floor(tank / (ppl * 3))) : '?',
-    Oven: (h.oven || 'the pizza oven').replace(/^./, c => c.toUpperCase()), oven: h.oven || 'the pizza oven', bbq: h.bbq || 'the Big Green Egg',
+    Oven: (h.oven || 'the pizza oven').replace(/^./, c => c.toUpperCase()), oven: h.oven || 'the pizza oven', bbq: h.bbq || 'the kamado', Bbq: (h.bbq || 'the kamado').replace(/^./, c => c.toUpperCase()),
     ovenGasLine: h.ovenGas === 'yes' ? '> We have the **gas burner** — the easiest way to use it. Wood steps are below for when the gas runs out.' : h.ovenGas === 'no' ? '> We don\'t have the gas burner — use the wood steps below.' : '> If we have the gas burner, use these steps. Otherwise skip to wood.',
     radios: h.radios || 'our handheld radios', radioCh: h.radioCh || '(not set yet — add it in Our plan → Our home)',
     gasMeter: h.gasMeter || 'add where it is in Our plan → Our home', waterToby: h.waterToby || 'add where it is in Our plan → Our home', switchboard: h.switchboard || 'add where it is in Our plan → Our home',
@@ -333,6 +335,21 @@ function render() {
 // ---------------------------------------------------------------------------
 // NOW
 // ---------------------------------------------------------------------------
+function showWelcome(force) {
+  if (S.manual.welcomed && !force) return;
+  modal(`<div style="font-size:2rem">🛡️</div><h2>Welcome to Family Ready</h2>
+   <p>A free, offline emergency plan and survival guide for New Zealand households.</p>
+   <ul class="bul">
+    <li><b>In an emergency, call 111</b> if life is at risk.</li>
+    <li><b>This is a guide, not official advice.</b> Always follow Civil Defence, emergency services and official warnings — they know what's happening where you are.</li>
+    <li><b>Your information stays on this phone.</b> Nothing you type (people, medicines, contacts, suppliers) is sent anywhere. Use ⚙️ → Back up to copy it to other phones.</li>
+    <li><b>Works with no internet</b> once it's added to your home screen and maps are saved.</li>
+   </ul>
+   <p class="small muted">Guidance is drawn from NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, St John and ANZCOR, MPI, SafeTravel and Smartraveller. Spotted a mistake? Each guide has a "Report a mistake" link.</p>
+   <h3>Get started</h3>
+   <ol class="steps" style="padding-left:0"><li><span class="txt">Our plan → add your household and contacts</span></li><li><span class="txt">Map → save the maps around home (on Wi-Fi)</span></li><li><span class="txt">⚙️ → add to home screen, and print the A4 pack</span></li></ol>
+   <div class="actions"><button class="btn primary" id="wOk">I understand — let's start</button></div>`, (m, close) => { $('#wOk', m).onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); }; });
+}
 function isInstalled() { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
 function readiness() {
   return [
@@ -348,7 +365,7 @@ function readiness() {
     ['install', 'Add this app to the home screen on every phone', isInstalled() || !!S.manual.install, 'data'],
     ['print', 'Make the A4 pack and keep a printed copy with the grab bags', !!S.manual.print, 'pack', true],
     ['practise', 'Practise the plan together (every 6 months)', S.manual.practise && daysSince(S.manual.practise) < 183, 'g:drills', true],
-    ['away', AW() + ': crew-bag kit packed & Safety Tips app installed', !!S.manual.away, 'g:away-kit', true],
+    ['away', 'Traveller: travel kit packed & offline maps downloaded', !!S.manual.away, 'g:away-kit', true],
   ];
 }
 function readinessItems() {
@@ -448,7 +465,7 @@ function vGuide(main, arg) {
       <input type="text" class="alText grow" style="flex:1" placeholder="Type it here…"><button class="btn sm primary alAdd" data-sec="${si}">Add</button></div></details>
   </section>`).join('')}
   <div class="card"><div class="row"><button class="btn primary" id="addNote">📝 Add a note</button><button class="btn" id="editG">✏️ Edit whole guide</button><button class="btn ghost" id="addSec">＋ New section</button><span class="grow"></span><button class="btn ghost" id="clrTicks">Clear ticks</button></div>
-  <div class="small muted" style="margin-top:8px">${g.builtin ? (g.edited ? 'You\'ve edited this guide. <a href="#" id="resetG">Reset to the original</a> · ' : '') + '<a href="#" id="hideG">Hide this guide</a>' : 'Our own guide · <a href="#" id="delG" style="color:var(--accent)">Delete it</a>'}</div></div>`;
+  <div class="small muted" style="margin-top:8px">${g.builtin ? `<a href="${reportUrl('Guide: ' + guideTitle(g, T), 'Guide: ' + g.id + '\nApp version: ' + APP_VERSION + '\n\nWhat is wrong or missing (please don\'t include personal details):\n')}" target="_blank" rel="noopener">🐞 Report a mistake in this guide</a> · ` : ''}${g.builtin ? (g.edited ? 'You\'ve edited this guide. <a href="#" id="resetG">Reset to the original</a> · ' : '') + '<a href="#" id="hideG">Hide this guide</a>' : 'Our own guide · <a href="#" id="delG" style="color:var(--accent)">Delete it</a>'}</div></div>`;
   // ticks
   $$('.tick[data-step]', main).forEach(t => t.onclick = () => { const k = t.dataset.step; TICKS[g.id][k] = !TICKS[g.id][k]; t.classList.toggle('on'); t.textContent = TICKS[g.id][k] ? '✓' : ''; t.closest('li').classList.toggle('done'); });
   $$('.tick[data-check]', main).forEach(t => t.onclick = () => { const k = t.dataset.check; S.ticks[g.id] = S.ticks[g.id] || {}; S.ticks[g.id][k] = !S.ticks[g.id][k]; persist(); t.classList.toggle('on'); t.textContent = S.ticks[g.id][k] ? '✓' : ''; t.closest('li').classList.toggle('done'); });

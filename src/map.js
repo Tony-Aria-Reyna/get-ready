@@ -26,7 +26,7 @@ const PT = { // point categories
   H: ['🏥', '#c62828', 'Hospitals'], U: ['🩺', '#e65100', 'Urgent care'], P: ['💊', '#2e7d32', 'Pharmacies'], F: ['🚒', '#b71c1c', 'Fire stations'],
   L: ['🚓', '#1565c0', 'Police'], M: ['🏛️', '#6d4c41', 'Marae'], A: ['❤️', '#ad1457', 'Defibrillators (AED)'], C: ['🏘️', '#546e7a', 'Community centres & halls'],
 };
-const MYPT = { layover: ['🏨', 'Layover hotel / crew place'], water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
+const MYPT = { layover: ['🏨', 'Place to stay overseas'], water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
 const DEFAULT_CENTRE = [-36.87, 174.70];
 let FOLLOW = false, MEACC = null, MEACCV = 0;
 let MAP = null, BASE = null, LYR = {}, MEPOS = null, MEMARK = null, WATCH = null, PICK = null, MAPFOCUS = null, OSMDATA = null, TSUNAMI = null;
@@ -115,8 +115,8 @@ function showAway(reg) {
   sheet(`<h2>🌏 Overseas — ${esc(AW())}</h2>
    <div class="row" style="margin-bottom:6px">${Object.entries(AWAY_REGION_NAMES).map(([k, v]) => `<button class="chip ${k === reg ? 'on' : ''}" data-reg="${k}" style="border:0;cursor:pointer">${v}</button>`).join('')}</div>
    <ul class="list">${cities.map((c, i) => `<li><div class="grow"><b>${esc(c[1])}</b>${near(c).map(m => `<div class="small muted">🇳🇿 ${esc(m[0])}</div>`).join('')}</div><button class="btn sm primary" data-city="${i}">Show</button></li>`).join('')}</ul>
-   ${mine.length ? `<h3>🏨 Our layover places</h3><ul class="list">${mine.map(p => `<li><div class="grow"><b>${esc(p.name)}</b>${p.note ? `<div class="small muted">${esc(p.note)}</div>` : ''}</div><button class="btn sm" data-fly="${p.lat},${p.lon}">Show</button><a class="btn sm" href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a></li>`).join('')}</ul>` : ''}
-   <div class="note small" style="margin-top:10px"><b>No signal overseas?</b> This street map needs the internet. Before each trip, download the city in <b>Organic Maps</b> (free) — it works fully offline. <a href="#" data-go="g:away-maps">How to set it up →</a><br>Pin the crew hotel here with <b>➕ Add place → Layover hotel</b>, so it's in the family backup too.</div>
+   ${mine.length ? `<h3>🏨 Our places to stay</h3><ul class="list">${mine.map(p => `<li><div class="grow"><b>${esc(p.name)}</b>${p.note ? `<div class="small muted">${esc(p.note)}</div>` : ''}</div><button class="btn sm" data-fly="${p.lat},${p.lon}">Show</button><a class="btn sm" href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a></li>`).join('')}</ul>` : ''}
+   <div class="note small" style="margin-top:10px"><b>No signal overseas?</b> This street map needs the internet. Before each trip, download the city in <b>Organic Maps</b> (free) — it works fully offline. <a href="#" data-go="g:away-maps">How to set it up →</a><br>Pin where you're staying with <b>➕ Add place → Place to stay overseas</b>, so it's in the family backup too.</div>
    <div class="row" style="margin-top:8px"><button class="btn sm" data-go="g:away-general">✈️ What to do overseas</button><button class="btn sm" id="awHome">🇳🇿 Back to NZ</button></div>`, el => {
     $$('[data-reg]', el).forEach(b => b.onclick = () => showAway(b.dataset.reg));
     $$('[data-city]', el).forEach(b => b.onclick = () => { const c = cities[+b.dataset.city]; if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([c[2], c[3]], 12); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
@@ -259,7 +259,7 @@ function presets() {
   const v = MAP ? MAP.getBounds() : null;
   return [
     ['home', '🏠 Around home — street detail', S.household.homeLat ? '6 km around home' : 'Set home first (Our plan) — otherwise central Auckland', boxAround(home[0], home[1], 6), 10, 17],
-    ['west', '🌳 West Auckland & the city', 'Waitākere Ranges to Auckland CBD', [-37.06, 174.42, -36.76, 174.90], 10, 15],
+    ['wide', '🌳 Around home — wider area', S.household.homeLat ? '25 km around home' : 'Set home first (Our plan) — otherwise central Auckland', boxAround(home[0], home[1], 25), 10, 15],
     ['akl', '🗺️ Auckland region — overview', 'Wellsford to Pukekohe', [-37.35, 174.15, -35.95, 175.35], 7, 13],
     ['ni', '🧭 Upper North Island — roads out', 'Whangārei to Taupō', [-39.1, 173.6, -35.6, 177.0], 6, 11],
     ...(v ? [['view', '🔍 What\'s on screen now', 'Pan/zoom first, then choose this', [v.getSouth(), v.getWest(), v.getNorth(), v.getEast()], Math.max(8, MAP.getZoom() - 3), Math.min(17, MAP.getZoom() + 2)]] : []),

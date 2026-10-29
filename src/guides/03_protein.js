@@ -369,7 +369,7 @@ G({ id: 'fish-clean', cat: 'protein', icon: '🔪', title: 'Killing, cleaning & 
 - Don't waste the frame: boil the head and bones for 30 minutes for fish stock and pick off the meat.
 ## Simple cooking
 - **Pan-fried:** dust fillets in flour with salt, fry in a little oil 2–3 minutes each side.
-- **On the Egg or BBQ:** whole fish wrapped in foil with a little oil and lemon, 15–20 minutes.
+- **On {{bbq}} or BBQ:** whole fish wrapped in foil with a little oil and lemon, 15–20 minutes.
 - **Fish stew:** fillet pieces simmered 5 minutes in a tomato and vegetable sauce, with rice.
 `);
 
@@ -442,18 +442,18 @@ G({ id: 'eels', cat: 'protein', icon: '🐍', title: 'Eels (tuna)',
 `);
 
 G({ id: 'smoking-fish', cat: 'protein', icon: '🔥', title: 'Smoking & salting fish',
-  one: 'Brine 30–60 min, dry, hot-smoke on the Egg at 80–100°C with mānuka chips. Keeps a few days cool.' }, `
+  one: 'Brine 30–60 min, dry, hot-smoke on {{bbq}} at 80–100°C with mānuka chips. Keeps a few days cool.' }, `
 > **Hot smoking** cooks and flavours fish — it keeps it only **a few extra days**, not months. **Heavy salting and drying** is how fish keeps for months.
-## Hot-smoking on the Big Green Egg
+## Hot-smoking on {{bbq}}
 ### You'll need
 [ ] Fish fillets (skin on is easier) — kahawai, mullet, trevally, snapper, eel are all great
 [ ] Brine: **1 cup of salt + 1 cup of brown sugar in 4 litres of water**
 [ ] A handful of **mānuka or fruit-wood chips**, soaked in water 30 minutes
-[ ] The Egg (or a BBQ with a lid)
+[ ] {{Bbq}} (or a BBQ with a lid)
 ### Steps
 1. Stir the brine until the salt and sugar dissolve. Put the fillets in for **30 minutes** (thin) to **60 minutes** (thick).
 1. Rinse the fillets, pat dry. Leave them on a rack in a cool, breezy place for 30–60 minutes until the surface feels tacky.
-1. Light the Egg with a small amount of charcoal ([[egg]]). Get it steady at **80–100°C** — bottom vent nearly closed.
+1. Light {{bbq}} with a small amount of charcoal ([[egg]]). Get it steady at **80–100°C** — bottom vent nearly closed.
 1. Scatter the wet wood chips on the hot coals. Put the grid on, fillets skin-down.
 1. Close the lid. Smoke for **1–2 hours** until the fish is golden and flakes easily in the thickest part.
 1. Cool on a rack.

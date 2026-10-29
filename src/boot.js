@@ -28,6 +28,7 @@ async function boot() {
   ROUTE = location.hash.slice(1) || 'now';
   try { history.replaceState({ r: ROUTE }, '', '#' + ROUTE); } catch (e) {}
   render();
+  showWelcome();
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !/localhost|127\.0\.0\.1/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(() => {});
   loadLayersData();
 }

@@ -92,7 +92,7 @@ G({ id: 'haybox', cat: 'food', icon: '🧺', title: 'Hay box — cooking with al
 
 G({ id: 'recipes', cat: 'food', icon: '🍲', title: 'Meals from the pantry — step by step',
   one: 'Simple meals for four from stored food, with protein in every one.' }, `
-> Every recipe feeds **4 people**. Halve or double as needed. "Cup" means a normal mug, about 250 ml. Cook outdoors on gas, the Egg, the Ooni, or electric on the car.
+> Every recipe feeds **4 people**. Halve or double as needed. "Cup" means a normal mug, about 250 ml. Cook outdoors on gas, {{bbq}}, {{oven}}, or electric on the car.
 ## Porridge (breakfast)
 1. 2 cups rolled oats + 4 cups water (or milk from powder) + a pinch of salt in a pot.
 1. Bring to the boil, stirring. Simmer 5 minutes, stirring so it doesn't stick.
@@ -106,12 +106,12 @@ G({ id: 'recipes', cat: 'food', icon: '🍲', title: 'Meals from the pantry — 
 1. 3 cups flour + 3 teaspoons baking powder + 1 teaspoon salt + ¼ cup milk powder in a bowl.
 1. Add about 1¼ cups water and mix to a soft dough. Don't knead much.
 1. Shape into a round 4 cm thick. Cut a cross on top.
-1. **On the Egg or Ooni:** on a floured tray or pizza stone at 200°C for 25–30 minutes. **In a pot:** an oiled cast-iron pot with a lid over low heat, 30–40 minutes, turning once.
+1. **On {{bbq}} or pizza oven:** on a floured tray or pizza stone at 200°C for 25–30 minutes. **In a pot:** an oiled cast-iron pot with a lid over low heat, 30–40 minutes, turning once.
 + Done when it's golden and sounds hollow when you tap the bottom.
 ## Flatbreads (on any hot pan)
 1. 2 cups flour + ½ teaspoon salt + 1 tablespoon oil + about ¾ cup water. Knead 2 minutes.
 1. Rest 10 minutes. Divide into 8 balls. Roll or press each out thin.
-1. Cook on a hot dry pan, the Ooni stone or the Egg grid, 1 minute each side until puffy with brown spots.
+1. Cook on a hot dry pan, {{oven}} stone or {{bbq}} grid, 1 minute each side until puffy with brown spots.
 ## Rice (absorption method)
 1. Rinse 2 cups of white rice in a sieve.
 1. Put in a pot with **3 cups of water** and a pinch of salt. Bring to the boil.

@@ -78,7 +78,7 @@ G({ id: 'grab-bags', cat: 'skills', icon: '🎒', title: 'Grab bags — packing 
 ## Extra for each person
 - **Child:** comfort toy, small games or colouring, favourite snacks, a photo of the family with our phone numbers on the back.
 - **Older family member:** spare glasses, hearing aid batteries, a week of medicines, a light folding stool, continence products if used.
-- **Walkie-talkie** (one per adult bag and one in our daughter's).
+- **Walkie-talkie** (one per adult bag, and one for each older child).
 ## In the car
 [ ] A grab bag, 6 L of water, blanket, jumper leads, torch, umbrella, tyre pump, phone charger, paper map.
 ## Keep them current
@@ -89,7 +89,7 @@ G({ id: 'maps-save', cat: 'skills', icon: '🗺️', title: 'Getting around with
   one: 'Save the maps in this app on Wi-Fi now. GPS still works with no signal. Keep a paper map in the car.' }, `
 ## Save the maps in this app (do this now, on each phone)
 1. Open **Map** → **⬇️ Save maps**.
-1. Choose **NZ Topo50**, then save **Around home**, **West Auckland & the city** and **Auckland region**. Do it on Wi-Fi.
+1. Choose **NZ Topo50**, then save **Around home**, **Around home — wider area** and **Auckland region**. Do it on Wi-Fi.
 1. Go to **⚙️ → Download emergency map data** for hospitals, pharmacies, AEDs, fire and police stations, marae and tsunami zones.
 1. Test: turn on airplane mode, open the map, press **📍 Me** — the blue dot works from GPS, even with no network.
 ## Paper maps
@@ -97,7 +97,7 @@ G({ id: 'maps-save', cat: 'skills', icon: '🗺️', title: 'Getting around with
 - For bush routes (Waitākere Ranges), a printed **Topo50** map sheet.
 ## Finding direction without a phone
 - In New Zealand the **sun is in the north at midday**. It rises in the east, sets in the west.
-- From West Auckland: the Waitākere Ranges are west (higher ground); the city and Sky Tower are north-east; the Manukau Harbour is south.
+- In Auckland: the Waitākere Ranges are in the west (high ground), the Sky Tower marks the city centre, the Manukau Harbour is to the south-west and the Waitematā to the north-east.
 - At night, the **Southern Cross** points roughly south.
 ## Walking
 - About **4–5 km an hour** on roads, slower with children, older people or bags; **2 km an hour** in rough bush.

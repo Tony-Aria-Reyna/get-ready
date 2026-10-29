@@ -4,7 +4,7 @@ G({ id: 'kids', cat: 'family', icon: '🧒', title: 'Looking after the children'
 ## Before
 1. **Practise** Drop, Cover, Hold, and where we meet. Make it a game — time how fast everyone gets to meeting point 1.
 1. Teach them our **phone numbers** by heart and how to call **111**.
-1. Show them the walkie-talkie and how to use it ([[radios]]). Our daughter keeps one in her grab bag.
+1. Show them the walkie-talkie and how to use it ([[radios]]). Older children can keep one in their grab bag.
 1. Find out the **school's emergency plan**: do they hold children or release them? Who's on the pickup list? Make sure both parents, the backup adult, and anyone else who might collect her are listed.
 1. Put a family photo with our phone numbers on the back in her school bag and grab bag.
 ## During
@@ -68,7 +68,7 @@ G({ id: 'apart', cat: 'family', icon: '📍', title: 'When we\'re apart: who doe
 1. **Everyone else goes home.** Home is the default meeting place.
 1. **If home isn't safe**, go to meeting point 2. If the area isn't safe, meeting point 3.
 1. If you can't get home tonight, **stay safe where you are** and send a text with where you are. Don't travel at night through damaged areas.
-1. **{{away}} overseas:** {{homeAdult}} runs the plan at home. {{away}} keeps herself safe and checks in once a day at {{checkin}} NZ time ([[away-general]]).
+1. **{{away}} overseas:** {{homeAdult}} runs the plan at home. {{away}} keeps themselves safe and checks in once a day at {{checkin}} NZ time ([[away-general]]).
 1. **Both parents away or cut off:** the backup adult ({{backupAdult}}) collects the children.
 ## Messages to send
 - One text to the family group: *"[Name]: safe at [place]. [OK/hurt]. Heading to [home/meeting point]. Battery [%]."*
