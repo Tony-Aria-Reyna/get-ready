@@ -3255,7 +3255,10 @@ G({ id: 'away-general', cat: 'away', icon: '✈️', colour: '#0e7490', title: '
 1. NZ consular emergency line, 24/7: **+64 99 20 20 20** (from overseas) · **0800 30 10 30** (from NZ).
 1. Register on **SafeTravel** (safetravel.govt.nz) if stranded more than a day or two — the NZ Government uses it to find and contact New Zealanders in a crisis.
 ## Regions
-- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+## Maps
+- Before every trip, download the city in **Organic Maps** so maps work with no signal — [[away-maps]].
+- In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned layover places.
 `);
 
 G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'North America (USA & Canada)', zones: [['Los Angeles · San Francisco · Vancouver', 'America/Los_Angeles'], ['Honolulu', 'Pacific/Honolulu'], ['Dallas · Houston · Chicago', 'America/Chicago'], ['New York', 'America/New_York']],
@@ -3274,6 +3277,8 @@ G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'Nor
 - **Hurricanes** (June–November: Gulf Coast, Florida, East Coast, Hawaii): follow evacuation orders; stay in an interior room away from windows.
 - **Winter storms** (Nov–Mar): airports close for days; stay in the hotel, keep warm and charged.
 - **Heat** (summer, especially Texas, Arizona, Nevada): drink water, shade, air conditioning.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ Embassy, Washington DC | +1 202 328 4848 |
@@ -3302,6 +3307,8 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 - **Tsunami** — near the coast (including Tokyo Bay and Osaka Bay areas). If there's a tsunami warning (**津波警報**), go to a tsunami evacuation building (high floors) or high ground immediately.
 - **Typhoons** (mainly June–October): trains and flights stop. Stay in the hotel until the all clear.
 - **Heat** in summer — drink water, shade, rest.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ Embassy, Tokyo (20-40 Kamiyama-cho, Shibuya-ku) | +81 3 3467 2271 |
@@ -3333,6 +3340,8 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 - **Cyclones and floods** in Queensland and the north (November–April). Never drive through floodwater.
 - **Heat** — very hot days are dangerous. Stay in air conditioning, drink water, avoid the midday sun.
 - **Sun, surf and wildlife:** swim between the flags; follow local warnings about crocodiles (north), jellyfish and snakes.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ High Commission, Canberra | +61 2 6270 4211 |
@@ -3361,6 +3370,8 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South 
 - **Volcanoes** — Tonga and Vanuatu. Ash closes airports, sometimes for days.
 - **Dengue fever** outbreaks are common. Insect repellent, long sleeves at dawn and dusk.
 - Hospitals are limited. Serious cases are flown to NZ or Australia — keep the airline's crew medical/insurance details handy.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ High Commission, Suva (Fiji) | +679 331 1422 |
@@ -3383,7 +3394,8 @@ G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-b
 [ ] Small torch or head torch
 [ ] Earplugs and eye mask (shelters are noisy and bright)
 [ ] P2/N95 mask (smoke, ash)
-[ ] Offline maps downloaded for regular layover cities (Google Maps or Organic Maps)
+[ ] Organic Maps installed, with every regular layover city downloaded ([[away-maps]])
+[ ] Crew hotel pinned in Family Ready (Map → ➕ Add place → Layover hotel)
 [ ] eSIM or roaming that works in each country — know how to switch it on
 [ ] Safety Tips app installed (Japan); notifications on
 `);
@@ -3397,6 +3409,50 @@ G({ id: 'away-home', cat: 'away', icon: '🏠', colour: '#0e7490', title: 'Getti
 1. Money: keep cash and two cards. Ask the airline about allowances while stranded.
 1. Medicines: ask a local pharmacy or doctor for more, with your prescription copy.
 1. Keep the daily check-in with home at **{{checkin}} NZ time**.
+`);
+
+// ---------------------------------------------------------------- OVERSEAS MAPS
+G({ id: 'away-maps', cat: 'away', icon: '🗺️', colour: '#0e7490', title: 'Maps overseas — working with no signal',
+  one: 'Download the city in Organic Maps before every trip. Pin the crew hotel. Our app shows the NZ embassy and your places.' }, `
+## Why a separate maps app
+- The Topo50 and aerial maps in Family Ready are **New Zealand only** (LINZ).
+- Overseas, Family Ready shows the **OpenStreetMap street map** — but only while there's internet, because OpenStreetMap doesn't allow apps to save it for offline use.
+- For maps that work with **no signal anywhere in the world**, use **Organic Maps** (free, no ads, no account). It downloads whole countries or regions onto the phone, with streets, hospitals, pharmacies and walking directions — all offline.
+> Family Ready still does the important bits overseas: the region guide, emergency numbers, the NZ embassy pins, and your own pinned places (crew hotel, pickup point). Open [[tab:map:away|Map → 🌏 Overseas]].
+## Set up Organic Maps (once, on Wi-Fi — 10 minutes)
+1. Install **Organic Maps** from the App Store (iPhone) or Google Play (Android).
+1. Open it and allow location access ("While using the app").
+1. Tap the **search** (magnifying glass) and type the city, e.g. *Tokyo*.
+1. When the map moves there, a **Download** button appears at the bottom. Tap it. Japan, the USA and Australia are split into regions — download the region your layover city is in.
+1. Repeat for every city you fly to regularly (list below). Big regions take 100–500 MB, so do it on Wi-Fi.
+1. Test it: turn on **airplane mode**, open Organic Maps, tap the arrow (your location). The blue dot and the map should still work.
++ It's working when you can zoom into streets and search for "hospital" with airplane mode on.
+## Before every trip (2 minutes)
+[ ] The destination's map is downloaded in Organic Maps (and updated if it says "Update")
+[ ] Crew hotel pinned — in Organic Maps tap the hotel → ☆ Save. Also add it in Family Ready: Map → ➕ Add place → *Layover hotel*
+[ ] NZ embassy or consulate saved (Family Ready: Map → 🌏 Overseas shows it)
+[ ] Nearest hospital to the hotel found and saved
+[ ] Phone and power bank charged
+[ ] The daily check-in time worked out for that city (see the region guide)
+## Regular layover cities to download
+| Region | Download in Organic Maps |
+| USA West Coast | California (Los Angeles, San Francisco) |
+| Hawaii | Hawaii |
+| USA other | Texas (Houston), Illinois (Chicago), New York |
+| Canada | British Columbia (Vancouver) |
+| Japan | Kanto (Tokyo), Kansai (Osaka) |
+| Australia | New South Wales (Sydney), Victoria (Melbourne), Queensland (Brisbane) |
+| Pacific | Fiji, Samoa, Tonga, Cook Islands, Vanuatu, New Caledonia, French Polynesia |
+> Region names in Organic Maps may be grouped slightly differently — search the city and download what it offers.
+## Other options
+- **Google Maps:** search the city → tap your profile picture → *Offline maps* → *Select your own map*. Offline areas expire after about a year unless updated, and aren't available everywhere.
+- **Apple Maps (iPhone):** search the city → *Download*. Needs a recent iOS.
+- Always also have the **paper**: the hotel's address card and a printed map of the area around the hotel.
+## In an emergency overseas
+1. Follow local instructions and the crew. See [[away-general]].
+1. Open Organic Maps or Family Ready → Map → 📍 Me (GPS works with no signal).
+1. Search **hospital**, **police** or **embassy** in Organic Maps — it works offline.
+1. Walk to safety — uphill or inland if there's a tsunami warning ([[tsunami]]).
 `);
 
 // Data used by the app (numbers, radio, supplier categories, bundled map points).
@@ -3559,6 +3615,32 @@ const AGE_GROUPS = [
   ['teenF', 'Teen girl 14–18', 45, 0.95], ['teenM', 'Teen boy 14–18', 65, 1.15], ['woman', 'Woman 19–70', 46, 0.9], ['man', 'Man 19–70', 64, 1.1],
   ['olderF', 'Woman 70+', 57, 0.8], ['olderM', 'Man 70+', 81, 0.9], ['preg', 'Pregnant / breastfeeding', 67, 1.05],
 ];
+
+// Overseas: layover cities (map centre) and NZ missions (address from NZ SafeTravel; pin positions approximate).
+const AWAY_CITIES = [
+  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Vancouver', 49.28, -123.12], ['na', 'Honolulu', 21.31, -157.86],
+  ['na', 'Houston', 29.76, -95.37], ['na', 'Chicago', 41.88, -87.63], ['na', 'New York', 40.71, -74.01],
+  ['jp', 'Tokyo', 35.68, 139.76], ['jp', 'Osaka', 34.69, 135.50],
+  ['au', 'Sydney', -33.87, 151.21], ['au', 'Melbourne', -37.81, 144.96], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Gold Coast', -28.02, 153.40], ['au', 'Perth', -31.95, 115.86],
+  ['pac', 'Nadi (Fiji)', -17.78, 177.44], ['pac', 'Suva (Fiji)', -18.14, 178.44], ['pac', 'Apia (Samoa)', -13.83, -171.76], ['pac', 'Nukuʻalofa (Tonga)', -21.14, -175.20],
+  ['pac', 'Rarotonga', -21.21, -159.78], ['pac', 'Port Vila (Vanuatu)', -17.73, 168.32], ['pac', 'Nouméa', -22.27, 166.44], ['pac', 'Papeete (Tahiti)', -17.54, -149.57], ['pac', 'Niue', -19.06, -169.92],
+];
+const AWAY_REGION_NAMES = { na: '🇺🇸 North America', jp: '🇯🇵 Japan', au: '🇦🇺 Australia', pac: '🌴 South Pacific' };
+const NZ_MISSIONS = [
+  ['NZ Embassy, Washington DC', '37 Observatory Circle NW, Washington, DC 20008', '+1 202 328 4848', 38.91900, -77.06423],
+  ['NZ Consulate-General, Los Angeles', 'Suite 600E, 2425 Olympic Boulevard, Santa Monica, CA 90404', '+1 310 566 6555', 34.02809, -118.47132],
+  ['NZ Consulate-General, Honolulu', '733 Bishop Street, Suite 2020, Honolulu, HI 96813', '+1 808 675 5555', 21.30670, -157.86283],
+  ['NZ Consulate-General, New York', '41st Floor, 295 Madison Ave, New York 10017', '+1 212 832 4038', 40.75178, -73.97934],
+  ['NZ High Commission, Ottawa', '150 Elgin Street, Suite 1401, Ottawa, Ontario K2P 1L4', '+1 613 238 5991', 45.42018, -75.69342],
+  ['NZ Embassy, Tokyo', '20-40 Kamiyama-cho, Shibuya-ku, Tokyo 150-0047', '+81 3 3467 2271', 35.66385, 139.69141],
+  ['NZ High Commission, Canberra', '140 Commonwealth Avenue, Yarralumla, ACT 2600 (visitor entrance on Forster Crescent)', '+61 2 6270 4211', -35.30191, 149.12452],
+  ['NZ Consulate-General, Sydney', 'Level 22, 20 Bond Street, Sydney NSW 2000', '+61 2 9270 5900', -33.86435, 151.20849],
+  ['NZ Consulate-General, Melbourne', 'Level 4, 45 William Street, Melbourne VIC 3000', '+61 3 9678 0201', -37.81859, 144.95909],
+  ['NZ High Commission, Suva', 'Lot 12 Banuve Street, Nasese, Suva', '+679 331 1422', -18.15704, 178.42988],
+  ['NZ High Commission, Apia', 'Beach Road, Apia', '+685 21 711', -13.83351, -171.76292],
+  ['NZ High Commission, Nukuʻalofa', 'Corner Taufaʻahau and Salote Roads, Nukuʻalofa', '+676 23122', -21.13354, -175.20010],
+  ['NZ High Commission, Rarotonga', '1st floor, Philatelic Bureau Building, Takuvaine Road, Avarua', '+682 22 201', -21.20848, -159.77550],
+];
 </script>
 <script>// ============================================================================
 // FAMILY READY — offline emergency app. All personal data stays on this device.
@@ -3635,7 +3717,7 @@ const DEFAULT_STATE = () => ({
   sources: [], points: [], manual: {}, ticks: {},
   gx: {}, gnew: [], hiddenG: {},
   saved: { maps: [] },
-  set: { linzKey: '', base: 'topo', layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1 }, theme: 'auto', textSize: 'normal' },
+  set: { linzKey: '', base: 'topo', layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1, missions: 1 }, theme: 'auto', textSize: 'normal' },
   meta: { created: Date.now(), changed: 0, lastBackup: 0 },
 });
 let S = DEFAULT_STATE();
@@ -4455,7 +4537,7 @@ const PT = { // point categories
   H: ['🏥', '#c62828', 'Hospitals'], U: ['🩺', '#e65100', 'Urgent care'], P: ['💊', '#2e7d32', 'Pharmacies'], F: ['🚒', '#b71c1c', 'Fire stations'],
   L: ['🚓', '#1565c0', 'Police'], M: ['🏛️', '#6d4c41', 'Marae'], A: ['❤️', '#ad1457', 'Defibrillators (AED)'], C: ['🏘️', '#546e7a', 'Community centres & halls'],
 };
-const MYPT = { water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
+const MYPT = { layover: ['🏨', 'Layover hotel / crew place'], water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
 const DEFAULT_CENTRE = [-36.87, 174.70];
 let FOLLOW = false, MEACC = null, MEACCV = 0;
 let MAP = null, BASE = null, LYR = {}, MEPOS = null, MEMARK = null, WATCH = null, PICK = null, MAPFOCUS = null, OSMDATA = null, TSUNAMI = null;
@@ -4504,9 +4586,9 @@ function popupFor(p) {
   const [t, lat, lon, name, addr, phone, ed, hours, extra] = p; const c = PT[t] || PT.C;
   return `<b>${c[0]} ${esc(name || c[2].replace(/s$/, ''))}</b>${ed ? '<br><span class="pill bad">Emergency department</span>' : ''}${addr ? '<br>' + esc(addr) : ''}${hours ? '<br><span class="small">' + esc(hours) + '</span>' : ''}${extra ? '<br><span class="small">' + esc(extra) + '</span>' : ''}${phone ? `<br><a href="${telHref(phone)}">📞 ${esc(phone)}</a>` : ''}<br><span class="small muted">${fromHere(lat, lon)}</span>`;
 }
-function vMap(main) {
+function vMap(main, arg) {
   main.innerHTML = `<div id="mapwrap"><div id="map"></div>
-   <div class="mapbar"><button class="btn sm" id="mLoc">📍 Me</button><button class="btn sm" id="mNear">🏥 Nearest help</button><button class="btn sm" id="mLay">🗂️ Layers</button><button class="btn sm" id="mSave">⬇️ Save maps</button><button class="btn sm" id="mAdd">➕ Add place</button></div>
+   <div class="mapbar"><button class="btn sm" id="mLoc">📍 Me</button><button class="btn sm" id="mNear">🏥 Nearest help</button><button class="btn sm" id="mLay">🗂️ Layers</button><button class="btn sm" id="mSave">⬇️ Save maps</button><button class="btn sm" id="mAdd">➕ Add place</button><button class="btn sm" id="mAway">🌏 Overseas</button></div>
    <div id="sheet"></div></div>`;
   if (typeof L === 'undefined') { $('#map').innerHTML = '<div class="empty">Map library failed to load.</div>'; return; }
   const centre = MAPFOCUS ? MAPFOCUS.slice(0, 2) : S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE;
@@ -4523,9 +4605,35 @@ function vMap(main) {
   $('#mNear').onclick = showNearest;
   $('#mLay').onclick = showLayers;
   $('#mSave').onclick = showSave;
+  $('#mAway').onclick = () => showAway();
+  // LINZ maps only cover New Zealand — outside NZ switch to the street map automatically
+  MAP.on('moveend', () => { if (!MAP || SETS[S.set.base].online) return; const c = MAP.getCenter(); if (!inNZ(c.lat, c.lng)) { setBase('street'); toast('Outside New Zealand — showing the street map (needs internet). For offline maps overseas use Organic Maps — see Map → 🌏 Overseas.', 7000); } });
   $('#mAdd').onclick = () => startPick('Tap the map where the place is', (lat, lon) => addMyPoint(lat, lon), null, true);
   if (PICK) armPick();
+  else if (arg === 'away') setTimeout(() => showAway(), 80);
   setTimeout(() => MAP && MAP.invalidateSize(), 60);
+}
+const inNZ = (la, lo) => la < -33.5 && la > -47.8 && ((lo > 165.5 && lo < 179.5) || lo < -175.8 && la < -43);
+function mapsLink(lat, lon, name) {
+  const n = encodeURIComponent(name || '');
+  return /iPhone|iPad|Mac/.test(navigator.userAgent) ? `https://maps.apple.com/?ll=${lat},${lon}&q=${n || lat + ',' + lon}` : `geo:${lat},${lon}?q=${lat},${lon}(${n})`;
+}
+function showAway(reg) {
+  reg = reg || S.set.awayReg || 'na'; S.set.awayReg = reg; persist(false);
+  const cities = AWAY_CITIES.filter(c => c[0] === reg);
+  const near = c => NZ_MISSIONS.filter(m => distKm(c[2], c[3], m[3], m[4]) < 60);
+  const mine = S.points.filter(p => p.cat === 'layover');
+  sheet(`<h2>🌏 Overseas — ${esc(AW())}</h2>
+   <div class="row" style="margin-bottom:6px">${Object.entries(AWAY_REGION_NAMES).map(([k, v]) => `<button class="chip ${k === reg ? 'on' : ''}" data-reg="${k}" style="border:0;cursor:pointer">${v}</button>`).join('')}</div>
+   <ul class="list">${cities.map((c, i) => `<li><div class="grow"><b>${esc(c[1])}</b>${near(c).map(m => `<div class="small muted">🇳🇿 ${esc(m[0])}</div>`).join('')}</div><button class="btn sm primary" data-city="${i}">Show</button></li>`).join('')}</ul>
+   ${mine.length ? `<h3>🏨 Our layover places</h3><ul class="list">${mine.map(p => `<li><div class="grow"><b>${esc(p.name)}</b>${p.note ? `<div class="small muted">${esc(p.note)}</div>` : ''}</div><button class="btn sm" data-fly="${p.lat},${p.lon}">Show</button><a class="btn sm" href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a></li>`).join('')}</ul>` : ''}
+   <div class="note small" style="margin-top:10px"><b>No signal overseas?</b> This street map needs the internet. Before each trip, download the city in <b>Organic Maps</b> (free) — it works fully offline. <a href="#" data-go="g:away-maps">How to set it up →</a><br>Pin the crew hotel here with <b>➕ Add place → Layover hotel</b>, so it's in the family backup too.</div>
+   <div class="row" style="margin-top:8px"><button class="btn sm" data-go="g:away-general">✈️ What to do overseas</button><button class="btn sm" id="awHome">🇳🇿 Back to NZ</button></div>`, el => {
+    $$('[data-reg]', el).forEach(b => b.onclick = () => showAway(b.dataset.reg));
+    $$('[data-city]', el).forEach(b => b.onclick = () => { const c = cities[+b.dataset.city]; if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([c[2], c[3]], 12); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $$('[data-fly]', el).forEach(b => b.onclick = () => { const [a, c] = b.dataset.fly.split(',').map(Number); if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([a, c], 16); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $('#awHome', el).onclick = () => { setBase('topo'); MAP.setView(S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE, 12); $('#sheet').innerHTML = ''; };
+  });
 }
 function setBase(k) {
   if (!MAP) return; if (BASE) MAP.removeLayer(BASE);
@@ -4547,6 +4655,11 @@ async function drawOverlays() {
   const groups = {};
   facilityPoints().forEach(p => { if (!on[p[0]]) return; (groups[p[0]] = groups[p[0]] || L.layerGroup()).addLayer(L.marker([p[1], p[2]], { icon: dotIcon(PT[p[0]][0], PT[p[0]][1]), title: p[3] || PT[p[0]][2] }).bindPopup(() => popupFor(p))); });
   Object.entries(groups).forEach(([k, g]) => { LYR['f' + k] = g.addTo(MAP); });
+  if (on.missions !== 0) {
+    const g = L.layerGroup();
+    NZ_MISSIONS.forEach(m => g.addLayer(L.marker([m[3], m[4]], { icon: dotIcon('🇳🇿', '#ffffff', true), zIndexOffset: 800 }).bindPopup(`<b>${esc(m[0])}</b><br>${esc(m[1])}<br><a href="${telHref(m[2])}">📞 ${esc(m[2])}</a><br>NZ consular 24/7: <a href="tel:+6499202020">+64 99 20 20 20</a><br><a href="${mapsLink(m[3], m[4], m[0])}">Open in maps app</a><br><span class="small muted">Pin position approximate — check the address</span>`)));
+    LYR.missions = g.addTo(MAP);
+  }
   if (on.meet) {
     const g = L.layerGroup();
     S.meet.filter(m => m.lat).forEach(m => g.addLayer(L.marker([m.lat, m.lon], { icon: dotIcon('⭐', '#6a1b9a', true), zIndexOffset: 900 }).bindPopup(`<b>Meeting point ${esc(m.label)}</b><br>${esc(m.desc)}`)));
@@ -4555,7 +4668,7 @@ async function drawOverlays() {
   }
   if (on.mine) {
     const g = L.layerGroup();
-    S.points.forEach(p => { const c = MYPT[p.cat] || MYPT.other; g.addLayer(L.marker([p.lat, p.lon], { icon: dotIcon(c[0], '#00695c', true) }).bindPopup(() => { const d = document.createElement('div'); d.innerHTML = `<b>${c[0]} ${esc(p.name)}</b><br><span class="small">${esc(c[1])}</span>${p.note ? '<br>' + esc(p.note) : ''}<br><span class="small muted">${fromHere(p.lat, p.lon)}</span><br><button class="btn sm" style="margin-top:6px">Edit</button>`; d.querySelector('button').onclick = () => editMyPoint(p); return d; })); });
+    S.points.forEach(p => { const c = MYPT[p.cat] || MYPT.other; g.addLayer(L.marker([p.lat, p.lon], { icon: dotIcon(c[0], '#00695c', true) }).bindPopup(() => { const d = document.createElement('div'); d.innerHTML = `<b>${c[0]} ${esc(p.name)}</b><br><span class="small">${esc(c[1])}</span>${p.note ? '<br>' + esc(p.note) : ''}<br><span class="small muted">${fromHere(p.lat, p.lon)}</span><br><a href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a> · <button class="btn sm" style="margin-top:6px">Edit</button>`; d.querySelector('button').onclick = () => editMyPoint(p); return d; })); });
     LYR.mine = g.addTo(MAP);
   }
   if (on.sources) {
@@ -4611,7 +4724,7 @@ function showLayers() {
   const row = (k, label) => `<li><span class="tick ${on[k] ? 'on' : ''}" data-ly="${k}" role="checkbox" aria-checked="${!!on[k]}" tabindex="0">${on[k] ? '✓' : ''}</span><span class="grow">${label}</span></li>`;
   sheet(`<h2>Map layers</h2><h3>Background map</h3><div class="row">${Object.entries(SETS).map(([k, s]) => `<button class="btn sm ${S.set.base === k ? 'primary' : ''}" data-base="${k}">${s.name}</button>`).join('')}</div>
    <p class="small muted" style="margin-top:6px"><b>Street map</b> has the most street names and detail but needs the internet (OpenStreetMap doesn't allow saving it). <b>Topo50</b> and <b>Aerial</b> can be saved for no signal.</p>
-   <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
+   <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('missions', '🇳🇿 NZ embassies & consulates overseas')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
    ${Object.entries(PT).map(([k, v]) => row(k, v[0] + ' ' + v[2] + (!OSMDATA && !['H', 'U', 'P', 'F', 'C'].includes(k) ? ' <span class="pill warn">not downloaded</span>' : ''))).join('')}</ul>
    ${!OSMDATA || !TSUNAMI ? `<button class="btn primary" data-go="data">⬇️ Download emergency map data</button>` : `<p class="small muted">Map data downloaded ${fmtDate(S.meta.layersAt)}. Points © OpenStreetMap contributors (ODbL); tsunami zones © Auckland Council.</p>`}`,
   el => {

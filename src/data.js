@@ -158,3 +158,29 @@ const AGE_GROUPS = [
   ['teenF', 'Teen girl 14–18', 45, 0.95], ['teenM', 'Teen boy 14–18', 65, 1.15], ['woman', 'Woman 19–70', 46, 0.9], ['man', 'Man 19–70', 64, 1.1],
   ['olderF', 'Woman 70+', 57, 0.8], ['olderM', 'Man 70+', 81, 0.9], ['preg', 'Pregnant / breastfeeding', 67, 1.05],
 ];
+
+// Overseas: layover cities (map centre) and NZ missions (address from NZ SafeTravel; pin positions approximate).
+const AWAY_CITIES = [
+  ['na', 'Los Angeles', 34.05, -118.24], ['na', 'San Francisco', 37.77, -122.42], ['na', 'Vancouver', 49.28, -123.12], ['na', 'Honolulu', 21.31, -157.86],
+  ['na', 'Houston', 29.76, -95.37], ['na', 'Chicago', 41.88, -87.63], ['na', 'New York', 40.71, -74.01],
+  ['jp', 'Tokyo', 35.68, 139.76], ['jp', 'Osaka', 34.69, 135.50],
+  ['au', 'Sydney', -33.87, 151.21], ['au', 'Melbourne', -37.81, 144.96], ['au', 'Brisbane', -27.47, 153.03], ['au', 'Gold Coast', -28.02, 153.40], ['au', 'Perth', -31.95, 115.86],
+  ['pac', 'Nadi (Fiji)', -17.78, 177.44], ['pac', 'Suva (Fiji)', -18.14, 178.44], ['pac', 'Apia (Samoa)', -13.83, -171.76], ['pac', 'Nukuʻalofa (Tonga)', -21.14, -175.20],
+  ['pac', 'Rarotonga', -21.21, -159.78], ['pac', 'Port Vila (Vanuatu)', -17.73, 168.32], ['pac', 'Nouméa', -22.27, 166.44], ['pac', 'Papeete (Tahiti)', -17.54, -149.57], ['pac', 'Niue', -19.06, -169.92],
+];
+const AWAY_REGION_NAMES = { na: '🇺🇸 North America', jp: '🇯🇵 Japan', au: '🇦🇺 Australia', pac: '🌴 South Pacific' };
+const NZ_MISSIONS = [
+  ['NZ Embassy, Washington DC', '37 Observatory Circle NW, Washington, DC 20008', '+1 202 328 4848', 38.91900, -77.06423],
+  ['NZ Consulate-General, Los Angeles', 'Suite 600E, 2425 Olympic Boulevard, Santa Monica, CA 90404', '+1 310 566 6555', 34.02809, -118.47132],
+  ['NZ Consulate-General, Honolulu', '733 Bishop Street, Suite 2020, Honolulu, HI 96813', '+1 808 675 5555', 21.30670, -157.86283],
+  ['NZ Consulate-General, New York', '41st Floor, 295 Madison Ave, New York 10017', '+1 212 832 4038', 40.75178, -73.97934],
+  ['NZ High Commission, Ottawa', '150 Elgin Street, Suite 1401, Ottawa, Ontario K2P 1L4', '+1 613 238 5991', 45.42018, -75.69342],
+  ['NZ Embassy, Tokyo', '20-40 Kamiyama-cho, Shibuya-ku, Tokyo 150-0047', '+81 3 3467 2271', 35.66385, 139.69141],
+  ['NZ High Commission, Canberra', '140 Commonwealth Avenue, Yarralumla, ACT 2600 (visitor entrance on Forster Crescent)', '+61 2 6270 4211', -35.30191, 149.12452],
+  ['NZ Consulate-General, Sydney', 'Level 22, 20 Bond Street, Sydney NSW 2000', '+61 2 9270 5900', -33.86435, 151.20849],
+  ['NZ Consulate-General, Melbourne', 'Level 4, 45 William Street, Melbourne VIC 3000', '+61 3 9678 0201', -37.81859, 144.95909],
+  ['NZ High Commission, Suva', 'Lot 12 Banuve Street, Nasese, Suva', '+679 331 1422', -18.15704, 178.42988],
+  ['NZ High Commission, Apia', 'Beach Road, Apia', '+685 21 711', -13.83351, -171.76292],
+  ['NZ High Commission, Nukuʻalofa', 'Corner Taufaʻahau and Salote Roads, Nukuʻalofa', '+676 23122', -21.13354, -175.20010],
+  ['NZ High Commission, Rarotonga', '1st floor, Philatelic Bureau Building, Takuvaine Road, Avarua', '+682 22 201', -21.20848, -159.77550],
+];

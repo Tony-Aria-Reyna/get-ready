@@ -23,7 +23,10 @@ G({ id: 'away-general', cat: 'away', icon: '✈️', colour: '#0e7490', title: '
 1. NZ consular emergency line, 24/7: **+64 99 20 20 20** (from overseas) · **0800 30 10 30** (from NZ).
 1. Register on **SafeTravel** (safetravel.govt.nz) if stranded more than a day or two — the NZ Government uses it to find and contact New Zealanders in a crisis.
 ## Regions
-- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+- [[away-na|North America]] · [[away-jp|Japan]] · [[away-au|Australia]] · [[away-pac|South Pacific]] · [[away-maps|Maps overseas]] · [[away-kit|Crew-bag kit]] · [[away-home|Getting home if flights stop]]
+## Maps
+- Before every trip, download the city in **Organic Maps** so maps work with no signal — [[away-maps]].
+- In Family Ready: [[tab:map:away|Map → 🌏 Overseas]] shows the city, the NZ embassy or consulate, and our pinned layover places.
 `);
 
 G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'North America (USA & Canada)', zones: [['Los Angeles · San Francisco · Vancouver', 'America/Los_Angeles'], ['Honolulu', 'Pacific/Honolulu'], ['Dallas · Houston · Chicago', 'America/Chicago'], ['New York', 'America/New_York']],
@@ -42,6 +45,8 @@ G({ id: 'away-na', cat: 'away', icon: '🇺🇸', colour: '#0e7490', title: 'Nor
 - **Hurricanes** (June–November: Gulf Coast, Florida, East Coast, Hawaii): follow evacuation orders; stay in an interior room away from windows.
 - **Winter storms** (Nov–Mar): airports close for days; stay in the hotel, keep warm and charged.
 - **Heat** (summer, especially Texas, Arizona, Nevada): drink water, shade, air conditioning.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ Embassy, Washington DC | +1 202 328 4848 |
@@ -70,6 +75,8 @@ G({ id: 'away-jp', cat: 'away', icon: '🇯🇵', colour: '#0e7490', title: 'Jap
 - **Tsunami** — near the coast (including Tokyo Bay and Osaka Bay areas). If there's a tsunami warning (**津波警報**), go to a tsunami evacuation building (high floors) or high ground immediately.
 - **Typhoons** (mainly June–October): trains and flights stop. Stay in the hotel until the all clear.
 - **Heat** in summer — drink water, shade, rest.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ Embassy, Tokyo (20-40 Kamiyama-cho, Shibuya-ku) | +81 3 3467 2271 |
@@ -101,6 +108,8 @@ G({ id: 'away-au', cat: 'away', icon: '🇦🇺', colour: '#0e7490', title: 'Aus
 - **Cyclones and floods** in Queensland and the north (November–April). Never drive through floodwater.
 - **Heat** — very hot days are dangerous. Stay in air conditioning, drink water, avoid the midday sun.
 - **Sun, surf and wildlife:** swim between the flags; follow local warnings about crocodiles (north), jellyfish and snakes.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ High Commission, Canberra | +61 2 6270 4211 |
@@ -129,6 +138,8 @@ G({ id: 'away-pac', cat: 'away', icon: '🌴', colour: '#0e7490', title: 'South 
 - **Volcanoes** — Tonga and Vanuatu. Ash closes airports, sometimes for days.
 - **Dengue fever** outbreaks are common. Insect repellent, long sleeves at dawn and dusk.
 - Hospitals are limited. Serious cases are flown to NZ or Australia — keep the airline's crew medical/insurance details handy.
+## Maps
+- Offline: download this area in **Organic Maps** before the trip ([[away-maps]]). In Family Ready: [[tab:map:away|Map → 🌏 Overseas]].
 ## NZ help
 | Office | Phone |
 | NZ High Commission, Suva (Fiji) | +679 331 1422 |
@@ -151,7 +162,8 @@ G({ id: 'away-kit', cat: 'away', icon: '🧳', colour: '#0e7490', title: 'Crew-b
 [ ] Small torch or head torch
 [ ] Earplugs and eye mask (shelters are noisy and bright)
 [ ] P2/N95 mask (smoke, ash)
-[ ] Offline maps downloaded for regular layover cities (Google Maps or Organic Maps)
+[ ] Organic Maps installed, with every regular layover city downloaded ([[away-maps]])
+[ ] Crew hotel pinned in Family Ready (Map → ➕ Add place → Layover hotel)
 [ ] eSIM or roaming that works in each country — know how to switch it on
 [ ] Safety Tips app installed (Japan); notifications on
 `);

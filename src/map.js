@@ -26,7 +26,7 @@ const PT = { // point categories
   H: ['🏥', '#c62828', 'Hospitals'], U: ['🩺', '#e65100', 'Urgent care'], P: ['💊', '#2e7d32', 'Pharmacies'], F: ['🚒', '#b71c1c', 'Fire stations'],
   L: ['🚓', '#1565c0', 'Police'], M: ['🏛️', '#6d4c41', 'Marae'], A: ['❤️', '#ad1457', 'Defibrillators (AED)'], C: ['🏘️', '#546e7a', 'Community centres & halls'],
 };
-const MYPT = { water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
+const MYPT = { layover: ['🏨', 'Layover hotel / crew place'], water: ['💧', 'Water source'], shelter: ['⛺', 'Shelter'], cache: ['📦', 'Supply cache'], danger: ['⚠️', 'Danger / avoid'], food: ['🍎', 'Food / fruit trees'], other: ['📍', 'Other'] };
 const DEFAULT_CENTRE = [-36.87, 174.70];
 let FOLLOW = false, MEACC = null, MEACCV = 0;
 let MAP = null, BASE = null, LYR = {}, MEPOS = null, MEMARK = null, WATCH = null, PICK = null, MAPFOCUS = null, OSMDATA = null, TSUNAMI = null;
@@ -75,9 +75,9 @@ function popupFor(p) {
   const [t, lat, lon, name, addr, phone, ed, hours, extra] = p; const c = PT[t] || PT.C;
   return `<b>${c[0]} ${esc(name || c[2].replace(/s$/, ''))}</b>${ed ? '<br><span class="pill bad">Emergency department</span>' : ''}${addr ? '<br>' + esc(addr) : ''}${hours ? '<br><span class="small">' + esc(hours) + '</span>' : ''}${extra ? '<br><span class="small">' + esc(extra) + '</span>' : ''}${phone ? `<br><a href="${telHref(phone)}">📞 ${esc(phone)}</a>` : ''}<br><span class="small muted">${fromHere(lat, lon)}</span>`;
 }
-function vMap(main) {
+function vMap(main, arg) {
   main.innerHTML = `<div id="mapwrap"><div id="map"></div>
-   <div class="mapbar"><button class="btn sm" id="mLoc">📍 Me</button><button class="btn sm" id="mNear">🏥 Nearest help</button><button class="btn sm" id="mLay">🗂️ Layers</button><button class="btn sm" id="mSave">⬇️ Save maps</button><button class="btn sm" id="mAdd">➕ Add place</button></div>
+   <div class="mapbar"><button class="btn sm" id="mLoc">📍 Me</button><button class="btn sm" id="mNear">🏥 Nearest help</button><button class="btn sm" id="mLay">🗂️ Layers</button><button class="btn sm" id="mSave">⬇️ Save maps</button><button class="btn sm" id="mAdd">➕ Add place</button><button class="btn sm" id="mAway">🌏 Overseas</button></div>
    <div id="sheet"></div></div>`;
   if (typeof L === 'undefined') { $('#map').innerHTML = '<div class="empty">Map library failed to load.</div>'; return; }
   const centre = MAPFOCUS ? MAPFOCUS.slice(0, 2) : S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE;
@@ -94,9 +94,35 @@ function vMap(main) {
   $('#mNear').onclick = showNearest;
   $('#mLay').onclick = showLayers;
   $('#mSave').onclick = showSave;
+  $('#mAway').onclick = () => showAway();
+  // LINZ maps only cover New Zealand — outside NZ switch to the street map automatically
+  MAP.on('moveend', () => { if (!MAP || SETS[S.set.base].online) return; const c = MAP.getCenter(); if (!inNZ(c.lat, c.lng)) { setBase('street'); toast('Outside New Zealand — showing the street map (needs internet). For offline maps overseas use Organic Maps — see Map → 🌏 Overseas.', 7000); } });
   $('#mAdd').onclick = () => startPick('Tap the map where the place is', (lat, lon) => addMyPoint(lat, lon), null, true);
   if (PICK) armPick();
+  else if (arg === 'away') setTimeout(() => showAway(), 80);
   setTimeout(() => MAP && MAP.invalidateSize(), 60);
+}
+const inNZ = (la, lo) => la < -33.5 && la > -47.8 && ((lo > 165.5 && lo < 179.5) || lo < -175.8 && la < -43);
+function mapsLink(lat, lon, name) {
+  const n = encodeURIComponent(name || '');
+  return /iPhone|iPad|Mac/.test(navigator.userAgent) ? `https://maps.apple.com/?ll=${lat},${lon}&q=${n || lat + ',' + lon}` : `geo:${lat},${lon}?q=${lat},${lon}(${n})`;
+}
+function showAway(reg) {
+  reg = reg || S.set.awayReg || 'na'; S.set.awayReg = reg; persist(false);
+  const cities = AWAY_CITIES.filter(c => c[0] === reg);
+  const near = c => NZ_MISSIONS.filter(m => distKm(c[2], c[3], m[3], m[4]) < 60);
+  const mine = S.points.filter(p => p.cat === 'layover');
+  sheet(`<h2>🌏 Overseas — ${esc(AW())}</h2>
+   <div class="row" style="margin-bottom:6px">${Object.entries(AWAY_REGION_NAMES).map(([k, v]) => `<button class="chip ${k === reg ? 'on' : ''}" data-reg="${k}" style="border:0;cursor:pointer">${v}</button>`).join('')}</div>
+   <ul class="list">${cities.map((c, i) => `<li><div class="grow"><b>${esc(c[1])}</b>${near(c).map(m => `<div class="small muted">🇳🇿 ${esc(m[0])}</div>`).join('')}</div><button class="btn sm primary" data-city="${i}">Show</button></li>`).join('')}</ul>
+   ${mine.length ? `<h3>🏨 Our layover places</h3><ul class="list">${mine.map(p => `<li><div class="grow"><b>${esc(p.name)}</b>${p.note ? `<div class="small muted">${esc(p.note)}</div>` : ''}</div><button class="btn sm" data-fly="${p.lat},${p.lon}">Show</button><a class="btn sm" href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a></li>`).join('')}</ul>` : ''}
+   <div class="note small" style="margin-top:10px"><b>No signal overseas?</b> This street map needs the internet. Before each trip, download the city in <b>Organic Maps</b> (free) — it works fully offline. <a href="#" data-go="g:away-maps">How to set it up →</a><br>Pin the crew hotel here with <b>➕ Add place → Layover hotel</b>, so it's in the family backup too.</div>
+   <div class="row" style="margin-top:8px"><button class="btn sm" data-go="g:away-general">✈️ What to do overseas</button><button class="btn sm" id="awHome">🇳🇿 Back to NZ</button></div>`, el => {
+    $$('[data-reg]', el).forEach(b => b.onclick = () => showAway(b.dataset.reg));
+    $$('[data-city]', el).forEach(b => b.onclick = () => { const c = cities[+b.dataset.city]; if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([c[2], c[3]], 12); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $$('[data-fly]', el).forEach(b => b.onclick = () => { const [a, c] = b.dataset.fly.split(',').map(Number); if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([a, c], 16); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $('#awHome', el).onclick = () => { setBase('topo'); MAP.setView(S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE, 12); $('#sheet').innerHTML = ''; };
+  });
 }
 function setBase(k) {
   if (!MAP) return; if (BASE) MAP.removeLayer(BASE);
@@ -118,6 +144,11 @@ async function drawOverlays() {
   const groups = {};
   facilityPoints().forEach(p => { if (!on[p[0]]) return; (groups[p[0]] = groups[p[0]] || L.layerGroup()).addLayer(L.marker([p[1], p[2]], { icon: dotIcon(PT[p[0]][0], PT[p[0]][1]), title: p[3] || PT[p[0]][2] }).bindPopup(() => popupFor(p))); });
   Object.entries(groups).forEach(([k, g]) => { LYR['f' + k] = g.addTo(MAP); });
+  if (on.missions !== 0) {
+    const g = L.layerGroup();
+    NZ_MISSIONS.forEach(m => g.addLayer(L.marker([m[3], m[4]], { icon: dotIcon('🇳🇿', '#ffffff', true), zIndexOffset: 800 }).bindPopup(`<b>${esc(m[0])}</b><br>${esc(m[1])}<br><a href="${telHref(m[2])}">📞 ${esc(m[2])}</a><br>NZ consular 24/7: <a href="tel:+6499202020">+64 99 20 20 20</a><br><a href="${mapsLink(m[3], m[4], m[0])}">Open in maps app</a><br><span class="small muted">Pin position approximate — check the address</span>`)));
+    LYR.missions = g.addTo(MAP);
+  }
   if (on.meet) {
     const g = L.layerGroup();
     S.meet.filter(m => m.lat).forEach(m => g.addLayer(L.marker([m.lat, m.lon], { icon: dotIcon('⭐', '#6a1b9a', true), zIndexOffset: 900 }).bindPopup(`<b>Meeting point ${esc(m.label)}</b><br>${esc(m.desc)}`)));
@@ -126,7 +157,7 @@ async function drawOverlays() {
   }
   if (on.mine) {
     const g = L.layerGroup();
-    S.points.forEach(p => { const c = MYPT[p.cat] || MYPT.other; g.addLayer(L.marker([p.lat, p.lon], { icon: dotIcon(c[0], '#00695c', true) }).bindPopup(() => { const d = document.createElement('div'); d.innerHTML = `<b>${c[0]} ${esc(p.name)}</b><br><span class="small">${esc(c[1])}</span>${p.note ? '<br>' + esc(p.note) : ''}<br><span class="small muted">${fromHere(p.lat, p.lon)}</span><br><button class="btn sm" style="margin-top:6px">Edit</button>`; d.querySelector('button').onclick = () => editMyPoint(p); return d; })); });
+    S.points.forEach(p => { const c = MYPT[p.cat] || MYPT.other; g.addLayer(L.marker([p.lat, p.lon], { icon: dotIcon(c[0], '#00695c', true) }).bindPopup(() => { const d = document.createElement('div'); d.innerHTML = `<b>${c[0]} ${esc(p.name)}</b><br><span class="small">${esc(c[1])}</span>${p.note ? '<br>' + esc(p.note) : ''}<br><span class="small muted">${fromHere(p.lat, p.lon)}</span><br><a href="${mapsLink(p.lat, p.lon, p.name)}">Open in maps app</a> · <button class="btn sm" style="margin-top:6px">Edit</button>`; d.querySelector('button').onclick = () => editMyPoint(p); return d; })); });
     LYR.mine = g.addTo(MAP);
   }
   if (on.sources) {
@@ -182,7 +213,7 @@ function showLayers() {
   const row = (k, label) => `<li><span class="tick ${on[k] ? 'on' : ''}" data-ly="${k}" role="checkbox" aria-checked="${!!on[k]}" tabindex="0">${on[k] ? '✓' : ''}</span><span class="grow">${label}</span></li>`;
   sheet(`<h2>Map layers</h2><h3>Background map</h3><div class="row">${Object.entries(SETS).map(([k, s]) => `<button class="btn sm ${S.set.base === k ? 'primary' : ''}" data-base="${k}">${s.name}</button>`).join('')}</div>
    <p class="small muted" style="margin-top:6px"><b>Street map</b> has the most street names and detail but needs the internet (OpenStreetMap doesn't allow saving it). <b>Topo50</b> and <b>Aerial</b> can be saved for no signal.</p>
-   <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
+   <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('missions', '🇳🇿 NZ embassies & consulates overseas')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
    ${Object.entries(PT).map(([k, v]) => row(k, v[0] + ' ' + v[2] + (!OSMDATA && !['H', 'U', 'P', 'F', 'C'].includes(k) ? ' <span class="pill warn">not downloaded</span>' : ''))).join('')}</ul>
    ${!OSMDATA || !TSUNAMI ? `<button class="btn primary" data-go="data">⬇️ Download emergency map data</button>` : `<p class="small muted">Map data downloaded ${fmtDate(S.meta.layersAt)}. Points © OpenStreetMap contributors (ODbL); tsunami zones © Auckland Council.</p>`}`,
   el => {

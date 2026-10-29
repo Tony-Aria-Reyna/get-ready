@@ -73,7 +73,7 @@ const DEFAULT_STATE = () => ({
   sources: [], points: [], manual: {}, ticks: {},
   gx: {}, gnew: [], hiddenG: {},
   saved: { maps: [] },
-  set: { linzKey: '', base: 'topo', layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1 }, theme: 'auto', textSize: 'normal' },
+  set: { linzKey: '', base: 'topo', layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1, missions: 1 }, theme: 'auto', textSize: 'normal' },
   meta: { created: Date.now(), changed: 0, lastBackup: 0 },
 });
 let S = DEFAULT_STATE();
