@@ -11,9 +11,12 @@ let html = R('src/shell.html')
   .replace('/*PDFMAKE_JS*/', () => safe(R('node_modules/pdfmake/build/pdfmake.min.js')))
   .replace('/*VFS_JS*/', () => safe(R('node_modules/pdfmake/build/vfs_fonts.js')))
   .replace('/*XLSX_JS*/', () => safe(R('node_modules/xlsx/dist/xlsx.mini.min.js')))
+  .replace('/*MAPLIBRE_CSS*/', () => safe(R('node_modules/maplibre-gl/dist/maplibre-gl.css')))
+  .replace('/*MAPLIBRE_JS*/', () => safe(R('node_modules/maplibre-gl/dist/maplibre-gl.js').replace(/\n\/\/# sourceMappingURL=.*$/m, '')))
+  .replace('/*MLLEAFLET_JS*/', () => safe(R('node_modules/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js')))
   .replace('/*LEAFLET_JS*/', () => safe(R('node_modules/leaflet/dist/leaflet.js')))
   .replace('/*CONTENT_JS*/', () => safe(fs.readdirSync(path.join(__dirname, 'src/guides')).sort().map(f => R('src/guides/' + f)).join('\n') + '\n' + R('src/data.js')))
-  .replace('/*APP_JS*/', () => safe(['core.js', 'views.js', 'map.js', 'excel.js', 'pack.js', 'boot.js'].map(f => R('src/' + f)).join('\n')));
+  .replace('/*APP_JS*/', () => safe(['core.js', 'views.js', 'vector.js', 'map.js', 'excel.js', 'pack.js', 'boot.js'].map(f => R('src/' + f)).join('\n')));
 fs.writeFileSync(path.join(out, 'index.html'), html);
 const ver = 'ready-' + Date.now().toString(36);
 fs.writeFileSync(path.join(out, 'sw.js'), `// Keeps the app working with no internet. Map tiles and data live in IndexedDB, not here.

@@ -3,11 +3,11 @@
 // ---------------------------------------------------------------------------
 const LINZ_ATTR = 'Topo50 & aerials © <a href="https://www.linz.govt.nz/">Toitū Te Whenua LINZ</a> CC BY 4.0';
 const SETS = {
+  street: { vec: true, name: 'NZ street map', max: 15, kb: 60 },
   topo: { set: 'topo-raster', name: 'NZ Topo50 map', max: 17, kb: 22 },
   aerial: { set: 'aerial', name: 'Aerial photos', max: 19, kb: 38 },
-  street: { online: true, name: 'Street map (OpenStreetMap)', max: 19, url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' },
+  osm: { online: true, name: 'World street map (OpenStreetMap)', max: 19, url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' },
 };
-const SAVABLE = Object.entries(SETS).filter(([k, s]) => !s.online);
 let KEYWARNED = false;
 function linzKeyProblem() {
   if (KEYWARNED) return; KEYWARNED = true;
@@ -18,7 +18,7 @@ function linzKeyProblem() {
    <li><span class="txt">Tap the share/copy link button on that map (or copy the address bar) — the link contains <b>api=c…</b></span></li>
    <li><span class="txt">Paste the link in the box below and tap Save.</span></li></ol>
    <div class="row"><input type="text" id="lkQ" placeholder="Paste the LINZ link or key" style="flex:1"><button class="btn primary" id="lkQS">Save</button></div>
-   <p class="small muted" style="margin-top:8px">A key from the website lasts 90 days. Meanwhile, <b>Street map (OpenStreetMap)</b> in Layers works online without a key. Please also use 🐞 Report a mistake (⚙️ → About) so the built-in key gets fixed.</p>`, el => {
+   <p class="small muted" style="margin-top:8px">A key from the website lasts 90 days. Meanwhile, <b>World street map (OpenStreetMap)</b> in Layers works online without a key. Please also use 🐞 Report a mistake (⚙️ → About) so the built-in key gets fixed.</p>`, el => {
     $('#lkQS', el).onclick = () => { const v = $('#lkQ', el).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); const k = m ? m[1] : v; if (!k) return; S.set.linzKey = k; persist(); KEYWARNED = false; $('#sheet').innerHTML = ''; setBase(S.set.base); toast('Key saved — map reloading'); };
   });
 }
@@ -44,6 +44,7 @@ const linzUrl = set => 'https://basemaps.linz.govt.nz/v1/tiles/' + set + '/WebMe
 const tileKey = (set, z, x, y) => set + '/' + z + '/' + x + '/' + y;
 function makeBase(k) {
   const def = SETS[k] || SETS.topo;
+  if (def.vec) return makeVector('street');
   // OpenStreetMap: online viewing only (their rules forbid saving it for offline use); the browser caches what you've looked at.
   if (def.online) return L.tileLayer(def.url, { maxZoom: 19, maxNativeZoom: def.max, minZoom: 4, attribution: def.attr, crossOrigin: false });
   // LINZ: saved pieces come from this phone; anything else is fetched and kept, so places you've looked at also work offline.
@@ -71,7 +72,7 @@ function makeBase(k) {
 function teardownMap() {
   if (WATCH != null && navigator.geolocation) { navigator.geolocation.clearWatch(WATCH); WATCH = null; }
   FOLLOW = false;
-  if (MAP) { try { MAP.remove(); } catch (e) {} MAP = null; LYR = {}; MEMARK = null; MEACC = null; }
+  if (MAP) { try { MAP.remove(); } catch (e) {} MAP = null; LYR = {}; MEMARK = null; MEACC = null; BASE = null; LABELS = null; }
 }
 function dotIcon(emoji, colour, big) {
   return L.divIcon({ className: '', html: big ? `<div class="pin" style="background:${colour}"><span>${emoji}</span></div>` : `<div class="dot" style="background:${colour}">${emoji}</div>`, iconSize: big ? [30, 30] : [22, 22], iconAnchor: big ? [15, 30] : [11, 11], popupAnchor: big ? [0, -28] : [0, -10] });
@@ -90,10 +91,11 @@ function vMap(main, arg) {
    <div id="sheet"></div></div>`;
   if (typeof L === 'undefined') { $('#map').innerHTML = '<div class="empty">Map library failed to load.</div>'; return; }
   const centre = MAPFOCUS ? MAPFOCUS.slice(0, 2) : S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE;
-  MAP = L.map('map', { zoomControl: false, attributionControl: true, tap: true }).setView(centre, MAPFOCUS ? MAPFOCUS[2] : 13);
+  MAP = L.map('map', { zoomControl: false, attributionControl: true, tap: true, minZoom: 4, maxZoom: 19 }).setView(centre, MAPFOCUS ? MAPFOCUS[2] : 13);
   MAPFOCUS = null;
-  if (SETS[S.set.base] && SETS[S.set.base].online && navigator.onLine === false) S.set.base = 'topo';
-  setBase(S.set.base || 'topo');
+  const lp = MAP.createPane('labels'); lp.style.zIndex = 350; lp.style.pointerEvents = 'none';
+  if (!SETS[S.set.base] || (SETS[S.set.base].online && navigator.onLine === false)) S.set.base = 'street';
+  setBase(S.set.base);
   // any pan or zoom by the user stops following the blue dot
   MAP.on('dragstart', stopFollow); MAP.on('zoomstart', e => { if (!MAP._followZoom) stopFollow(); });
   L.control.zoom({ position: 'bottomright' }).addTo(MAP);
@@ -105,7 +107,7 @@ function vMap(main, arg) {
   $('#mSave').onclick = showSave;
   $('#mAway').onclick = () => showAway();
   // LINZ maps only cover New Zealand — outside NZ switch to the street map automatically
-  MAP.on('moveend', () => { if (!MAP || SETS[S.set.base].online) return; const c = MAP.getCenter(); if (!inNZ(c.lat, c.lng)) { setBase('street'); toast('Outside New Zealand — showing the street map (needs internet). For offline maps overseas use Organic Maps — see Map → 🌏 Overseas.', 7000); } });
+  MAP.on('moveend', () => { if (!MAP || SETS[S.set.base].online) return; const c = MAP.getCenter(); if (!inNZ(c.lat, c.lng)) { setBase('osm'); toast('Outside New Zealand — showing the street map (needs internet). For offline maps overseas use Organic Maps — see Map → 🌏 Overseas.', 7000); } });
   $('#mAdd').onclick = () => startPick('Tap the map where the place is', (lat, lon) => addMyPoint(lat, lon), null, true);
   if (PICK) armPick();
   else if (arg === 'away') setTimeout(() => showAway(), 80);
@@ -128,14 +130,28 @@ function showAway(reg) {
    <div class="note small" style="margin-top:10px"><b>No signal overseas?</b> This street map needs the internet. Before each trip, download the city in <b>Organic Maps</b> (free) — it works fully offline. <a href="#" data-go="g:away-maps">How to set it up →</a><br>Pin where you're staying with <b>➕ Add place → Place to stay overseas</b>, so it's in the family backup too.</div>
    <div class="row" style="margin-top:8px"><button class="btn sm" data-go="g:away-general">✈️ What to do overseas</button><button class="btn sm" id="awHome">🇳🇿 Back to NZ</button></div>`, el => {
     $$('[data-reg]', el).forEach(b => b.onclick = () => showAway(b.dataset.reg));
-    $$('[data-city]', el).forEach(b => b.onclick = () => { const c = cities[+b.dataset.city]; if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([c[2], c[3]], 12); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
-    $$('[data-fly]', el).forEach(b => b.onclick = () => { const [a, c] = b.dataset.fly.split(',').map(Number); if (!SETS[S.set.base].online) setBase('street'); stopFollow(); MAP.setView([a, c], 16); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
-    $('#awHome', el).onclick = () => { setBase('topo'); MAP.setView(S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE, 12); $('#sheet').innerHTML = ''; };
+    $$('[data-city]', el).forEach(b => b.onclick = () => { const c = cities[+b.dataset.city]; if (!SETS[S.set.base].online) setBase('osm'); stopFollow(); MAP.setView([c[2], c[3]], 12); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $$('[data-fly]', el).forEach(b => b.onclick = () => { const [a, c] = b.dataset.fly.split(',').map(Number); if (!SETS[S.set.base].online) setBase('osm'); stopFollow(); MAP.setView([a, c], 16); if (window.innerWidth < 900) $('#sheet').innerHTML = ''; });
+    $('#awHome', el).onclick = () => { setBase('street'); MAP.setView(S.household.homeLat ? [S.household.homeLat, S.household.homeLon] : DEFAULT_CENTRE, 12); $('#sheet').innerHTML = ''; };
   });
 }
-function setBase(k) {
-  if (!MAP) return; if (BASE) MAP.removeLayer(BASE);
-  BASE = makeBase(k).addTo(MAP); S.set.base = k; persist(false);
+let BASETOKEN = 0;
+async function setBase(k) {
+  if (!MAP) return; const t = ++BASETOKEN;
+  if (!SETS[k]) k = 'street';
+  if (SETS[k].vec && !glOK()) { toast('This device can\'t draw the street map — showing Topo50 instead'); k = 'topo'; }
+  let lyr;
+  try { lyr = await makeBase(k); }
+  catch (e) {
+    if (t !== BASETOKEN) return;
+    if (e && e.code === 'key') linzKeyProblem();
+    else toast(navigator.onLine === false ? 'The street map isn\'t saved on this phone yet — showing Topo50. Save it on Wi-Fi: ⬇️ Save maps.' : 'Street map didn\'t load — showing Topo50', 6000);
+    k = 'topo'; lyr = makeBase(k);
+  }
+  if (t !== BASETOKEN || !MAP) return;
+  if (BASE) MAP.removeLayer(BASE);
+  BASE = lyr.addTo(MAP); S.set.base = k; persist(false);
+  syncLabels();
 }
 async function loadLayersData() {
   if (!OSMDATA) { try { OSMDATA = await idb.get('kv', 'osm'); } catch (e) {} }
@@ -219,15 +235,17 @@ function showNearest() {
 }
 function showLayers() {
   const on = S.set.layers;
-  const row = (k, label) => `<li><span class="tick ${on[k] ? 'on' : ''}" data-ly="${k}" role="checkbox" aria-checked="${!!on[k]}" tabindex="0">${on[k] ? '✓' : ''}</span><span class="grow">${label}</span></li>`;
+  const isOn = k => k === 'labels' ? S.set.labels !== 0 : !!on[k];
+  const row = (k, label) => `<li><span class="tick ${isOn(k) ? 'on' : ''}" data-ly="${k}" role="checkbox" aria-checked="${isOn(k)}" tabindex="0">${isOn(k) ? '✓' : ''}</span><span class="grow">${label}</span></li>`;
   sheet(`<h2>Map layers</h2><h3>Background map</h3><div class="row">${Object.entries(SETS).map(([k, s]) => `<button class="btn sm ${S.set.base === k ? 'primary' : ''}" data-base="${k}">${s.name}</button>`).join('')}</div>
-   <p class="small muted" style="margin-top:6px"><b>Street map</b> has the most street names and detail but needs the internet (OpenStreetMap doesn't allow saving it). <b>Topo50</b> and <b>Aerial</b> can be saved for no signal.</p>
+   <p class="small muted" style="margin-top:6px"><b>NZ street map</b> — streets, names, buildings and tracks; the easiest to read. <b>Topo50</b> — hills, rivers and bush tracks. <b>Aerial photos</b> — what it really looks like. All three are from LINZ and can be saved for no signal (⬇️ Save maps). <b>World street map</b> is for overseas and needs the internet.</p>
+   ${S.set.base === 'aerial' ? `<ul class="list">${row('labels', '🏷️ Show names on the photos (streets, places)')}</ul>` : ''}
    <h3>Show</h3><ul class="list">${row('meet', '⭐ Home & meeting points')}${row('mine', '📍 Our places')}${row('sources', '🤝 Suppliers & contacts')}${row('missions', '🇳🇿 NZ embassies & consulates overseas')}${row('tsunami', '🌊 Tsunami evacuation zones' + (TSUNAMI ? '' : ' <span class="pill warn">not downloaded</span>'))}
    ${Object.entries(PT).map(([k, v]) => row(k, v[0] + ' ' + v[2] + (!OSMDATA && !['H', 'U', 'P', 'F', 'C'].includes(k) ? ' <span class="pill warn">not downloaded</span>' : ''))).join('')}</ul>
    ${!OSMDATA || !TSUNAMI ? `<button class="btn primary" data-go="data">⬇️ Download emergency map data</button>` : `<p class="small muted">Map data downloaded ${fmtDate(S.meta.layersAt)}. Points © OpenStreetMap contributors (ODbL); tsunami zones © Auckland Council.</p>`}`,
   el => {
     $$('[data-base]', el).forEach(b => b.onclick = () => { if (SETS[b.dataset.base].online && navigator.onLine === false) toast('Street map needs the internet — showing what this phone has already viewed'); setBase(b.dataset.base); showLayers(); });
-    $$('[data-ly]', el).forEach(t => t.onclick = () => { on[t.dataset.ly] = on[t.dataset.ly] ? 0 : 1; persist(false); drawOverlays(); showLayers(); });
+    $$('[data-ly]', el).forEach(t => t.onclick = () => { if (t.dataset.ly === 'labels') { S.set.labels = S.set.labels === 0 ? 1 : 0; persist(false); syncLabels(); showLayers(); return; } on[t.dataset.ly] = on[t.dataset.ly] ? 0 : 1; persist(false); drawOverlays(); showLayers(); });
   });
 }
 function startPick(msg, cb, at, stayOnMap) {
@@ -275,64 +293,106 @@ function presets() {
   ];
 }
 let OFF = { busy: false, cancel: false };
+const SAVE_KINDS = ['street', 'topo', 'aerial'];
+// how many pieces a saved area needs, for one map type
+function areaCount(k, b, z0, z1) {
+  const def = SETS[k];
+  if (def.vec) { const [a, c] = vecRange(z0, z1); return countTiles(b, a, c); }
+  const n = countTiles(b, z0, Math.min(z1, def.max));
+  if (k === 'aerial' && S.set.labels !== 0) { const [a, c] = vecRange(z0, z1); return n + countTiles(b, a, c); }
+  return n;
+}
+function areaBytes(k, b, z0, z1) {
+  const def = SETS[k];
+  if (def.vec) return areaCount(k, b, z0, z1) * def.kb * 1024;
+  let n = countTiles(b, z0, Math.min(z1, def.max)) * def.kb * 1024;
+  if (k === 'aerial' && S.set.labels !== 0) { const [a, c] = vecRange(z0, z1); n += countTiles(b, a, c) * SETS.street.kb * 1024 * 0.6; }
+  return n;
+}
+// storage keys a saved record uses (to know what can be removed)
+function recKeys(m) {
+  const out = [];
+  const def = SETS[m.k];
+  if (def && !def.vec) tilesFor(m.b, m.z0, m.z1).forEach(t => out.push(tileKey(def.set, ...t)));
+  if (m.k === 'street' || m.labels) { const [a, c] = vecRange(m.z0, m.vz1 != null ? m.vz1 + 1 : m.z1); tilesFor(m.b, a, c).forEach(t => out.push(lzKey(vecRel(...t)))); }
+  return out;
+}
 function showSave() {
   const P = presets();
-  const savedHtml = S.saved.maps.length ? `<h3>Saved on this device</h3><ul class="list">${S.saved.maps.map((m, i) => { const old = daysSince(m.at) > 183; return `<li><div class="grow"><b>${esc(m.name)}</b><div class="small muted">${SETS[m.k] ? SETS[m.k].name : m.k} · ${m.n.toLocaleString()} pieces · ${MB(m.bytes || 0)} · saved ${fmtDate(m.at)}</div>${old ? '<div class="small" style="color:var(--warn)">Over 6 months old — refresh to get the latest roads and buildings</div>' : ''}</div><button class="btn sm ${old ? 'primary' : 'ghost'}" data-rf="${i}">Refresh</button><button class="btn sm ghost" data-show="${i}">Show</button><button class="btn sm ghost" data-rm="${i}" style="color:var(--accent)">✕</button></li>`; }).join('')}</ul>` : '';
-  sheet(`<h2>Save maps for no signal</h2><p class="small">Downloads LINZ Topo50 (or aerial photo) maps onto this phone so the map works in a disaster with no internet. Do it on <b>Wi-Fi</b>. Each phone needs its own copy. Downloads run at a gentle pace (as LINZ asks), so a typical area takes 5–10 minutes. Refresh saved maps every 6 months.</p>
-  <label class="f">Map type</label><select id="svK">${SAVABLE.map(([k, s]) => `<option value="${k}"${k === 'topo' ? ' selected' : ''}>${s.name}${k === 'topo' ? ' (recommended — smaller)' : ''}</option>`).join('')}</select>
-  <ul class="list">${P.map((p, i) => `<li><div class="grow"><b>${p[1]}</b><div class="small muted">${p[2]} · <span data-est="${i}"></span></div></div><button class="btn sm primary" data-sv="${i}">Save</button></li>`).join('')}</ul>
+  if (!Array.isArray(S.set.saveKinds)) S.set.saveKinds = ['street', 'topo'];
+  const K = S.set.saveKinds;
+  const kname = m => (SETS[m.k] ? SETS[m.k].name : m.k) + (m.labels ? ' + names' : '');
+  const savedHtml = S.saved.maps.length ? `<h3>Saved on this device</h3><ul class="list">${S.saved.maps.map((m, i) => { const old = daysSince(m.at) > 183; return `<li><div class="grow"><b>${esc(m.name)}</b><div class="small muted">${kname(m)} · ${m.n.toLocaleString()} pieces · ${MB(m.bytes || 0)} · saved ${fmtDate(m.at)}</div>${old ? '<div class="small" style="color:var(--warn)">Over 6 months old — refresh to get the latest roads and buildings</div>' : ''}</div><button class="btn sm ${old ? 'primary' : 'ghost'}" data-rf="${i}">Refresh</button><button class="btn sm ghost" data-show="${i}">Show</button><button class="btn sm ghost" data-rm="${i}" style="color:var(--accent)">✕</button></li>`; }).join('')}</ul>` : '';
+  const kRow = k => `<li><span class="tick ${K.includes(k) ? 'on' : ''}" data-sk="${k}" role="checkbox" aria-checked="${K.includes(k)}" tabindex="0">${K.includes(k) ? '✓' : ''}</span><span class="grow">${{ street: '🏙️ <b>NZ street map</b> — streets, names, buildings <span class="pill ok">recommended</span>', topo: '⛰️ <b>Topo50</b> — hills, rivers, bush tracks', aerial: '📷 <b>Aerial photos</b>' + (S.set.labels !== 0 ? ' with names' : '') + ' — the biggest download' }[k]}</span></li>`;
+  sheet(`<h2>Save maps for no signal</h2><p class="small">Downloads LINZ maps onto this phone so the map works in a disaster with no internet. Do it on <b>Wi-Fi</b>. Each phone needs its own copy. Downloads run at a gentle pace (as LINZ asks), so a typical area takes 5–15 minutes. Refresh saved maps every 6 months.</p>
+  <h3>Which maps</h3><ul class="list">${SAVE_KINDS.map(kRow).join('')}</ul>
+  <h3>Which area</h3><ul class="list">${P.map((p, i) => `<li><div class="grow"><b>${p[1]}</b><div class="small muted">${p[2]} · <span data-est="${i}"></span></div></div><button class="btn sm primary" data-sv="${i}">Save</button></li>`).join('')}</ul>
   <div id="svProg"></div>${savedHtml}`, el => {
-    const est = () => { const k = $('#svK', el).value; $$('[data-est]', el).forEach(s => { const p = P[s.dataset.est]; const n = countTiles(p[3], p[4], Math.min(p[5], SETS[k].max)); s.textContent = `about ${MB(n * SETS[k].kb * 1024)} (${n.toLocaleString()} pieces)`; }); };
-    est(); $('#svK', el).onchange = est;
-    $$('[data-sv]', el).forEach(b => b.onclick = () => saveArea(P[b.dataset.sv], $('#svK', el).value));
+    const est = () => $$('[data-est]', el).forEach(s => { const p = P[s.dataset.est]; if (!K.length) { s.textContent = 'tick a map type above'; return; } let n = 0, b = 0; K.forEach(k => { n += areaCount(k, p[3], p[4], p[5]); b += areaBytes(k, p[3], p[4], p[5]); }); s.textContent = `about ${MB(b)} (${n.toLocaleString()} pieces)`; });
+    est();
+    $$('[data-sk]', el).forEach(t => t.onclick = () => { const k = t.dataset.sk; const i = K.indexOf(k); if (i >= 0) K.splice(i, 1); else K.push(k); K.sort((a, b) => SAVE_KINDS.indexOf(a) - SAVE_KINDS.indexOf(b)); persist(false); showSave(); });
+    $$('[data-sv]', el).forEach(b => b.onclick = () => { if (!K.length) { toast('Tick at least one map type'); return; } saveMany(P[b.dataset.sv], K.slice()); });
     $$('[data-rm]', el).forEach(b => b.onclick = () => confirmTwice(b, 'Delete?', () => removeArea(+b.dataset.rm)));
-    $$('[data-rf]', el).forEach(b => b.onclick = () => { const m = S.saved.maps[+b.dataset.rf]; saveArea([m.name, '↻ ' + m.name, '', m.b, m.z0, m.z1], m.k, { refresh: true }); });
+    $$('[data-rf]', el).forEach(b => b.onclick = () => { const m = S.saved.maps[+b.dataset.rf]; saveArea([m.name, '↻ ' + m.name, '', m.b, m.z0, m.zU || m.z1], m.k, { refresh: true, labels: m.labels }); });
     $$('[data-show]', el).forEach(b => b.onclick = () => { const m = S.saved.maps[+b.dataset.show]; MAP.fitBounds([[m.b[0], m.b[1]], [m.b[2], m.b[3]]]); });
   });
 }
+async function saveMany(p, kinds) {
+  let total = 0; kinds.forEach(k => { total += areaCount(k, p[3], p[4], p[5]); });
+  if (dayCount() + total > TILE_DAY_CAP) { toast('That would go over today\'s download limit — try again tomorrow, or save fewer map types.', 6000); return; }
+  for (const k of kinds) { const ok = await saveArea(p, k, { many: kinds.length > 1 }); if (!ok) break; }
+}
 async function saveArea(p, k, opts = {}) {
-  if (OFF.busy) { toast('A download is already running'); return; }
-  if (navigator.onLine === false) { toast('You are offline — connect to Wi-Fi first'); return; }
-  const def = SETS[k], z1 = Math.min(p[5], def.max), n = countTiles(p[3], p[4], z1);
-  if (n > 40000) { toast('That area is too big — zoom in and use "What\'s on screen"'); return; }
-  if (dayCount() + n > TILE_DAY_CAP) { toast('That would go over today\'s download limit — try again tomorrow, or save a smaller area.', 6000); return; }
+  if (OFF.busy) { toast('A download is already running'); return false; }
+  if (navigator.onLine === false) { toast('You are offline — connect to Wi-Fi first'); return false; }
+  const def = SETS[k];
+  const labels = k === 'aerial' && (opts.labels != null ? !!opts.labels : S.set.labels !== 0);
+  const z1 = def.vec ? p[5] : Math.min(p[5], def.max);
+  const n = def.vec ? areaCount(k, p[3], p[4], p[5]) : countTiles(p[3], p[4], z1) + (labels ? countTiles(p[3], ...vecRange(p[4], p[5])) : 0);
+  if (n > 40000) { toast('That area is too big — zoom in and use "What\'s on screen"'); return false; }
+  if (dayCount() + n > TILE_DAY_CAP) { toast('That would go over today\'s download limit — try again tomorrow, or save a smaller area.', 6000); return false; }
   try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) {}
-  const list = tilesFor(p[3], p[4], z1); OFF = { busy: true, cancel: false };
+  OFF = { busy: true, cancel: false };
   const prog = $('#svProg'); let done = 0, fail = 0, bytes = 0, skip = 0, auth = false;
-  const ui = () => { if (prog) prog.innerHTML = `<div class="progress"><i style="width:${Math.round((done + fail + skip) / list.length * 100)}%"></i></div><div class="row small"><span class="grow">${(done + skip).toLocaleString()} of ${list.length.toLocaleString()} · ${MB(bytes)}${fail ? ' · ' + fail + ' unavailable' : ''}</span>${OFF.busy ? '<button class="btn sm ghost" id="svC">Cancel</button>' : ''}</div>`; const c = $('#svC'); if (c) c.onclick = () => { OFF.cancel = true; }; };
-  ui(); let i = 0; let last = 0;
-  const url = (z, x, y) => linzUrl(def.set).replace('{z}', z).replace('{x}', x).replace('{y}', y);
+  const title = `${def.name}${labels ? ' + names' : ''}`;
+  const ui = () => { const pr = $('#svProg'); if (pr) pr.innerHTML = `<div class="small"><b>${esc(title)}</b></div><div class="progress"><i style="width:${Math.round((done + fail + skip) / Math.max(1, list.length) * 100)}%"></i></div><div class="row small"><span class="grow">${(done + skip).toLocaleString()} of ${list.length.toLocaleString()} · ${MB(bytes)}${fail ? ' · ' + fail + ' unavailable' : ''}</span>${OFF.busy ? '<button class="btn sm ghost" id="svC">Cancel</button>' : ''}</div>`; const c = $('#svC'); if (c) c.onclick = () => { OFF.cancel = true; }; };
+  let list = [];
+  if (prog) prog.innerHTML = `<div class="small">Getting ready… ${esc(title)}</div>`;
+  // fonts, symbols and style first, so the street map and names draw even when nothing else is saved
+  if (def.vec || labels) { try { (await vecResources(def.vec ? ['street'] : ['labels'])).forEach(r => list.push([r, true])); } catch (e) {} }
+  if (!def.vec) tilesFor(p[3], p[4], z1).forEach(t => list.push([rasRel(def.set, ...t)]));
+  if (def.vec || labels) { const [a, c] = vecRange(p[4], p[5]); tilesFor(p[3], a, c).forEach(t => list.push([vecRel(...t)])); }
+  ui(); let i = 0, last = 0;
   async function worker() {
     while (i < list.length && !OFF.cancel && !auth) {
-      const [z, x, y] = list[i++]; const key = tileKey(def.set, z, x, y);
+      const [rel, res] = list[i++];
       try {
-        if (!opts.refresh && await idb.has('tiles', key)) { skip++; }
-        else {
-          await tileGate(); dayCount(1);
-          const r = await fetch(url(z, x, y), { mode: 'cors', credentials: 'omit' });
-          if (r.status === 401 || r.status === 403 || (r.status === 400 && /key/i.test(await r.clone().text().catch(() => '')))) { auth = true; break; }
-          if (!r.ok) { fail++; } else { const b = await r.blob(); bytes += b.size; await idb.put('tiles', key, b); done++; }
-        }
-      } catch (e) { fail++; }
+        if (!opts.refresh && await idb.has('tiles', lzKey(rel))) skip++;
+        else { const r = await lzRes(rel, { force: true, gate: true }); bytes += r.blob.size; done++; }
+      } catch (e) { if (e.code === 'key') { auth = true; break; } fail++; }
       if (Date.now() - last > 300) { last = Date.now(); ui(); }
     }
   }
   await Promise.all(Array.from({ length: 4 }, worker)); persist(false);
   OFF.busy = false; ui();
-  if (auth) { linzKeyProblem(); return; }
-  if (OFF.cancel) { toast('Cancelled. What downloaded is kept.'); }
-  const rec = { name: p[1].replace(/^\S+\s/, ''), k, b: p[3], z0: p[4], z1, n: list.length, bytes, at: Date.now() };
+  if (auth) { linzKeyProblem(); return false; }
+  if (OFF.cancel) toast('Cancelled. What downloaded is kept.');
+  const vz = vecRange(p[4], p[5]);
+  const rec = { name: p[1].replace(/^\S+\s/, ''), k, b: p[3], z0: p[4], z1: def.vec ? p[5] : z1, zU: p[5], n: list.length, bytes, at: Date.now() };
+  if (def.vec || labels) rec.vz1 = vz[1];
+  if (labels) rec.labels = true;
   const ex = S.saved.maps.findIndex(m => m.name === rec.name && m.k === k);
-  if (ex >= 0) { if (!opts.refresh) rec.bytes += S.saved.maps[ex].bytes || 0; S.saved.maps[ex] = rec; } else S.saved.maps.push(rec);
+  if (ex >= 0) { if (!opts.refresh) rec.bytes += S.saved.maps[ex].bytes || 0; if (S.saved.maps[ex].labels) rec.labels = true, rec.vz1 = vz[1]; S.saved.maps[ex] = rec; } else S.saved.maps.push(rec);
   persist();
-  if (!OFF.cancel) toast(`${opts.refresh ? 'Refreshed' : 'Saved'} ${rec.name}: ${MB(bytes)} downloaded${fail ? `, ${fail} pieces not available` : ''}. Works offline now.`, 6000);
-  if (BASE && S.set.base !== k && !SETS[S.set.base].online) setBase(k); else if (BASE) BASE.redraw();
+  if (!OFF.cancel) toast(`${opts.refresh ? 'Refreshed' : 'Saved'} ${rec.name} (${title}): ${MB(bytes)} downloaded${fail ? `, ${fail} pieces not available` : ''}. Works offline now.`, 6000);
+  if (BASE && !opts.many && S.set.base !== k && !SETS[S.set.base].vec && !SETS[S.set.base].online) setBase(k); else if (BASE && BASE.redraw) BASE.redraw();
   showSave();
+  return !OFF.cancel;
 }
 async function removeArea(i) {
-  const m = S.saved.maps[i]; const def = SETS[m.k]; const keep = new Set();
-  S.saved.maps.forEach((o, j) => { if (j !== i && o.k === m.k) tilesFor(o.b, o.z0, o.z1).forEach(t => keep.add(tileKey(def.set, ...t))); });
-  for (const t of tilesFor(m.b, m.z0, m.z1)) { const k = tileKey(def.set, ...t); if (!keep.has(k)) await idb.del('tiles', k); }
+  const m = S.saved.maps[i]; const keep = new Set();
+  S.saved.maps.forEach((o, j) => { if (j !== i) recKeys(o).forEach(k => keep.add(k)); });
+  for (const k of recKeys(m)) if (!keep.has(k)) await idb.del('tiles', k);
   S.saved.maps.splice(i, 1); persist(); toast('Removed'); showSave();
 }
 

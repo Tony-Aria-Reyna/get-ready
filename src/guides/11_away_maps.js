@@ -2,8 +2,8 @@
 G({ id: 'away-maps', cat: 'away', icon: '🗺️', colour: '#0e7490', title: 'Maps overseas — working with no signal',
   one: 'Download the city in Organic Maps before every trip. Pin your hotel. Our app shows the NZ embassy and your places.' }, `
 ## Why a separate maps app
-- The Topo50 and aerial maps in Family Ready are **New Zealand only** (LINZ).
-- Overseas, Family Ready shows the **OpenStreetMap street map** — but only while there's internet, because OpenStreetMap doesn't allow apps to save it for offline use.
+- The street map, Topo50 and aerial photos in Family Ready come from LINZ and cover **New Zealand only**.
+- Overseas, Family Ready switches to the **World street map (OpenStreetMap)** — but only while there's internet, because OpenStreetMap doesn't allow apps to save it for offline use.
 - For maps that work with **no signal anywhere in the world**, use **Organic Maps** (free, no ads, no account). It downloads whole countries or regions onto the phone, with streets, hospitals, pharmacies and walking directions — all offline.
 > Family Ready still does the important bits overseas: the region guide, emergency numbers, the NZ embassy pins, and your own pinned places (hotel, meeting point). Open [[tab:map:away|Map → 🌏 Overseas]].
 ## Set up Organic Maps (once, on Wi-Fi — 10 minutes)

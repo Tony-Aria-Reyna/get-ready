@@ -75,7 +75,7 @@ const DEFAULT_STATE = () => ({
   sources: [], points: [], manual: {}, ticks: {},
   gx: {}, gnew: [], hiddenG: {},
   saved: { maps: [] },
-  set: { linzKey: '', base: 'topo', layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1, missions: 1 }, theme: 'auto', textSize: 'normal' },
+  set: { linzKey: '', base: 'street', labels: 1, saveKinds: ['street', 'topo'], layers: { H: 1, U: 1, P: 1, F: 1, L: 1, M: 1, A: 1, C: 0, tsunami: 1, meet: 1, mine: 1, sources: 1, missions: 1 }, theme: 'auto', textSize: 'normal' },
   meta: { created: Date.now(), changed: 0, lastBackup: 0 },
 });
 let S = DEFAULT_STATE();
@@ -88,7 +88,9 @@ function migrate() {
   S.home = Object.assign({}, HOME_DEFAULTS, S.home || {});
   if (S.rules.radioCh && !S.home.radioCh) S.home.radioCh = S.rules.radioCh;
   S.people.forEach(p => { if (!p.age) p.age = /daughter|son|child|kid/i.test(p.role || '') ? 'child4' : /mother|nana|grand|in-law/i.test(p.role || '') ? 'olderF' : 'woman'; });
-  S.v = 2;
+  // v3: the LINZ street map becomes the main map; the old online-only street map is now 'osm'
+  if ((S.v || 0) < 3) { if (S.set.base === 'street' || S.set.base === 'topo' || !S.set.base) S.set.base = 'street'; }
+  S.v = 3;
 }
 function persist(changed = true) {
   if (changed) S.meta.changed = Date.now();

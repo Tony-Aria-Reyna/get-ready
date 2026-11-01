@@ -89,7 +89,9 @@ G({ id: 'maps-save', cat: 'skills', icon: '🗺️', title: 'Getting around with
   one: 'Save the maps in this app on Wi-Fi now. GPS still works with no signal. Keep a paper map in the car.' }, `
 ## Save the maps in this app (do this now, on each phone)
 1. Open **Map** → **⬇️ Save maps**.
-1. Choose **NZ Topo50**, then save **Around home**, **Around home — wider area** and **Auckland region**. Do it on Wi-Fi.
+1. Under **Which maps**, tick **NZ street map** (streets, names and buildings — the easiest to read) and **Topo50** (hills, rivers, bush tracks). Tick **Aerial photos** too if the phone has plenty of space.
+1. Tap **Save** next to **Around home**, then **Around home — wider area**, then **Auckland region**. Do it on Wi-Fi; each one takes 5–15 minutes. Keep the app open while it saves.
+1. Refresh them every 6 months (the app reminds you): **⬇️ Save maps** → **Refresh**.
 1. Go to **⚙️ → Download emergency map data** for hospitals, pharmacies, AEDs, fire and police stations, marae and tsunami zones.
 1. Test: turn on airplane mode, open the map, press **📍 Me** — the blue dot works from GPS, even with no network.
 ## Paper maps

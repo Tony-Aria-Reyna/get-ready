@@ -25,4 +25,4 @@ An offline emergency app for our family: what to do in an earthquake, tsunami, e
 ## Updating
 Edit files in `src/`, then `npm install && npm run build`, commit and push.
 
-Maps: Toitū Te Whenua LINZ (CC BY 4.0). Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council. Guidance: NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, MPI, SafeTravel, Smartraveller. Always follow official instructions in a real emergency.
+Maps: Toitū Te Whenua LINZ Basemaps — street map, Topo50 and aerial photos (CC BY 4.0), drawn with MapLibre GL (BSD) and Leaflet. Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council. Guidance: NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, MPI, SafeTravel, Smartraveller. Always follow official instructions in a real emergency.
