@@ -357,7 +357,7 @@ function readiness() {
     ['contacts', 'Add key contacts, including one outside Auckland', S.contacts.some(c => c.outOfTown), 'plan'],
     ['meet', 'Choose all three meeting points', S.meet.every(m => m.desc && !m.desc.startsWith('e.g.')), 'plan'],
     ['homeset', 'Check the car socket voltage & set the family radio channel', S.home.carVolts !== 'unknown' && !!S.home.radioCh, 'plan'],
-    ['maps', 'Save maps for offline use', S.saved.maps.length > 0, 'map'],
+    ['maps', 'Save maps for offline use (refresh every 6 months)', S.saved.maps.length > 0 && !staleMaps().length, 'map'],
     ['layers', 'Download emergency map data (tsunami zones, hospitals…)', !!S.meta.layersAt, 'data'],
     ['kit', 'Go through the supplies list', Object.keys(S.supplies.have).length >= 15, 'kit'],
     ['sources', 'Add at least 5 suppliers / contacts for food and essentials', S.sources.length >= 5, 'sources'],
@@ -385,7 +385,7 @@ function vNow(main) {
   <div class="sos">${sc.map(s => `<button style="background:${s.colour || '#b91c1c'}" data-go="g:${s.id}"><span class="i">${s.icon}</span><b>${esc(guideTitle(s, T))}</b></button>`).join('')}
   <button style="background:#0e7490" data-go="g:away-general"><span class="i">✈️</span><b>${esc(AW())} is overseas</b></button>
   <button style="background:#6d28d9" data-go="g:car-power"><span class="i">⚡</span><b>Power cut at home</b></button></div></div>
-  ${expiring.length || (S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30) ? `<div class="card">${expiring.length ? `<div class="note" style="margin-bottom:8px">⏰ <b>${expiring.length} supply item${expiring.length > 1 ? 's' : ''}</b> near the use-by date: ${expiring.slice(0, 4).map(e => esc(e.name)).join(', ')}${expiring.length > 4 ? '…' : ''} <a href="#" data-go="kit">Check</a></div>` : ''}${S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30 ? `<div class="note">💾 Changes not backed up${S.meta.lastBackup ? ' since ' + fmtDate(S.meta.lastBackup) : ''}. <a href="#" data-go="data">Back up now</a></div>` : ''}</div>` : ''}
+  ${expiring.length || staleMaps().length || (S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30) ? `<div class="card">${expiring.length ? `<div class="note" style="margin-bottom:8px">⏰ <b>${expiring.length} supply item${expiring.length > 1 ? 's' : ''}</b> near the use-by date: ${expiring.slice(0, 4).map(e => esc(e.name)).join(', ')}${expiring.length > 4 ? '…' : ''} <a href="#" data-go="kit">Check</a></div>` : ''}${staleMaps().length ? `<div class="note" style="margin-bottom:8px">🗺️ <b>Saved maps are over 6 months old.</b> Refresh them on Wi-Fi to get the latest roads and buildings. <a href="#" data-go="map">Open the map → ⬇️ Save maps → Refresh</a></div>` : ''}${S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30 ? `<div class="note">💾 Changes not backed up${S.meta.lastBackup ? ' since ' + fmtDate(S.meta.lastBackup) : ''}. <a href="#" data-go="data">Back up now</a></div>` : ''}</div>` : ''}
   <div class="grid2">
    <div class="card"><h2>Where we meet</h2>
     <ul class="list">${S.meet.map(m => `<li><div class="grow"><b>${esc(m.label)}</b><div class="${m.desc.startsWith('e.g.') ? 'muted small' : ''}">${esc(m.desc)}</div></div>${m.lat ? `<button class="btn sm" data-showmeet="${m.id}">Map</button>` : ''}</li>`).join('')}</ul>

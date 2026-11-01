@@ -4034,7 +4034,7 @@ function readiness() {
     ['contacts', 'Add key contacts, including one outside Auckland', S.contacts.some(c => c.outOfTown), 'plan'],
     ['meet', 'Choose all three meeting points', S.meet.every(m => m.desc && !m.desc.startsWith('e.g.')), 'plan'],
     ['homeset', 'Check the car socket voltage & set the family radio channel', S.home.carVolts !== 'unknown' && !!S.home.radioCh, 'plan'],
-    ['maps', 'Save maps for offline use', S.saved.maps.length > 0, 'map'],
+    ['maps', 'Save maps for offline use (refresh every 6 months)', S.saved.maps.length > 0 && !staleMaps().length, 'map'],
     ['layers', 'Download emergency map data (tsunami zones, hospitals…)', !!S.meta.layersAt, 'data'],
     ['kit', 'Go through the supplies list', Object.keys(S.supplies.have).length >= 15, 'kit'],
     ['sources', 'Add at least 5 suppliers / contacts for food and essentials', S.sources.length >= 5, 'sources'],
@@ -4062,7 +4062,7 @@ function vNow(main) {
   <div class="sos">${sc.map(s => `<button style="background:${s.colour || '#b91c1c'}" data-go="g:${s.id}"><span class="i">${s.icon}</span><b>${esc(guideTitle(s, T))}</b></button>`).join('')}
   <button style="background:#0e7490" data-go="g:away-general"><span class="i">✈️</span><b>${esc(AW())} is overseas</b></button>
   <button style="background:#6d28d9" data-go="g:car-power"><span class="i">⚡</span><b>Power cut at home</b></button></div></div>
-  ${expiring.length || (S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30) ? `<div class="card">${expiring.length ? `<div class="note" style="margin-bottom:8px">⏰ <b>${expiring.length} supply item${expiring.length > 1 ? 's' : ''}</b> near the use-by date: ${expiring.slice(0, 4).map(e => esc(e.name)).join(', ')}${expiring.length > 4 ? '…' : ''} <a href="#" data-go="kit">Check</a></div>` : ''}${S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30 ? `<div class="note">💾 Changes not backed up${S.meta.lastBackup ? ' since ' + fmtDate(S.meta.lastBackup) : ''}. <a href="#" data-go="data">Back up now</a></div>` : ''}</div>` : ''}
+  ${expiring.length || staleMaps().length || (S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30) ? `<div class="card">${expiring.length ? `<div class="note" style="margin-bottom:8px">⏰ <b>${expiring.length} supply item${expiring.length > 1 ? 's' : ''}</b> near the use-by date: ${expiring.slice(0, 4).map(e => esc(e.name)).join(', ')}${expiring.length > 4 ? '…' : ''} <a href="#" data-go="kit">Check</a></div>` : ''}${staleMaps().length ? `<div class="note" style="margin-bottom:8px">🗺️ <b>Saved maps are over 6 months old.</b> Refresh them on Wi-Fi to get the latest roads and buildings. <a href="#" data-go="map">Open the map → ⬇️ Save maps → Refresh</a></div>` : ''}${S.meta.changed > S.meta.lastBackup && daysSince(S.meta.lastBackup) > 30 ? `<div class="note">💾 Changes not backed up${S.meta.lastBackup ? ' since ' + fmtDate(S.meta.lastBackup) : ''}. <a href="#" data-go="data">Back up now</a></div>` : ''}</div>` : ''}
   <div class="grid2">
    <div class="card"><h2>Where we meet</h2>
     <ul class="list">${S.meet.map(m => `<li><div class="grow"><b>${esc(m.label)}</b><div class="${m.desc.startsWith('e.g.') ? 'muted small' : ''}">${esc(m.desc)}</div></div>${m.lat ? `<button class="btn sm" data-showmeet="${m.id}">Map</button>` : ''}</li>`).join('')}</ul>
@@ -4534,8 +4534,8 @@ async function vData(main) {
    <p>Saved map areas: <b>${S.saved.maps.length}</b> (${tiles.toLocaleString()} pieces). <a href="#" data-go="map">Open the map → ⬇️ Save maps</a></p>
    <p>Emergency map data (tsunami zones, hospitals, pharmacies, AEDs, fire, police, marae): <b>${S.meta.layersAt ? 'downloaded ' + fmtDate(S.meta.layersAt) : 'not downloaded'}</b></p>
    <button class="btn primary" id="dl">⬇️ ${S.meta.layersAt ? 'Refresh' : 'Download'} emergency map data</button><div id="dlS" class="small" style="margin-top:8px"></div>
-   <label class="f">LINZ map key (needed for Topo50 and aerial maps)</label><div class="small muted" style="margin:-2px 0 6px">Open basemaps.linz.govt.nz, copy its link (contains api=c…), paste it here. It lasts 90 days — or email basemaps@linz.govt.nz for a free Developer key that doesn't expire. Saved maps keep working without a key.</div><div class="row"><input type="text" id="lk" value="${esc(S.set.linzKey)}" placeholder="Paste a link from basemaps.linz.govt.nz or a key" style="flex:1"><button class="btn" id="lkS">Save</button></div>
-   <p class="small muted">Maps: Toitū Te Whenua LINZ (CC BY 4.0). Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council.</p></div>
+   <label class="f">LINZ map key (optional)</label><div class="small muted" style="margin:-2px 0 6px">Not needed — the app has a key from LINZ built in. Only paste one here if the map says the key has stopped working.</div><div class="row"><input type="text" id="lk" value="${esc(S.set.linzKey)}" placeholder="Paste a link from basemaps.linz.govt.nz or a key" style="flex:1"><button class="btn" id="lkS">Save</button></div>
+   <p class="small muted">Maps: Toitū Te Whenua LINZ Basemaps (CC BY 4.0), used with LINZ's permission. Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council.</p></div>
   <div class="card"><h2>📱 This device</h2>
    <p>Installed as an app: <b>${isInstalled() ? 'yes' : 'no'}</b>${!isInstalled() ? ` <label class="row small" style="display:inline-flex"><input type="checkbox" id="inst"${S.manual.install ? ' checked' : ''}> Done on our phones</label>` : ''}</p>
    ${!isInstalled() ? `<div class="note small"><b>iPhone:</b> open in Safari → Share → <b>Add to Home Screen</b>.<br><b>Android:</b> open in Chrome → ⋮ → <b>Install app</b>.<br>Then open it once in airplane mode to check it works offline.</div>` : ''}
@@ -4576,13 +4576,13 @@ let KEYWARNED = false;
 function linzKeyProblem() {
   if (KEYWARNED) return; KEYWARNED = true;
   sheet(`<h2>🔑 The LINZ map needs a free access key</h2>
-   <p>LINZ now asks for a key before it sends map pieces. Maps you have already <b>saved</b> keep working without one.</p>
+   <p>LINZ didn't accept the built-in map key (it may have been changed). Maps you have already <b>saved</b> keep working. To fix it now, paste your own free key:</p>
    <ol class="steps" style="padding-left:0">
    <li><span class="txt">On this phone, open <b>basemaps.linz.govt.nz</b> in the browser.</span></li>
    <li><span class="txt">Tap the share/copy link button on that map (or copy the address bar) — the link contains <b>api=c…</b></span></li>
    <li><span class="txt">Paste the link in the box below and tap Save.</span></li></ol>
    <div class="row"><input type="text" id="lkQ" placeholder="Paste the LINZ link or key" style="flex:1"><button class="btn primary" id="lkQS">Save</button></div>
-   <p class="small muted" style="margin-top:8px">That key lasts 90 days. For a key that never expires, email <b>basemaps@linz.govt.nz</b> and ask for a free Developer key for a family emergency app. Meanwhile, <b>Street map (OpenStreetMap)</b> in Layers works online without a key.</p>`, el => {
+   <p class="small muted" style="margin-top:8px">A key from the website lasts 90 days. Meanwhile, <b>Street map (OpenStreetMap)</b> in Layers works online without a key. Please also use 🐞 Report a mistake (⚙️ → About) so the built-in key gets fixed.</p>`, el => {
     $('#lkQS', el).onclick = () => { const v = $('#lkQ', el).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); const k = m ? m[1] : v; if (!k) return; S.set.linzKey = k; persist(); KEYWARNED = false; $('#sheet').innerHTML = ''; setBase(S.set.base); toast('Key saved — map reloading'); };
   });
 }
@@ -4594,7 +4594,16 @@ const MYPT = { layover: ['🏨', 'Place to stay overseas'], water: ['💧', 'Wat
 const DEFAULT_CENTRE = [-36.87, 174.70];
 let FOLLOW = false, MEACC = null, MEACCV = 0;
 let MAP = null, BASE = null, LYR = {}, MEPOS = null, MEMARK = null, WATCH = null, PICK = null, MAPFOCUS = null, OSMDATA = null, TSUNAMI = null;
-const linzKey = () => S.set.linzKey ? '?api=' + encodeURIComponent(S.set.linzKey) : '';
+// Developer key issued by LINZ Basemaps for this app (Nov 2026). LINZ asked that caching stays under
+// ~10 tiles/second and 250,000 tiles/day/user, and suggested refreshing saved maps about every 6 months.
+const LINZ_KEY = 'd01m5g152dt1bf2a17xdcdkaxnh';
+const linzKey = () => '?api=' + encodeURIComponent(S.set.linzKey || LINZ_KEY);
+const TILE_RATE_MS = 125;          // at most 8 map pieces a second
+const TILE_DAY_CAP = 100000;       // well under LINZ's 250,000 a day
+let lastTileAt = 0;
+async function tileGate() { const wait = lastTileAt + TILE_RATE_MS - Date.now(); lastTileAt = Math.max(Date.now(), lastTileAt + TILE_RATE_MS); if (wait > 0) await new Promise(r => setTimeout(r, wait)); }
+function dayCount(add) { const d = new Date().toISOString().slice(0, 10); const m = S.meta.dl && S.meta.dl.d === d ? S.meta.dl : { d, n: 0 }; if (add) { m.n += add; S.meta.dl = m; } return m.n; }
+const staleMaps = () => S.saved.maps.filter(m => daysSince(m.at) > 183);
 const linzUrl = set => 'https://basemaps.linz.govt.nz/v1/tiles/' + set + '/WebMercatorQuad/{z}/{x}/{y}.webp' + linzKey();
 const tileKey = (set, z, x, y) => set + '/' + z + '/' + x + '/' + y;
 function makeBase(k) {
@@ -4832,8 +4841,8 @@ function presets() {
 let OFF = { busy: false, cancel: false };
 function showSave() {
   const P = presets();
-  const savedHtml = S.saved.maps.length ? `<h3>Saved on this device</h3><ul class="list">${S.saved.maps.map((m, i) => `<li><div class="grow"><b>${esc(m.name)}</b><div class="small muted">${SETS[m.k] ? SETS[m.k].name : m.k} · ${m.n.toLocaleString()} pieces · ${MB(m.bytes || 0)} · ${fmtDate(m.at)}</div></div><button class="btn sm ghost" data-show="${i}">Show</button><button class="btn sm ghost" data-rm="${i}" style="color:var(--accent)">✕</button></li>`).join('')}</ul>` : '';
-  sheet(`<h2>Save maps for no signal</h2><p class="small">Downloads LINZ Topo50 (or aerial photo) maps onto this phone so the map works in a disaster with no internet. Do it on <b>Wi-Fi</b>. Each phone needs its own copy.</p>
+  const savedHtml = S.saved.maps.length ? `<h3>Saved on this device</h3><ul class="list">${S.saved.maps.map((m, i) => { const old = daysSince(m.at) > 183; return `<li><div class="grow"><b>${esc(m.name)}</b><div class="small muted">${SETS[m.k] ? SETS[m.k].name : m.k} · ${m.n.toLocaleString()} pieces · ${MB(m.bytes || 0)} · saved ${fmtDate(m.at)}</div>${old ? '<div class="small" style="color:var(--warn)">Over 6 months old — refresh to get the latest roads and buildings</div>' : ''}</div><button class="btn sm ${old ? 'primary' : 'ghost'}" data-rf="${i}">Refresh</button><button class="btn sm ghost" data-show="${i}">Show</button><button class="btn sm ghost" data-rm="${i}" style="color:var(--accent)">✕</button></li>`; }).join('')}</ul>` : '';
+  sheet(`<h2>Save maps for no signal</h2><p class="small">Downloads LINZ Topo50 (or aerial photo) maps onto this phone so the map works in a disaster with no internet. Do it on <b>Wi-Fi</b>. Each phone needs its own copy. Downloads run at a gentle pace (as LINZ asks), so a typical area takes 5–10 minutes. Refresh saved maps every 6 months.</p>
   <label class="f">Map type</label><select id="svK">${SAVABLE.map(([k, s]) => `<option value="${k}"${k === 'topo' ? ' selected' : ''}>${s.name}${k === 'topo' ? ' (recommended — smaller)' : ''}</option>`).join('')}</select>
   <ul class="list">${P.map((p, i) => `<li><div class="grow"><b>${p[1]}</b><div class="small muted">${p[2]} · <span data-est="${i}"></span></div></div><button class="btn sm primary" data-sv="${i}">Save</button></li>`).join('')}</ul>
   <div id="svProg"></div>${savedHtml}`, el => {
@@ -4841,14 +4850,16 @@ function showSave() {
     est(); $('#svK', el).onchange = est;
     $$('[data-sv]', el).forEach(b => b.onclick = () => saveArea(P[b.dataset.sv], $('#svK', el).value));
     $$('[data-rm]', el).forEach(b => b.onclick = () => confirmTwice(b, 'Delete?', () => removeArea(+b.dataset.rm)));
+    $$('[data-rf]', el).forEach(b => b.onclick = () => { const m = S.saved.maps[+b.dataset.rf]; saveArea([m.name, '↻ ' + m.name, '', m.b, m.z0, m.z1], m.k, { refresh: true }); });
     $$('[data-show]', el).forEach(b => b.onclick = () => { const m = S.saved.maps[+b.dataset.show]; MAP.fitBounds([[m.b[0], m.b[1]], [m.b[2], m.b[3]]]); });
   });
 }
-async function saveArea(p, k) {
+async function saveArea(p, k, opts = {}) {
   if (OFF.busy) { toast('A download is already running'); return; }
   if (navigator.onLine === false) { toast('You are offline — connect to Wi-Fi first'); return; }
   const def = SETS[k], z1 = Math.min(p[5], def.max), n = countTiles(p[3], p[4], z1);
   if (n > 40000) { toast('That area is too big — zoom in and use "What\'s on screen"'); return; }
+  if (dayCount() + n > TILE_DAY_CAP) { toast('That would go over today\'s download limit — try again tomorrow, or save a smaller area.', 6000); return; }
   try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch (e) {}
   const list = tilesFor(p[3], p[4], z1); OFF = { busy: true, cancel: false };
   const prog = $('#svProg'); let done = 0, fail = 0, bytes = 0, skip = 0, auth = false;
@@ -4859,8 +4870,9 @@ async function saveArea(p, k) {
     while (i < list.length && !OFF.cancel && !auth) {
       const [z, x, y] = list[i++]; const key = tileKey(def.set, z, x, y);
       try {
-        if (await idb.has('tiles', key)) { skip++; }
+        if (!opts.refresh && await idb.has('tiles', key)) { skip++; }
         else {
+          await tileGate(); dayCount(1);
           const r = await fetch(url(z, x, y), { mode: 'cors', credentials: 'omit' });
           if (r.status === 401 || r.status === 403 || (r.status === 400 && /key/i.test(await r.clone().text().catch(() => '')))) { auth = true; break; }
           if (!r.ok) { fail++; } else { const b = await r.blob(); bytes += b.size; await idb.put('tiles', key, b); done++; }
@@ -4869,15 +4881,15 @@ async function saveArea(p, k) {
       if (Date.now() - last > 300) { last = Date.now(); ui(); }
     }
   }
-  await Promise.all(Array.from({ length: 6 }, worker));
+  await Promise.all(Array.from({ length: 4 }, worker)); persist(false);
   OFF.busy = false; ui();
   if (auth) { linzKeyProblem(); return; }
   if (OFF.cancel) { toast('Cancelled. What downloaded is kept.'); }
   const rec = { name: p[1].replace(/^\S+\s/, ''), k, b: p[3], z0: p[4], z1, n: list.length, bytes, at: Date.now() };
   const ex = S.saved.maps.findIndex(m => m.name === rec.name && m.k === k);
-  if (ex >= 0) { rec.bytes += S.saved.maps[ex].bytes || 0; S.saved.maps[ex] = rec; } else S.saved.maps.push(rec);
+  if (ex >= 0) { if (!opts.refresh) rec.bytes += S.saved.maps[ex].bytes || 0; S.saved.maps[ex] = rec; } else S.saved.maps.push(rec);
   persist();
-  if (!OFF.cancel) toast(`Saved ${rec.name}: ${MB(bytes)} downloaded${fail ? `, ${fail} pieces not available` : ''}. Works offline now.`, 6000);
+  if (!OFF.cancel) toast(`${opts.refresh ? 'Refreshed' : 'Saved'} ${rec.name}: ${MB(bytes)} downloaded${fail ? `, ${fail} pieces not available` : ''}. Works offline now.`, 6000);
   if (BASE && S.set.base !== k && !SETS[S.set.base].online) setBase(k); else if (BASE) BASE.redraw();
   showSave();
 }
