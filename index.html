@@ -4948,7 +4948,7 @@ async function makeVector(kind) {
   loadMaplibre();
   const st = prepStyle(await vecStyle(kind));
   const lyr = L.maplibreGL({ style: st, pane: kind === 'labels' ? 'labels' : 'tilePane', attributionControl: false, interactive: false, fadeDuration: 0 });
-  lyr.getAttribution = () => 'Street map © <a href="https://www.linz.govt.nz/">Toitū Te Whenua LINZ</a> CC BY 4.0';
+  lyr.getAttribution = () => kind === 'labels' ? '' : 'Street map © <a href="https://www.linz.govt.nz/">Toitū Te Whenua LINZ</a> CC BY 4.0';
   return lyr;
 }
 // the "Show names" layer on top of the aerial photos
