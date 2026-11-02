@@ -1,6 +1,7 @@
 {
+  "id": "./",
   "name": "Family Ready",
-  "short_name": "Ready",
+  "short_name": "Family Ready",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

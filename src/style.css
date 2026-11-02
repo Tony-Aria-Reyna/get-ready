@@ -197,3 +197,7 @@ textarea.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 
 ol.steps li, ul.checks li, .check, .list li:has(> .tick){cursor:pointer;-webkit-tap-highlight-color:rgba(36,82,127,.08)}
 .tick{flex:0 0 30px;height:30px;border-radius:9px}
+
+.mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.installbar{display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.installbar .btn{white-space:nowrap}

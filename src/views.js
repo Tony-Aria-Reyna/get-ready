@@ -38,10 +38,34 @@ const HOME_F = [
   { k: 'ovenGas', label: 'Does it have the gas burner?', type: 'select', options: [['unknown', "Don't know"], ['yes', 'Yes'], ['no', 'No']] },
   { k: 'bbq', label: 'Charcoal cooker', ph: 'e.g. the Big Green Egg' }, { k: 'stove', label: 'Camp stove / gas BBQ (if any)' },
   { k: 'radios', label: 'Our walkie-talkies', ph: 'e.g. a Baofeng and four Unidens', section: 'Radios' },
-  { k: 'radioCh', label: 'Family radio channel and tone', ph: 'e.g. PRS channel 20 (476.900 MHz), tone 100.0 Hz' },
+  { k: 'radioCh', label: 'Family radio channel and tone', ph: 'e.g. PRS channel 20 (476.900 MHz), tone 100.0 Hz', help: 'Easier: Guides → 📡 Radio converter sets this for you and shows what to set on each radio.' },
   { k: 'radioNotes', label: 'Radio notes', type: 'textarea' },
   { k: 'gasMeter', label: 'Where the gas meter / bottles are', section: 'Shut-offs' }, { k: 'waterToby', label: 'Where the water toby (street tap) is' }, { k: 'switchboard', label: 'Where the main switchboard is' },
 ];
+// ---- manuals & spec sheets attached to a home system (or one radio) ----
+const SYS_NAMES = { car: 'Car', solar: 'Solar', water: 'Water tank', cook: 'Cookers', radio: 'Radios', shutoff: 'Shut-offs' };
+function sysLabel(sys) {
+  if (!sys) return '';
+  if (sys.startsWith('radio:')) { const r = (S.home.radioList || []).find(x => 'radio:' + x.id === sys); return '📻 ' + (r ? r.model || 'Radio' : 'Radio'); }
+  return SYS_NAMES[sys] || '';
+}
+function manualLinks(sys, word = 'manual or spec sheet') {
+  const ds = S.docs.filter(d => d.sys === sys);
+  return `${ds.map(d => `<a class="btn sm" data-doc="${d.id}" target="_blank" rel="noopener">📄 ${esc(d.name)}</a>`).join(' ')} <button class="btn sm ghost" data-attach="${esc(sys)}">📎 ${ds.length ? 'Add another' : 'Attach ' + word}</button>`;
+}
+async function fillManualLinks(root) {
+  for (const a of $$('a[data-doc]', root || document)) { if (a.href) continue; const b = await idb.get('files', a.dataset.doc).catch(() => null); if (b) a.href = URL.createObjectURL(b); else a.style.opacity = .5; }
+}
+function attachFile(sys, after) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true;
+  inp.accept = 'image/*,application/pdf,.pdf,.doc,.docx,.txt,.xls,.xlsx';
+  inp.onchange = async () => {
+    for (const f of inp.files) { const id = uid(); const blob = f.type.startsWith('image/') ? await shrinkImage(f, 2400) : f; await idb.put('files', id, blob); S.docs.push({ id, name: f.name.replace(/\.[^.]+$/, ''), type: blob.type || f.type || '', at: Date.now(), sys }); }
+    persist(); toast(inp.files.length > 1 ? inp.files.length + ' files saved on this phone' : 'Saved on this phone'); if (after) after();
+  };
+  inp.click();
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-attach]'); if (b) { e.preventDefault(); attachFile(b.dataset.attach, () => render()); } });
 function editHome() { formModal('Our home systems', HOME_F, S.home, v => { Object.assign(S.home, v); persist(); render(); }, { intro: '<p class="small muted">These details are written into the step-by-step guides.</p>' }); }
 function personSummary(p) {
   const a = AGE[p.age];
@@ -67,13 +91,15 @@ function vPlan(main) {
    <p><b>School emergency plan:</b> ${esc(S.rules.school) || '<span class="muted">Ask the school: do they hold children or release them, and who is on the pickup list?</span>'}</p>${S.rules.note ? `<p>${esc(S.rules.note)}</p>` : ''}
    <p class="small"><a href="#" data-go="g:apart">Full "When we're apart" guide →</a></p></div>
   <div class="card"><div class="row"><h2 class="grow" style="margin:0">🔧 Our home systems</h2><button class="btn sm" id="ehome">Edit</button></div>
-   <table style="margin-top:8px"><tr><td>Car (power)</td><td>${esc(S.home.carModel || S.home.car)} · ${esc(S.home.carOutlet)} W · ${S.home.carVolts === 'unknown' ? '<span class="pill warn">socket voltage not checked</span>' : esc(S.home.carVolts) + ' V'}</td></tr>
-   <tr><td>Solar</td><td>${esc(S.home.inverter)}</td></tr>
-   <tr><td>Water tank</td><td>${S.home.tankL ? esc(S.home.tankCount) + ' × ' + esc(S.home.tankL) + ' L' : '<span class="muted">size not set</span>'} · ${esc(S.home.tapWhere)}</td></tr>
-   <tr><td>Cookers</td><td>${[S.home.stove, S.home.oven + (S.home.ovenGas === 'yes' ? ' (gas + wood)' : ''), S.home.bbq].filter(Boolean).map(esc).join(' · ')}</td></tr>
-   <tr><td>Radios</td><td>${esc(S.home.radios)}<br><b>${esc(S.home.radioCh) || '<span class="muted">channel not set</span>'}</b></td></tr>
-   <tr><td>Shut-offs</td><td class="small">Gas: ${esc(S.home.gasMeter) || '—'}<br>Water: ${esc(S.home.waterToby) || '—'}<br>Power: ${esc(S.home.switchboard) || '—'}</td></tr></table></div>
-  <div class="card"><div class="row"><h2 class="grow" style="margin:0">📄 Documents & photos</h2><label class="btn sm primary">＋ Add photo<input type="file" accept="image/*,application/pdf" id="docIn" multiple hidden></label></div>
+   <p class="small muted">Attach the manual or spec sheet for anything (PDF, photo or document) — it's kept on this phone and shown in the matching guide.</p>
+   <table style="margin-top:8px"><tr><td>Car (power)</td><td>${esc(S.home.carModel || S.home.car)} · ${esc(S.home.carOutlet)} W · ${S.home.carVolts === 'unknown' ? '<span class="pill warn">socket voltage not checked</span>' : esc(S.home.carVolts) + ' V'}<div class="mrow">${manualLinks('car')}</div></td></tr>
+   <tr><td>Solar</td><td>${esc(S.home.inverter)}<div class="mrow">${manualLinks('solar')}</div></td></tr>
+   <tr><td>Water tank</td><td>${S.home.tankL ? esc(S.home.tankCount) + ' × ' + esc(S.home.tankL) + ' L' : '<span class="muted">size not set</span>'} · ${esc(S.home.tapWhere)}<div class="mrow">${manualLinks('water')}</div></td></tr>
+   <tr><td>Cookers</td><td>${[S.home.stove, S.home.oven + (S.home.ovenGas === 'yes' ? ' (gas + wood)' : ''), S.home.bbq].filter(Boolean).map(esc).join(' · ')}<div class="mrow">${manualLinks('cook')}</div></td></tr>
+   <tr><td>Radios</td><td>${(S.home.radioList || []).length ? S.home.radioList.map(r => `${esc(r.model)}${r.count > 1 ? ' ×' + esc(r.count) : ''}${r.owner ? ' (' + esc(r.owner) + ')' : ''} <span class="small muted">${r.kind === 'mhz' ? 'MHz' : 'channels'}</span>`).join('<br>') : esc(S.home.radios)}<br><b>${esc(S.home.radioCh) || '<span class="muted">channel not set</span>'}</b>
+     <div class="mrow"><button class="btn sm primary" data-go="tool:radio">📡 Radios, manuals & channel converter</button></div></td></tr>
+   <tr><td>Shut-offs</td><td class="small">Gas: ${esc(S.home.gasMeter) || '—'}<br>Water: ${esc(S.home.waterToby) || '—'}<br>Power: ${esc(S.home.switchboard) || '—'}<div class="mrow">${manualLinks('shutoff', 'photo or plan')}</div></td></tr></table></div>
+  <div class="card"><div class="row"><h2 class="grow" style="margin:0">📄 Documents & photos</h2><label class="btn sm primary">＋ Add photo or document<input type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.txt,.xls,.xlsx" id="docIn" multiple hidden></label></div>
    <p class="small muted">Passports, licences, insurance, prescriptions, photos of the shut-offs. Stored only on this phone — keep it locked with a passcode.</p>
    <div id="docs" class="grid3"></div></div>`;
   const personForm = (p, isNew) => formModal(isNew ? 'Add person' : 'Edit ' + (p.name || 'person'), PERSON_F(), p, v => { if (!v.name && !v.role) { toast('Add a name'); return false; } if (isNew) S.people.push(Object.assign({ id: uid() }, v)); else Object.assign(p, v); persist(); vPlan(main); },
@@ -107,8 +133,8 @@ async function renderDocs() {
   for (const d of S.docs) {
     const b = await idb.get('files', d.id); const div = document.createElement('div'); div.className = 'card'; div.style.cssText = 'padding:8px;margin:0';
     const url = b ? URL.createObjectURL(b) : '';
-    div.innerHTML = `${b && d.type.startsWith('image/') ? `<img src="${url}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">` : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem">📄</div>`}
-    <div class="small" style="margin-top:4px;word-break:break-word"><b>${esc(d.name)}</b></div><div class="row" style="margin-top:4px"><a class="btn sm" href="${url}" target="_blank" rel="noopener">Open</a><button class="btn sm ghost" data-ren>Rename</button><button class="btn sm ghost" data-del style="color:var(--accent)">✕</button></div>`;
+    div.innerHTML = `${b && (d.type || '').startsWith('image/') ? `<img src="${url}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">` : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem">📄</div>`}
+    <div class="small" style="margin-top:4px;word-break:break-word"><b>${esc(d.name)}</b>${d.sys ? ` <span class="pill">${esc(sysLabel(d.sys))}</span>` : ''}</div><div class="row" style="margin-top:4px"><a class="btn sm" href="${url}" target="_blank" rel="noopener">Open</a><button class="btn sm ghost" data-ren>Rename</button><button class="btn sm ghost" data-del style="color:var(--accent)">✕</button></div>`;
     $('[data-ren]', div).onclick = () => formModal('Rename', [{ k: 'name', label: 'Name' }], d, v => { d.name = v.name || d.name; persist(); renderDocs(); });
     $('[data-del]', div).onclick = e => confirmTwice(e.target, 'Delete?', async () => { await idb.del('files', d.id); S.docs = S.docs.filter(x => x !== d); persist(); renderDocs(); });
     el.appendChild(div);
@@ -210,6 +236,10 @@ async function vData(main) {
   const persisted = navigator.storage && navigator.storage.persisted ? await navigator.storage.persisted().catch(() => false) : false;
   const tiles = await idb.count('tiles').catch(() => 0);
   main.innerHTML = `
+  <div class="card"><h2>📲 Install on this phone</h2>
+   ${isInstalled() ? '<p>✓ <b>Installed</b> — you\'re using the app. It works with no internet.</p>' : '<p>Put Family Ready on the home screen so it opens like an app and <b>works with no internet</b>. Do this on every phone in the family.</p>'}
+   <div class="row">${isInstalled() ? '' : `<button class="btn primary" id="inst2">📲 ${INSTALL_EVT ? 'Install Family Ready' : 'Show me how to install'}</button>`}<button class="btn" id="inShare2">📤 Send the link to the family</button></div>
+   ${!isInstalled() ? `<label class="row small" style="margin-top:8px"><input type="checkbox" id="inst"${S.manual.install ? ' checked' : ''}> We've installed it on all our phones</label>` : ''}</div>
   <div class="card"><h2>📄 A4 pack</h2><p class="small muted">A designed PDF of everything — cover, contents, quick reference, our plan, every guide, supplies and suppliers. Print it or keep it on a USB stick.</p><button class="btn primary" data-go="pack">Make the A4 pack</button></div>
   <div class="card"><h2>📊 Excel — import & export</h2>
    <p class="small muted">Fill in the Excel template (Family, Contacts, Suppliers, Supplies, Places), then import it. Or export what's in the app, edit it in Excel and import it again.</p>
@@ -225,8 +255,6 @@ async function vData(main) {
    <label class="f">LINZ map key (optional)</label><div class="small muted" style="margin:-2px 0 6px">Not needed — the app has a key from LINZ built in. Only paste one here if the map says the key has stopped working.</div><div class="row"><input type="text" id="lk" value="${esc(S.set.linzKey)}" placeholder="Paste a link from basemaps.linz.govt.nz or a key" style="flex:1"><button class="btn" id="lkS">Save</button></div>
    <p class="small muted">Maps: Toitū Te Whenua LINZ Basemaps (CC BY 4.0), used with LINZ's permission. Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council.</p></div>
   <div class="card"><h2>📱 This device</h2>
-   <p>Installed as an app: <b>${isInstalled() ? 'yes' : 'no'}</b>${!isInstalled() ? ` <label class="row small" style="display:inline-flex"><input type="checkbox" id="inst"${S.manual.install ? ' checked' : ''}> Done on our phones</label>` : ''}</p>
-   ${!isInstalled() ? `<div class="note small"><b>iPhone:</b> open in Safari → Share → <b>Add to Home Screen</b>.<br><b>Android:</b> open in Chrome → ⋮ → <b>Install app</b>.<br>Then open it once in airplane mode to check it works offline.</div>` : ''}
    <p>Storage used: <b>${est ? MB(est.usage || 0) : '—'}</b> · Protected from clean-up: <b>${persisted ? 'yes' : 'no'}</b>${!persisted ? ' <button class="btn sm" id="pp">Protect</button>' : ''}</p>
    <div class="grid2" style="grid-template-columns:1fr 1fr"><div><label class="f">Appearance</label><select id="th"><option value="auto">Match phone</option><option value="light">Light</option><option value="dark">Dark (easier at night)</option></select></div>
    <div><label class="f">Text size</label><select id="ts"><option value="normal">Normal</option><option value="large">Large</option><option value="xl">Extra large</option></select></div></div></div>
@@ -245,6 +273,7 @@ async function vData(main) {
   $('#dl', main).onclick = async e => { e.target.disabled = true; await downloadLayers(m => { const s = $('#dlS'); if (s) s.textContent = m; }); e.target.disabled = false; };
   $('#lkS', main).onclick = () => { const v = $('#lk', main).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); S.set.linzKey = m ? m[1] : v; persist(); toast('Saved'); };
   const inst = $('#inst', main); if (inst) inst.onchange = e => { S.manual.install = e.target.checked; persist(); };
+  const i2 = $('#inst2', main); if (i2) i2.onclick = () => doInstall(); $('#inShare2', main).onclick = shareLink;
   const pp = $('#pp', main); if (pp) pp.onclick = async () => { const ok = navigator.storage && await navigator.storage.persist(); toast(ok ? 'Protected' : 'The browser said no — installing the app usually fixes this'); vData(main); };
   $('#wAgain', main).onclick = () => showWelcome(true);
   $('#wipe', main).onclick = e => confirmTwice(e.target, 'Tap again — this cannot be undone', async () => { await idb.clear('kv'); await idb.clear('tiles'); await idb.clear('files'); try { localStorage.removeItem('family-ready-state'); } catch (x) {} S = DEFAULT_STATE(); migrate(); OSMDATA = TSUNAMI = null; toast('Erased'); go('now'); });

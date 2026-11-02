@@ -231,8 +231,9 @@ G({ id: 'radios', cat: 'home', icon: '📡', title: 'Our walkie-talkies',
 1. If someone is missing or there's danger, leave the radios on all the time.
 1. Charge radios from the car or a power bank whenever you can. Check spare batteries monthly.
 ## Setting up all the radios (do once, then test)
-1. **Unidens:** set the channel, then the CTCSS code. The Uniden manual has a table showing the code's tone in **Hz** (e.g. 100.0 Hz).
-1. **Baofeng:** set the same frequency. PRS channel 1 = 476.425 MHz and each channel adds 0.025 MHz (channel 20 = 476.900 MHz). Set bandwidth to **Narrow**, power **Low**, and both tones (T-CTCS and R-CTCS) to the same **Hz** as the Unidens.
+> Open [[tool:radio|📡 Radio converter]] — it shows exactly what to set on **each** of our radios, converts channel numbers to MHz (and Uniden tone codes to Hz), and keeps each radio's manual.
+1. **Channel-number radios (e.g. Unidens):** set the channel, then the CTCSS code. Most Unidens use code **12 for 100.0 Hz** — check the code table in the manual.
+1. **MHz radios (e.g. Baofeng):** set the same frequency. PRS channels 1–40 start at 476.4250 MHz and go up 0.025 MHz each (channel 20 = 476.9000 MHz); channels 41–80 sit halfway between (channel 41 = 476.4375 MHz). Set bandwidth to **Narrow**, power **Low**, and both tones (T-CTCS and R-CTCS) to the same **Hz** as the Unidens.
 1. Test: talk from each radio to every other one. If two can't hear each other, the tone doesn't match — check the Hz.
 1. Stick a label on the back of every radio with the channel and code.
 > The tone isn't privacy — anyone on that channel without a tone can still hear us, and others talking on the channel block it. If it's busy, everyone switches to the backup channel.

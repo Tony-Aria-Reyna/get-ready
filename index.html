@@ -874,6 +874,10 @@ textarea.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;f
 
 ol.steps li, ul.checks li, .check, .list li:has(> .tick){cursor:pointer;-webkit-tap-highlight-color:rgba(36,82,127,.08)}
 .tick{flex:0 0 30px;height:30px;border-radius:9px}
+
+.mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.installbar{display:flex;gap:10px;align-items:center;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.installbar .btn{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1801,8 +1805,9 @@ G({ id: 'radios', cat: 'home', icon: '📡', title: 'Our walkie-talkies',
 1. If someone is missing or there's danger, leave the radios on all the time.
 1. Charge radios from the car or a power bank whenever you can. Check spare batteries monthly.
 ## Setting up all the radios (do once, then test)
-1. **Unidens:** set the channel, then the CTCSS code. The Uniden manual has a table showing the code's tone in **Hz** (e.g. 100.0 Hz).
-1. **Baofeng:** set the same frequency. PRS channel 1 = 476.425 MHz and each channel adds 0.025 MHz (channel 20 = 476.900 MHz). Set bandwidth to **Narrow**, power **Low**, and both tones (T-CTCS and R-CTCS) to the same **Hz** as the Unidens.
+> Open [[tool:radio|📡 Radio converter]] — it shows exactly what to set on **each** of our radios, converts channel numbers to MHz (and Uniden tone codes to Hz), and keeps each radio's manual.
+1. **Channel-number radios (e.g. Unidens):** set the channel, then the CTCSS code. Most Unidens use code **12 for 100.0 Hz** — check the code table in the manual.
+1. **MHz radios (e.g. Baofeng):** set the same frequency. PRS channels 1–40 start at 476.4250 MHz and go up 0.025 MHz each (channel 20 = 476.9000 MHz); channels 41–80 sit halfway between (channel 41 = 476.4375 MHz). Set bandwidth to **Narrow**, power **Low**, and both tones (T-CTCS and R-CTCS) to the same **Hz** as the Unidens.
 1. Test: talk from each radio to every other one. If two can't hear each other, the tone doesn't match — check the Hz.
 1. Stick a label on the back of every radio with the channel and code.
 > The tone isn't privacy — anyone on that channel without a tone can still hear us, and others talking on the channel block it. If it's busy, everyone switches to the backup channel.
@@ -4064,6 +4069,7 @@ function migrate() {
   S.people.forEach(p => { if (!p.age) p.age = /daughter|son|child|kid/i.test(p.role || '') ? 'child4' : /mother|nana|grand|in-law/i.test(p.role || '') ? 'olderF' : 'woman'; });
   // v3: the LINZ street map becomes the main map; the old online-only street map is now 'osm'
   if ((S.v || 0) < 3) { if (S.set.base === 'street' || S.set.base === 'topo' || !S.set.base) S.set.base = 'street'; }
+  if (typeof radioMigrate === 'function') radioMigrate();
   S.v = 3;
 }
 function persist(changed = true) {
@@ -4123,7 +4129,7 @@ function tokens() {
     tankDays20: tank ? String(Math.floor(tank / (ppl * 20))) : '?', tankDays3: tank ? String(Math.floor(tank / (ppl * 3))) : '?',
     Oven: (h.oven || 'the pizza oven').replace(/^./, c => c.toUpperCase()), oven: h.oven || 'the pizza oven', bbq: h.bbq || 'the kamado', Bbq: (h.bbq || 'the kamado').replace(/^./, c => c.toUpperCase()),
     ovenGasLine: h.ovenGas === 'yes' ? '> We have the **gas burner** — the easiest way to use it. Wood steps are below for when the gas runs out.' : h.ovenGas === 'no' ? '> We don\'t have the gas burner — use the wood steps below.' : '> If we have the gas burner, use these steps. Otherwise skip to wood.',
-    radios: h.radios || 'our handheld radios', radioCh: h.radioCh || '(not set yet — add it in Our plan → Our home)',
+    radios: (h.radioList || []).length ? h.radioList.map(r => `${r.count > 1 ? r.count + ' × ' : 'a '}${r.model}${r.owner ? ' (' + r.owner + ')' : ''}`).join(', ') : h.radios || 'our handheld radios', radioCh: (typeof radioSummary === 'function' && radioSummary()) || h.radioCh || '(not set yet — set it in Guides → 📡 Radio converter)',
     gasMeter: h.gasMeter || 'add where it is in Our plan → Our home', waterToby: h.waterToby || 'add where it is in Our plan → Our home', switchboard: h.switchboard || 'add where it is in Our plan → Our home',
     pantryTable: ['| Food | Per adult per month | For us — ' + daysTarget() + ' days |', ...pantryRows].join('\n'),
   };
@@ -4306,6 +4312,7 @@ function render() {
   main.classList.toggle('mapmode', top === 'map');
   const views = { now: vNow, guides: vGuides, cat: vCat, g: vGuide, search: vSearch, plan: vPlan, kit: vKit, sources: vSources, tool: vTool, data: vData, pack: vPack, map: vMap };
   (views[top] || vNow)(main, ROUTE.split(':').slice(1).join(':'));
+  if (typeof fillManualLinks === 'function') fillManualLinks(main);
 }
 
 // ---------------------------------------------------------------------------
@@ -4323,10 +4330,9 @@ function showWelcome(force) {
    </ul>
    <p class="small muted">Guidance is drawn from NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, St John and ANZCOR, MPI, SafeTravel and Smartraveller. Spotted a mistake? Each guide has a "Report a mistake" link.</p>
    <h3>Get started</h3>
-   <ol class="steps" style="padding-left:0"><li><span class="txt">Our plan → add your household and contacts</span></li><li><span class="txt">Map → save the maps around home (on Wi-Fi)</span></li><li><span class="txt">⚙️ → add to home screen, and print the A4 pack</span></li></ol>
-   <div class="actions"><button class="btn primary" id="wOk">I understand — let's start</button></div>`, (m, close) => { $('#wOk', m).onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); }; });
+   <ol class="steps" style="padding-left:0"><li><span class="txt">Our plan → add your household and contacts</span></li><li><span class="txt">Map → save the maps around home (on Wi-Fi)</span></li><li><span class="txt">Add it to the home screen (📲 on the Now page), and print the A4 pack</span></li></ol>
+   <div class="actions">${isInstalled() ? '' : '<button class="btn" id="wIn">📲 Add to home screen</button>'}<button class="btn primary" id="wOk">I understand — let's start</button></div>`, (m, close) => { $('#wOk', m).onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); }; const wi = $('#wIn', m); if (wi) wi.onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); doInstall(); }; });
 }
-function isInstalled() { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
 function readiness() {
   return [
     ['people', 'Add everyone in the family, with medicines and age group', S.people.length > 0, 'plan'],
@@ -4356,6 +4362,7 @@ function vNow(main) {
   const phones = [...S.people.filter(p => p.phone).map(p => ({ name: p.name, sub: p.role, phone: p.phone })), ...S.contacts.filter(c => c.phone).map(c => ({ name: c.name, sub: c.rel, phone: c.phone }))].slice(0, 10);
   main.innerHTML = `
   <button class="searchbar" data-go="search" aria-label="Search everything">🔍 <span>Search everything — e.g. "water", "eggs", "burns"</span></button>
+  ${installBanner()}
   <a class="call111" href="tel:111">📞 Call 111</a>
   <div class="card" style="padding-bottom:4px"><h2 style="margin-bottom:10px">What's happening?</h2>
   <div class="sos">${sc.map(s => `<button style="background:${s.colour || '#b91c1c'}" data-go="g:${s.id}"><span class="i">${s.icon}</span><b>${esc(guideTitle(s, T))}</b></button>`).join('')}
@@ -4381,6 +4388,7 @@ function vNow(main) {
    ${items.map(i => `<div class="check"><span class="tick ${i[2] ? 'on' : ''}" ${i[4] ? `data-manual="${i[0]}" role="checkbox" aria-checked="${!!i[2]}" tabindex="0"` : ''}>${i[2] ? '✓' : ''}</span><div class="grow">${esc(i[1])}${i[0] === 'practise' && S.manual.practise ? ` <span class="small muted">(last ${fmtDate(S.manual.practise)})</span>` : ''}</div>${!i[2] && i[3] ? `<button class="btn sm ghost" data-go="${i[3]}">Do it</button>` : ''}</div>`).join('')}
   </div>
   <p class="small muted" style="text-align:center">Everything you type is stored only on this device and works with no internet.<br>Version ${APP_VERSION}</p>`;
+  wireInstallBanner(main);
   $$('[data-manual]', main).forEach(el => el.onclick = () => {
     const k = el.dataset.manual; const it = items.find(i => i[0] === k); const now = !it[2];
     S.manual.ovr = S.manual.ovr || {};
@@ -4402,7 +4410,7 @@ function vGuides(main) {
   const hiddenCount = Object.keys(S.hiddenG).filter(k => S.hiddenG[k]).length;
   main.innerHTML = `
   <button class="searchbar" data-go="search">🔍 <span>Search all guides, contacts and supplies…</span></button>
-  <div class="row" style="margin-bottom:12px"><button class="btn primary" id="newG">＋ New guide</button><button class="btn" data-go="pack">📄 A4 pack</button><button class="btn" data-go="tool:power">🧮 Power calculator</button>${hiddenCount ? `<button class="btn ghost" id="unhide">Show ${hiddenCount} hidden</button>` : ''}</div>
+  <div class="row" style="margin-bottom:12px"><button class="btn primary" id="newG">＋ New guide</button><button class="btn" data-go="pack">📄 A4 pack</button><button class="btn" data-go="tool:power">🧮 Power calculator</button><button class="btn" data-go="tool:radio">📡 Radio converter</button>${hiddenCount ? `<button class="btn ghost" id="unhide">Show ${hiddenCount} hidden</button>` : ''}</div>
   <div class="catjump">${CATS.filter(c => (byCat[c[0]] || []).length || c[0] === 'ours').map(c => `<button class="chip" data-jump="${c[0]}" style="border:0;cursor:pointer">${c[2]} ${esc(c[1].split(' ')[0].replace(/,$/, ''))}</button>`).join('')}</div>
   ${CATS.map(c => { const arr = byCat[c[0]] || []; if (!arr.length && c[0] !== 'ours') return ''; return `<div class="card catcard" id="cat-${c[0]}"><div class="cathead" style="border-color:${c[3]}"><span style="font-size:1.4rem">${c[2]}</span><div class="grow"><h2 style="margin:0">${esc(c[0] === 'away' ? c[1] + ' — ' + AW() : c[1])}</h2><div class="small muted">${esc(c[4])}</div></div></div>
     <div class="gtiles">${arr.map(g => guideTile(g, T)).join('') || '<div class="empty">Nothing here yet — tap <b>＋ New guide</b> to add your own.</div>'}</div></div>`; }).join('')}`;
@@ -4423,6 +4431,14 @@ function checkinIn(tz) {
   const p = new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(now).reduce((o, x) => (o[x.type] = x.value, o), {});
   return timeIn(tz, new Date(now.getTime() + ((hh * 60 + mm) - ((+p.hour % 24) * 60 + +p.minute)) * 60000));
 }
+const GUIDE_SYS = { 'car-power': 'car', 'tank-water': 'water', 'cook-options': 'cook', egg: 'cook', ooni: 'cook', charcoal: 'cook', radios: 'radio', shutoffs: 'shutoff' };
+function guideManuals(id) {
+  const sys = GUIDE_SYS[id]; if (!sys || typeof manualLinks !== 'function') return '';
+  const radios = sys === 'radio' ? (S.home.radioList || []) : [];
+  return `<div class="card"><div class="small"><b>📎 Our manuals & spec sheets</b></div><div class="mrow">${manualLinks(sys)}</div>
+   ${radios.map(r => `<div class="mrow"><span class="small"><b>${esc(r.model)}</b></span> ${manualLinks('radio:' + r.id, 'manual')}</div>`).join('')}
+   ${sys === 'radio' ? '<div class="mrow"><button class="btn sm primary" data-go="tool:radio">📡 What to set on each radio · channel ↔ MHz converter</button></div>' : ''}</div>`;
+}
 function vGuide(main, arg) {
   const [id, qs] = arg.split('?'); const g = getGuide(id); if (!g) return go('guides');
   const q = qs ? decodeURIComponent(qs).split(/\s+/).map(norm).filter(Boolean) : (SHOWQ || null); SHOWQ = null;
@@ -4433,7 +4449,7 @@ function vGuide(main, arg) {
   main.innerHTML = `
   <div class="gnav"><button class="btn sm ghost" data-go="guides">← Guides</button><span class="grow"></span><button class="btn sm ghost" data-go="search">🔍</button></div>
   <div class="sc-head" style="background:${colour}"><div class="small" style="opacity:.85">${c.icon} ${esc(c.name)}</div><div class="row" style="align-items:flex-start"><span style="font-size:2rem;line-height:1.2">${g.icon || '📄'}</span><h1 class="grow" style="margin:0">${esc(guideTitle(g, T))}</h1></div>${g.one ? `<div class="one">${inline(fill(g.one, T))}</div>` : ''}</div>
-  ${away}
+  ${away}${guideManuals(g.id)}
   ${secs.map((s, si) => `<section class="card gsec" id="sec${si}">${s.title ? `<div class="sechead"><h2>${inline(fill(s.title, T), opts)}</h2><button class="btn sm ghost secedit" data-sec="${si}" aria-label="Edit this section">✏️</button></div>` : `<div class="sechead" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm ghost secedit" data-sec="${si}" aria-label="Edit">✏️</button></div>`}
     ${renderBlocks(blocks(s.lines), g, opts)}
     <details class="addline"><summary>＋ Add to this section</summary>
@@ -4593,6 +4609,7 @@ const APPLIANCES = [
 ];
 const PSEL = {};
 function vTool(main, which) {
+  if (which === 'radio') return vRadio(main);
   if (which !== 'power') return go('guides');
   const h = S.home, outlet = Number(h.carOutlet) || 1500, kwh = Number(h.carKwh) || 0;
   const sel = APPLIANCES.filter((a, i) => PSEL[i]);
@@ -4649,10 +4666,34 @@ const HOME_F = [
   { k: 'ovenGas', label: 'Does it have the gas burner?', type: 'select', options: [['unknown', "Don't know"], ['yes', 'Yes'], ['no', 'No']] },
   { k: 'bbq', label: 'Charcoal cooker', ph: 'e.g. the Big Green Egg' }, { k: 'stove', label: 'Camp stove / gas BBQ (if any)' },
   { k: 'radios', label: 'Our walkie-talkies', ph: 'e.g. a Baofeng and four Unidens', section: 'Radios' },
-  { k: 'radioCh', label: 'Family radio channel and tone', ph: 'e.g. PRS channel 20 (476.900 MHz), tone 100.0 Hz' },
+  { k: 'radioCh', label: 'Family radio channel and tone', ph: 'e.g. PRS channel 20 (476.900 MHz), tone 100.0 Hz', help: 'Easier: Guides → 📡 Radio converter sets this for you and shows what to set on each radio.' },
   { k: 'radioNotes', label: 'Radio notes', type: 'textarea' },
   { k: 'gasMeter', label: 'Where the gas meter / bottles are', section: 'Shut-offs' }, { k: 'waterToby', label: 'Where the water toby (street tap) is' }, { k: 'switchboard', label: 'Where the main switchboard is' },
 ];
+// ---- manuals & spec sheets attached to a home system (or one radio) ----
+const SYS_NAMES = { car: 'Car', solar: 'Solar', water: 'Water tank', cook: 'Cookers', radio: 'Radios', shutoff: 'Shut-offs' };
+function sysLabel(sys) {
+  if (!sys) return '';
+  if (sys.startsWith('radio:')) { const r = (S.home.radioList || []).find(x => 'radio:' + x.id === sys); return '📻 ' + (r ? r.model || 'Radio' : 'Radio'); }
+  return SYS_NAMES[sys] || '';
+}
+function manualLinks(sys, word = 'manual or spec sheet') {
+  const ds = S.docs.filter(d => d.sys === sys);
+  return `${ds.map(d => `<a class="btn sm" data-doc="${d.id}" target="_blank" rel="noopener">📄 ${esc(d.name)}</a>`).join(' ')} <button class="btn sm ghost" data-attach="${esc(sys)}">📎 ${ds.length ? 'Add another' : 'Attach ' + word}</button>`;
+}
+async function fillManualLinks(root) {
+  for (const a of $$('a[data-doc]', root || document)) { if (a.href) continue; const b = await idb.get('files', a.dataset.doc).catch(() => null); if (b) a.href = URL.createObjectURL(b); else a.style.opacity = .5; }
+}
+function attachFile(sys, after) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true;
+  inp.accept = 'image/*,application/pdf,.pdf,.doc,.docx,.txt,.xls,.xlsx';
+  inp.onchange = async () => {
+    for (const f of inp.files) { const id = uid(); const blob = f.type.startsWith('image/') ? await shrinkImage(f, 2400) : f; await idb.put('files', id, blob); S.docs.push({ id, name: f.name.replace(/\.[^.]+$/, ''), type: blob.type || f.type || '', at: Date.now(), sys }); }
+    persist(); toast(inp.files.length > 1 ? inp.files.length + ' files saved on this phone' : 'Saved on this phone'); if (after) after();
+  };
+  inp.click();
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-attach]'); if (b) { e.preventDefault(); attachFile(b.dataset.attach, () => render()); } });
 function editHome() { formModal('Our home systems', HOME_F, S.home, v => { Object.assign(S.home, v); persist(); render(); }, { intro: '<p class="small muted">These details are written into the step-by-step guides.</p>' }); }
 function personSummary(p) {
   const a = AGE[p.age];
@@ -4678,13 +4719,15 @@ function vPlan(main) {
    <p><b>School emergency plan:</b> ${esc(S.rules.school) || '<span class="muted">Ask the school: do they hold children or release them, and who is on the pickup list?</span>'}</p>${S.rules.note ? `<p>${esc(S.rules.note)}</p>` : ''}
    <p class="small"><a href="#" data-go="g:apart">Full "When we're apart" guide →</a></p></div>
   <div class="card"><div class="row"><h2 class="grow" style="margin:0">🔧 Our home systems</h2><button class="btn sm" id="ehome">Edit</button></div>
-   <table style="margin-top:8px"><tr><td>Car (power)</td><td>${esc(S.home.carModel || S.home.car)} · ${esc(S.home.carOutlet)} W · ${S.home.carVolts === 'unknown' ? '<span class="pill warn">socket voltage not checked</span>' : esc(S.home.carVolts) + ' V'}</td></tr>
-   <tr><td>Solar</td><td>${esc(S.home.inverter)}</td></tr>
-   <tr><td>Water tank</td><td>${S.home.tankL ? esc(S.home.tankCount) + ' × ' + esc(S.home.tankL) + ' L' : '<span class="muted">size not set</span>'} · ${esc(S.home.tapWhere)}</td></tr>
-   <tr><td>Cookers</td><td>${[S.home.stove, S.home.oven + (S.home.ovenGas === 'yes' ? ' (gas + wood)' : ''), S.home.bbq].filter(Boolean).map(esc).join(' · ')}</td></tr>
-   <tr><td>Radios</td><td>${esc(S.home.radios)}<br><b>${esc(S.home.radioCh) || '<span class="muted">channel not set</span>'}</b></td></tr>
-   <tr><td>Shut-offs</td><td class="small">Gas: ${esc(S.home.gasMeter) || '—'}<br>Water: ${esc(S.home.waterToby) || '—'}<br>Power: ${esc(S.home.switchboard) || '—'}</td></tr></table></div>
-  <div class="card"><div class="row"><h2 class="grow" style="margin:0">📄 Documents & photos</h2><label class="btn sm primary">＋ Add photo<input type="file" accept="image/*,application/pdf" id="docIn" multiple hidden></label></div>
+   <p class="small muted">Attach the manual or spec sheet for anything (PDF, photo or document) — it's kept on this phone and shown in the matching guide.</p>
+   <table style="margin-top:8px"><tr><td>Car (power)</td><td>${esc(S.home.carModel || S.home.car)} · ${esc(S.home.carOutlet)} W · ${S.home.carVolts === 'unknown' ? '<span class="pill warn">socket voltage not checked</span>' : esc(S.home.carVolts) + ' V'}<div class="mrow">${manualLinks('car')}</div></td></tr>
+   <tr><td>Solar</td><td>${esc(S.home.inverter)}<div class="mrow">${manualLinks('solar')}</div></td></tr>
+   <tr><td>Water tank</td><td>${S.home.tankL ? esc(S.home.tankCount) + ' × ' + esc(S.home.tankL) + ' L' : '<span class="muted">size not set</span>'} · ${esc(S.home.tapWhere)}<div class="mrow">${manualLinks('water')}</div></td></tr>
+   <tr><td>Cookers</td><td>${[S.home.stove, S.home.oven + (S.home.ovenGas === 'yes' ? ' (gas + wood)' : ''), S.home.bbq].filter(Boolean).map(esc).join(' · ')}<div class="mrow">${manualLinks('cook')}</div></td></tr>
+   <tr><td>Radios</td><td>${(S.home.radioList || []).length ? S.home.radioList.map(r => `${esc(r.model)}${r.count > 1 ? ' ×' + esc(r.count) : ''}${r.owner ? ' (' + esc(r.owner) + ')' : ''} <span class="small muted">${r.kind === 'mhz' ? 'MHz' : 'channels'}</span>`).join('<br>') : esc(S.home.radios)}<br><b>${esc(S.home.radioCh) || '<span class="muted">channel not set</span>'}</b>
+     <div class="mrow"><button class="btn sm primary" data-go="tool:radio">📡 Radios, manuals & channel converter</button></div></td></tr>
+   <tr><td>Shut-offs</td><td class="small">Gas: ${esc(S.home.gasMeter) || '—'}<br>Water: ${esc(S.home.waterToby) || '—'}<br>Power: ${esc(S.home.switchboard) || '—'}<div class="mrow">${manualLinks('shutoff', 'photo or plan')}</div></td></tr></table></div>
+  <div class="card"><div class="row"><h2 class="grow" style="margin:0">📄 Documents & photos</h2><label class="btn sm primary">＋ Add photo or document<input type="file" accept="image/*,application/pdf,.pdf,.doc,.docx,.txt,.xls,.xlsx" id="docIn" multiple hidden></label></div>
    <p class="small muted">Passports, licences, insurance, prescriptions, photos of the shut-offs. Stored only on this phone — keep it locked with a passcode.</p>
    <div id="docs" class="grid3"></div></div>`;
   const personForm = (p, isNew) => formModal(isNew ? 'Add person' : 'Edit ' + (p.name || 'person'), PERSON_F(), p, v => { if (!v.name && !v.role) { toast('Add a name'); return false; } if (isNew) S.people.push(Object.assign({ id: uid() }, v)); else Object.assign(p, v); persist(); vPlan(main); },
@@ -4718,8 +4761,8 @@ async function renderDocs() {
   for (const d of S.docs) {
     const b = await idb.get('files', d.id); const div = document.createElement('div'); div.className = 'card'; div.style.cssText = 'padding:8px;margin:0';
     const url = b ? URL.createObjectURL(b) : '';
-    div.innerHTML = `${b && d.type.startsWith('image/') ? `<img src="${url}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">` : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem">📄</div>`}
-    <div class="small" style="margin-top:4px;word-break:break-word"><b>${esc(d.name)}</b></div><div class="row" style="margin-top:4px"><a class="btn sm" href="${url}" target="_blank" rel="noopener">Open</a><button class="btn sm ghost" data-ren>Rename</button><button class="btn sm ghost" data-del style="color:var(--accent)">✕</button></div>`;
+    div.innerHTML = `${b && (d.type || '').startsWith('image/') ? `<img src="${url}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">` : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem">📄</div>`}
+    <div class="small" style="margin-top:4px;word-break:break-word"><b>${esc(d.name)}</b>${d.sys ? ` <span class="pill">${esc(sysLabel(d.sys))}</span>` : ''}</div><div class="row" style="margin-top:4px"><a class="btn sm" href="${url}" target="_blank" rel="noopener">Open</a><button class="btn sm ghost" data-ren>Rename</button><button class="btn sm ghost" data-del style="color:var(--accent)">✕</button></div>`;
     $('[data-ren]', div).onclick = () => formModal('Rename', [{ k: 'name', label: 'Name' }], d, v => { d.name = v.name || d.name; persist(); renderDocs(); });
     $('[data-del]', div).onclick = e => confirmTwice(e.target, 'Delete?', async () => { await idb.del('files', d.id); S.docs = S.docs.filter(x => x !== d); persist(); renderDocs(); });
     el.appendChild(div);
@@ -4821,6 +4864,10 @@ async function vData(main) {
   const persisted = navigator.storage && navigator.storage.persisted ? await navigator.storage.persisted().catch(() => false) : false;
   const tiles = await idb.count('tiles').catch(() => 0);
   main.innerHTML = `
+  <div class="card"><h2>📲 Install on this phone</h2>
+   ${isInstalled() ? '<p>✓ <b>Installed</b> — you\'re using the app. It works with no internet.</p>' : '<p>Put Family Ready on the home screen so it opens like an app and <b>works with no internet</b>. Do this on every phone in the family.</p>'}
+   <div class="row">${isInstalled() ? '' : `<button class="btn primary" id="inst2">📲 ${INSTALL_EVT ? 'Install Family Ready' : 'Show me how to install'}</button>`}<button class="btn" id="inShare2">📤 Send the link to the family</button></div>
+   ${!isInstalled() ? `<label class="row small" style="margin-top:8px"><input type="checkbox" id="inst"${S.manual.install ? ' checked' : ''}> We've installed it on all our phones</label>` : ''}</div>
   <div class="card"><h2>📄 A4 pack</h2><p class="small muted">A designed PDF of everything — cover, contents, quick reference, our plan, every guide, supplies and suppliers. Print it or keep it on a USB stick.</p><button class="btn primary" data-go="pack">Make the A4 pack</button></div>
   <div class="card"><h2>📊 Excel — import & export</h2>
    <p class="small muted">Fill in the Excel template (Family, Contacts, Suppliers, Supplies, Places), then import it. Or export what's in the app, edit it in Excel and import it again.</p>
@@ -4836,8 +4883,6 @@ async function vData(main) {
    <label class="f">LINZ map key (optional)</label><div class="small muted" style="margin:-2px 0 6px">Not needed — the app has a key from LINZ built in. Only paste one here if the map says the key has stopped working.</div><div class="row"><input type="text" id="lk" value="${esc(S.set.linzKey)}" placeholder="Paste a link from basemaps.linz.govt.nz or a key" style="flex:1"><button class="btn" id="lkS">Save</button></div>
    <p class="small muted">Maps: Toitū Te Whenua LINZ Basemaps (CC BY 4.0), used with LINZ's permission. Places: © OpenStreetMap contributors (ODbL). Tsunami zones: Auckland Council.</p></div>
   <div class="card"><h2>📱 This device</h2>
-   <p>Installed as an app: <b>${isInstalled() ? 'yes' : 'no'}</b>${!isInstalled() ? ` <label class="row small" style="display:inline-flex"><input type="checkbox" id="inst"${S.manual.install ? ' checked' : ''}> Done on our phones</label>` : ''}</p>
-   ${!isInstalled() ? `<div class="note small"><b>iPhone:</b> open in Safari → Share → <b>Add to Home Screen</b>.<br><b>Android:</b> open in Chrome → ⋮ → <b>Install app</b>.<br>Then open it once in airplane mode to check it works offline.</div>` : ''}
    <p>Storage used: <b>${est ? MB(est.usage || 0) : '—'}</b> · Protected from clean-up: <b>${persisted ? 'yes' : 'no'}</b>${!persisted ? ' <button class="btn sm" id="pp">Protect</button>' : ''}</p>
    <div class="grid2" style="grid-template-columns:1fr 1fr"><div><label class="f">Appearance</label><select id="th"><option value="auto">Match phone</option><option value="light">Light</option><option value="dark">Dark (easier at night)</option></select></div>
    <div><label class="f">Text size</label><select id="ts"><option value="normal">Normal</option><option value="large">Large</option><option value="xl">Extra large</option></select></div></div></div>
@@ -4856,9 +4901,187 @@ async function vData(main) {
   $('#dl', main).onclick = async e => { e.target.disabled = true; await downloadLayers(m => { const s = $('#dlS'); if (s) s.textContent = m; }); e.target.disabled = false; };
   $('#lkS', main).onclick = () => { const v = $('#lk', main).value.trim(); const m = v.match(/[?&]api=([A-Za-z0-9_-]+)/); S.set.linzKey = m ? m[1] : v; persist(); toast('Saved'); };
   const inst = $('#inst', main); if (inst) inst.onchange = e => { S.manual.install = e.target.checked; persist(); };
+  const i2 = $('#inst2', main); if (i2) i2.onclick = () => doInstall(); $('#inShare2', main).onclick = shareLink;
   const pp = $('#pp', main); if (pp) pp.onclick = async () => { const ok = navigator.storage && await navigator.storage.persist(); toast(ok ? 'Protected' : 'The browser said no — installing the app usually fixes this'); vData(main); };
   $('#wAgain', main).onclick = () => showWelcome(true);
   $('#wipe', main).onclick = e => confirmTwice(e.target, 'Tap again — this cannot be undone', async () => { await idb.clear('kv'); await idb.clear('tiles'); await idb.clear('files'); try { localStorage.removeItem('family-ready-state'); } catch (x) {} S = DEFAULT_STATE(); migrate(); OSMDATA = TSUNAMI = null; toast('Erased'); go('now'); });
+}
+
+// ---------------------------------------------------------------------------
+// RADIOS — NZ PRS (UHF CB) channels ↔ MHz, CTCSS codes ↔ Hz, and how to set each of our radios
+// ---------------------------------------------------------------------------
+// NZ/AU 80-channel PRS plan: ch 1–40 = 476.425 + 0.025 steps; ch 41–80 sit 12.5 kHz above (476.4375 + 0.025 steps).
+const prsMhz = ch => ch >= 1 && ch <= 40 ? 476.425 + (ch - 1) * 0.025 : ch >= 41 && ch <= 80 ? 476.4375 + (ch - 41) * 0.025 : null;
+const fmtMhz = f => f == null ? '—' : f.toFixed(4);
+function mhzToCh(f) {
+  let best = null, d = 1e9;
+  for (let c = 1; c <= 80; c++) { const x = Math.abs(prsMhz(c) - f); if (x < d) { d = x; best = c; } }
+  return { ch: best, exact: d < 0.0006, off: d };
+}
+// Standard 38-tone CTCSS list — the numbering Uniden UHF CB radios use (code 12 = 100.0 Hz). Some brands number differently: check the manual.
+const CTCSS = [67.0, 71.9, 74.4, 77.0, 79.7, 82.5, 85.4, 88.5, 91.5, 94.8, 97.4, 100.0, 103.5, 107.2, 110.9, 114.8, 118.8, 123.0, 127.3, 131.8, 136.5, 141.3, 146.2, 151.4, 156.7, 162.2, 167.9, 173.8, 179.9, 186.2, 192.8, 203.5, 210.7, 218.1, 225.7, 233.6, 241.8, 250.3];
+const toneCode = hz => { const i = CTCSS.findIndex(t => Math.abs(t - hz) < 0.05); return i < 0 ? null : i + 1; };
+function chUse(c) {
+  if (c === 5 || c === 35) return ['bad', 'Emergency only (repeater)'];
+  if (c === 22 || c === 23) return ['bad', 'Data only — no talking'];
+  if (c >= 61 && c <= 63) return ['bad', 'Reserved — don\'t use'];
+  if ((c >= 1 && c <= 8) || (c >= 41 && c <= 48)) return ['warn', 'Repeater output (shared, long range)'];
+  if ((c >= 31 && c <= 38) || (c >= 71 && c <= 78)) return ['warn', 'Repeater input — avoid'];
+  if (c === 11) return ['warn', 'Calling channel — call, then move off'];
+  return ['ok', 'General chat'];
+}
+const RADIO_KINDS = [['ch', 'Channel numbers (e.g. Uniden UHF CB)'], ['mhz', 'Frequencies in MHz (e.g. Baofeng)']];
+const RADIO_F = [
+  { k: 'model', label: 'Make and model', ph: 'e.g. Uniden UH45 or Baofeng UV-5R' },
+  { k: 'owner', label: 'Who has it', ph: 'e.g. Dad, our daughter' },
+  { k: 'count', label: 'How many', type: 'number' },
+  { k: 'kind', label: 'How you pick the channel on it', type: 'select', options: RADIO_KINDS, help: 'If the screen shows a channel number (1–80) choose the first. If you type a frequency like 476.900, choose MHz.' },
+  { k: 'notes', label: 'Notes (where it lives, battery type, quirks)', type: 'textarea' },
+];
+function famRadio() {
+  const h = S.home; const ch = Number(h.famCh) || 0; const tone = Number(h.famTone) || 0; const bk = Number(h.backupCh) || 0;
+  return { ch, tone, bk, code: tone ? toneCode(tone) : 0 };
+}
+function radioSummary() {
+  const f = famRadio(); if (!f.ch) return S.home.radioCh || '';
+  return `PRS channel ${f.ch} (${fmtMhz(prsMhz(f.ch))} MHz), ${f.tone ? `tone ${f.tone.toFixed(1)} Hz${f.code ? ` (Uniden code ${f.code})` : ''}` : 'no tone'}${f.bk ? ` · backup channel ${f.bk} (${fmtMhz(prsMhz(f.bk))} MHz)` : ''}`;
+}
+function radioMigrate() {
+  const h = S.home; if (!Array.isArray(h.radioList)) h.radioList = [];
+  if (!h.famCh && h.radioCh) { const m = h.radioCh.match(/channel\s*(\d{1,2})/i); if (m) h.famCh = +m[1]; const t = h.radioCh.match(/(\d{2,3}\.\d)\s*Hz/i); if (t && !h.famTone) h.famTone = +t[1]; const b = h.radioCh.match(/backup[^\d]*(\d{1,2})/i); if (b && !h.backupCh) h.backupCh = +b[1]; }
+}
+// what to set on one radio
+function radioSetup(r) {
+  const f = famRadio(); if (!f.ch) return '<p class="small muted">Set the family channel above first.</p>';
+  const toneTxt = f.tone ? (r.kind === 'mhz' ? `${f.tone.toFixed(1)} Hz` : `code <b>${f.code || '?'}</b> (${f.tone.toFixed(1)} Hz)`) : 'OFF';
+  if (r.kind === 'mhz') return `<table class="small"><tr><td>Frequency</td><td><b>${fmtMhz(prsMhz(f.ch))} MHz</b> (= channel ${f.ch})</td></tr>
+    <tr><td>Tone (send and receive)</td><td><b>${toneTxt}</b> — set both T-CTCS and R-CTCS</td></tr>
+    <tr><td>Bandwidth</td><td><b>Narrow</b> (12.5 kHz, “N” / NFM)</td></tr><tr><td>Offset / shift</td><td><b>Off</b> (simplex)</td></tr><tr><td>Power</td><td><b>Low</b> unless out of range</td></tr>
+    ${f.bk ? `<tr><td>Backup</td><td>${fmtMhz(prsMhz(f.bk))} MHz (channel ${f.bk}), same tone</td></tr>` : ''}</table>
+    <details class="small" style="margin-top:6px"><summary>Baofeng UV-5R step by step (other models differ — see the manual)</summary><ol class="steps" style="padding-left:0;margin-top:6px">
+    <li><span class="txt">Press <b>VFO/MR</b> until the screen shows a frequency (not “CH”).</span></li>
+    ${f.ch > 40 ? '<li><span class="txt">This frequency needs 12.5 kHz steps: <b>MENU</b> → 1 (STEP) → <b>12.5K</b> → MENU → EXIT.</span></li>' : ''}
+    <li><span class="txt">Type <b>${fmtMhz(prsMhz(f.ch)).replace('.', '').slice(0, 6)}</b> on the keypad — the screen shows ${fmtMhz(prsMhz(f.ch))}.</span></li>
+    <li><span class="txt"><b>MENU</b> → 5 (WN) → <b>NARR</b> → MENU to save → EXIT.</span></li>
+    <li><span class="txt"><b>MENU</b> → 13 (T-CTCS) → <b>${f.tone ? f.tone.toFixed(1) : 'OFF'}</b> → MENU → EXIT. Then <b>MENU</b> → 11 (R-CTCS) → the same → MENU → EXIT.</span></li>
+    <li><span class="txt"><b>MENU</b> → 2 (TXP) → <b>LOW</b> → MENU → EXIT. Check MENU → 25 (SFT-D) is <b>OFF</b>.</span></li>
+    <li><span class="txt">Optional: save it as a channel — MENU → 27 (MEM-CH) → pick a number → MENU.</span></li></ol></details>`;
+  return `<table class="small"><tr><td>Channel</td><td><b>${f.ch}</b></td></tr><tr><td>Tone (CTCSS)</td><td><b>${toneTxt}</b></td></tr>
+    ${f.bk ? `<tr><td>Backup</td><td>channel ${f.bk}, same code</td></tr>` : ''}</table>
+    <p class="small muted" style="margin:4px 0 0">Uniden: turn the channel to ${f.ch}, then press <b>MENU</b> until the CTCSS code flashes and use the arrows to set ${f.code || 'the code'}. Check the code table in your model's manual — most Unidens use code 12 for 100.0 Hz.</p>`;
+}
+let RCONV = { ch: '', mhz: '', code: '', hz: '' };
+function vRadio(main) {
+  radioMigrate();
+  const h = S.home, f = famRadio();
+  const chOpts = sel => Array.from({ length: 80 }, (_, i) => i + 1).map(c => { const u = chUse(c); return `<option value="${c}"${c === sel ? ' selected' : ''}${u[0] === 'bad' ? ' disabled' : ''}>${c} — ${fmtMhz(prsMhz(c))} MHz${u[0] !== 'ok' ? ' · ' + u[1] : ''}</option>`; }).join('');
+  main.innerHTML = `<div class="gnav"><button class="btn sm ghost" data-go="g:radios">← Walkie-talkie guide</button></div>
+  <div class="card"><h1>📡 Our radio channel</h1>
+   <p class="small">Every radio must be on the <b>same channel and the same tone</b>. Channel-number radios and MHz radios talk to each other fine — this page works out what to set on each.</p>
+   <label class="f">Family channel</label><select id="rCh"><option value="">Choose…</option>${chOpts(f.ch)}</select>
+   <label class="f">Squelch tone (CTCSS)</label><select id="rTone"><option value="0">Off — hear everyone on the channel</option>${CTCSS.map((t, i) => `<option value="${t}"${Math.abs(t - f.tone) < .05 ? ' selected' : ''}>${t.toFixed(1)} Hz — Uniden code ${i + 1}</option>`).join('')}</select>
+   <label class="f">Backup channel (if ours is busy)</label><select id="rBk"><option value="">None</option>${chOpts(f.bk)}</select>
+   ${f.ch ? `<div class="note" style="margin-top:10px"><b>${esc(radioSummary())}</b></div>` : ''}
+  </div>
+  <div class="card"><div class="row"><h2 class="grow" style="margin:0">📻 Our radios</h2><button class="btn sm primary" id="rAdd">＋ Add radio</button></div>
+   ${h.radioList.length ? h.radioList.map(r => `<div class="card" style="margin:10px 0 0;padding:10px"><div class="row"><div class="grow"><b>${esc(r.model || 'Radio')}</b>${r.count > 1 ? ' ×' + esc(r.count) : ''} <span class="small muted">${esc(r.owner || '')}</span><div class="small muted">${r.kind === 'mhz' ? 'Frequencies (MHz)' : 'Channel numbers'}</div></div><button class="btn sm" data-re="${r.id}">Edit</button></div>
+     ${radioSetup(r)}${r.notes ? `<p class="small">${esc(r.notes)}</p>` : ''}<div class="small" style="margin-top:6px">${manualLinks('radio:' + r.id, 'manual')}</div></div>`).join('') : '<div class="empty">Add each kind of radio (e.g. the Baofeng, and each pair of Unidens) — then attach its manual.</div>'}
+  </div>
+  <div class="card"><h2>🔁 Converter</h2>
+   <div class="row"><div class="grow"><label class="f">Channel (1–80)</label><input type="number" id="cvCh" min="1" max="80" inputmode="numeric" value="${esc(RCONV.ch)}"></div><div class="grow"><label class="f">Frequency (MHz)</label><input type="text" id="cvMhz" inputmode="decimal" placeholder="476.9000" value="${esc(RCONV.mhz)}"></div></div>
+   <div id="cvOut1" class="small" style="margin-top:6px"></div>
+   <div class="row" style="margin-top:6px"><div class="grow"><label class="f">Uniden tone code</label><input type="number" id="cvCode" min="1" max="38" inputmode="numeric" value="${esc(RCONV.code)}"></div><div class="grow"><label class="f">Tone (Hz)</label><input type="text" id="cvHz" inputmode="decimal" placeholder="100.0" value="${esc(RCONV.hz)}"></div></div>
+   <div id="cvOut2" class="small" style="margin-top:6px"></div>
+  </div>
+  <div class="card"><details><summary><b>All 80 PRS channels</b> — frequency and what each is for</summary>
+   <table class="small" style="margin-top:8px"><tr><th>Ch</th><th>MHz</th><th>Use</th></tr>${Array.from({ length: 80 }, (_, i) => i + 1).map(c => { const u = chUse(c); const ours = c === f.ch ? ' style="background:rgba(47,125,79,.15);font-weight:700"' : c === f.bk ? ' style="background:rgba(183,121,31,.12)"' : ''; return `<tr${ours}><td>${c}${c === f.ch ? ' ⭐' : c === f.bk ? ' (backup)' : ''}</td><td>${fmtMhz(prsMhz(c))}</td><td><span class="pill ${u[0]}">${u[1]}</span></td></tr>`; }).join('')}</table></details>
+   <details style="margin-top:8px"><summary><b>All tone codes</b> — Uniden code ↔ Hz</summary><table class="small" style="margin-top:8px"><tr><th>Code</th><th>Hz</th><th>Code</th><th>Hz</th></tr>${Array.from({ length: 19 }, (_, i) => `<tr><td>${i + 1}</td><td>${CTCSS[i].toFixed(1)}</td><td>${i + 20}</td><td>${CTCSS[i + 19].toFixed(1)}</td></tr>`).join('')}</table>
+   <p class="small muted">The standard 38-tone list used by Uniden UHF CB radios. A few brands number their codes differently — check the table in the manual (attach it above).</p></details>
+   <p class="small muted" style="margin-top:8px">NZ PRS band (476–477 MHz), 80 channels, 12.5 kHz spacing. Strictly, NZ PRS radios should be approved for the band; a Baofeng is fine to listen with, and in an emergency anyone may use any radio to call for help.</p></div>`;
+  const saveFam = () => { h.famCh = +$('#rCh', main).value || ''; h.famTone = +$('#rTone', main).value || 0; h.backupCh = +$('#rBk', main).value || ''; h.radioCh = radioSummary(); persist(); vRadio(main); };
+  ['#rCh', '#rTone', '#rBk'].forEach(s => $(s, main).onchange = saveFam);
+  const rForm = (r, isNew) => formModal(isNew ? 'Add radio' : 'Edit radio', RADIO_F, r, v => { if (!v.model) { toast('Add the make or model'); return false; } v.count = Number(v.count) || 1; if (isNew) h.radioList.push(Object.assign({ id: uid() }, v)); else Object.assign(r, v); persist(); vRadio(main); },
+    { onDelete: isNew ? null : () => { h.radioList = h.radioList.filter(x => x !== r); persist(); vRadio(main); } });
+  $('#rAdd', main).onclick = () => rForm({ kind: 'ch', count: 2 }, true);
+  $$('[data-re]', main).forEach(b => b.onclick = () => rForm(h.radioList.find(x => x.id === b.dataset.re)));
+  const conv1 = from => {
+    const o = $('#cvOut1', main); RCONV.ch = $('#cvCh', main).value; RCONV.mhz = $('#cvMhz', main).value;
+    if (from === 'ch') { const c = +RCONV.ch; const m = prsMhz(c); if (!m) { o.textContent = ''; return; } $('#cvMhz', main).value = RCONV.mhz = fmtMhz(m); const u = chUse(c); o.innerHTML = `Channel <b>${c}</b> = <b>${fmtMhz(m)} MHz</b> <span class="pill ${u[0]}">${u[1]}</span>`; }
+    else { const v = parseFloat(String(RCONV.mhz).replace(',', '.')); if (!v) { o.textContent = ''; return; } const r = mhzToCh(v); if (r.exact) { $('#cvCh', main).value = RCONV.ch = r.ch; const u = chUse(r.ch); o.innerHTML = `<b>${fmtMhz(v)} MHz</b> = channel <b>${r.ch}</b> <span class="pill ${u[0]}">${u[1]}</span>`; } else { $('#cvCh', main).value = RCONV.ch = ''; o.innerHTML = `<span style="color:var(--warn)">${esc(String(v))} MHz isn't a PRS channel.</span>${r.off < 0.1 ? ` Nearest: channel ${r.ch} (${fmtMhz(prsMhz(r.ch))} MHz).` : ' PRS is 476.4250–477.4125 MHz.'}`; } }
+  };
+  const conv2 = from => {
+    const o = $('#cvOut2', main); RCONV.code = $('#cvCode', main).value; RCONV.hz = $('#cvHz', main).value;
+    if (from === 'code') { const c = +RCONV.code; if (!(c >= 1 && c <= 38)) { o.textContent = c ? 'Codes 1–38 are tones. Higher numbers on a Uniden are DCS codes — see the manual.' : ''; return; } $('#cvHz', main).value = RCONV.hz = CTCSS[c - 1].toFixed(1); o.innerHTML = `Uniden code <b>${c}</b> = <b>${CTCSS[c - 1].toFixed(1)} Hz</b>`; }
+    else { const v = parseFloat(String(RCONV.hz).replace(',', '.')); if (!v) { o.textContent = ''; return; } const c = toneCode(v); if (c) { $('#cvCode', main).value = RCONV.code = c; o.innerHTML = `<b>${v.toFixed(1)} Hz</b> = Uniden code <b>${c}</b>`; } else o.innerHTML = `<span style="color:var(--warn)">${esc(String(v))} Hz isn't a standard tone.</span>`; }
+  };
+  $('#cvCh', main).oninput = () => conv1('ch'); $('#cvMhz', main).oninput = () => conv1('mhz');
+  $('#cvCode', main).oninput = () => conv2('code'); $('#cvHz', main).oninput = () => conv2('hz');
+  if (RCONV.ch) conv1('ch'); if (RCONV.code) conv2('code');
+}
+
+// ---------------------------------------------------------------------------
+// INSTALL — getting Family Ready onto the home screen, on any phone or computer
+// ---------------------------------------------------------------------------
+let INSTALL_EVT = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); INSTALL_EVT = e; if (ROUTE === 'now' || ROUTE === 'data') render(); });
+window.addEventListener('appinstalled', () => { INSTALL_EVT = null; try { S.manual.installed = Date.now(); persist(false); } catch (e) {} toast('Installed — find Family Ready on your home screen'); });
+function isInstalled() { try { return matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: window-controls-overlay)').matches || navigator.standalone === true; } catch (e) { return false; } }
+function deviceKind() {
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const android = /Android/.test(ua);
+  const br = /SamsungBrowser/.test(ua) ? 'samsung' : /EdgA?\//.test(ua) ? 'edge' : /CriOS/.test(ua) ? 'chrome' : /FxiOS|Firefox/.test(ua) ? 'firefox' : /Chrome\//.test(ua) ? 'chrome' : /Safari/.test(ua) ? 'safari' : 'other';
+  return { ios, android, desktop: !ios && !android, br };
+}
+function installSteps() {
+  const d = deviceKind();
+  if (d.ios) {
+    const share = '<b>Share</b> button (a square with an arrow pointing up ⬆️)';
+    const steps = d.br === 'safari' ? [`Tap the ${share} at the bottom of the screen.`, 'Scroll down the list and tap <b>Add to Home Screen</b>.', 'Make sure <b>Open as Web App</b> is on (if shown), then tap <b>Add</b>.']
+      : [`Tap the ${share} in the address bar at the top (on some versions it's under the <b>⋯</b> menu).`, 'Tap <b>Add to Home Screen</b>. (If it isn\'t there, open this page in <b>Safari</b> and do it from there.)', 'Tap <b>Add</b>.'];
+    return { title: 'iPhone / iPad', steps, after: 'Open Family Ready from the new icon on the home screen — not from the browser.', note: '<b>Important on iPhone:</b> the home-screen app keeps its own copy of the data, separate from the browser. Install it first, then add the family details inside the app — or bring them across with ⚙️ Settings → <b>Restore</b> using a backup or family starter file.' };
+  }
+  if (d.android && d.br === 'samsung') return { title: 'Samsung Internet', steps: ['Tap the <b>☰</b> menu (bottom right).', 'Tap <b>Add page to</b> → <b>Home screen</b> (or <b>Install</b> if shown).', 'Tap <b>Add</b>.'], after: 'Open Family Ready from the new icon.' };
+  if (d.android && d.br === 'firefox') return { title: 'Firefox on Android', steps: ['Tap the <b>⋮</b> menu.', 'Tap <b>Install</b> (or <b>Add to Home screen</b>).'], after: 'Open Family Ready from the new icon.' };
+  if (d.android) return { title: 'Android (Chrome)', steps: ['Tap the <b>⋮</b> menu (three dots, top right).', 'Tap <b>Add to Home screen</b> — or <b>Install app</b> if you see it.', 'If asked, choose <b>Install</b>, then <b>Add</b>.'], after: 'Open Family Ready from the new icon on the home screen.' };
+  return { title: 'Computer (Chrome or Edge)', steps: ['Click the <b>install icon</b> at the right-hand end of the address bar (a small screen with a down arrow).', 'Or open the <b>⋮</b> / <b>⋯</b> menu → <b>Cast, save and share</b> → <b>Install page as app</b> (Edge: <b>Apps</b> → <b>Install this site as an app</b>).', 'Click <b>Install</b>.'], after: 'Family Ready opens in its own window and gets a desktop / Start menu icon. Safari on Mac: File → <b>Add to Dock</b>.' };
+}
+async function doInstall() {
+  if (!INSTALL_EVT) { showInstall(); return; }
+  const e = INSTALL_EVT; INSTALL_EVT = null;
+  try { e.prompt(); const r = await e.userChoice; if (r && r.outcome === 'accepted') toast('Installing…'); } catch (x) { showInstall(); }
+  render();
+}
+function shareLink() {
+  const url = location.href.split('#')[0].split('?')[0];
+  if (navigator.share) navigator.share({ title: 'Family Ready', text: 'Our family emergency plan — open this link and add it to your home screen:', url }).catch(() => {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copied — paste it into a text or email')).catch(() => toast(url, 8000));
+  else toast(url, 8000);
+}
+function showInstall() {
+  if (isInstalled()) { modal(`<h2>✓ Family Ready is installed</h2><p>You're using the installed app. It works with no internet.</p><p class="small muted">To put it on another phone, send them the link:</p><div class="row"><button class="btn primary" id="inShare">📤 Send the link</button></div>`, el => { $('#inShare', el).onclick = shareLink; }); return; }
+  const s = installSteps();
+  modal(`<div style="font-size:2rem">📲</div><h2>Put Family Ready on your home screen</h2>
+   <p>Then it opens like an app and <b>works with no internet</b>. It's free and takes 10 seconds — nothing is downloaded from an app store.</p>
+   ${INSTALL_EVT ? `<button class="btn primary" id="inGo" style="width:100%;font-size:1.05rem;padding:12px">📲 Install Family Ready</button><p class="small muted" style="margin-top:10px">Or do it by hand:</p>` : ''}
+   <h3>${esc(s.title)}</h3><ol class="steps" style="padding-left:0">${s.steps.map(t => `<li><span class="txt">${t}</span></li>`).join('')}</ol>
+   <p class="small">${s.after}</p>${s.note ? `<div class="note small">${s.note}</div>` : ''}
+   <details class="small" style="margin-top:10px"><summary>Other phones and computers</summary>
+    <p><b>iPhone (Safari):</b> Share ⬆️ → Add to Home Screen → Add.<br><b>iPhone (Chrome):</b> Share ⬆️ in the address bar → Add to Home Screen.<br><b>Android (Chrome):</b> ⋮ → Add to Home screen / Install app.<br><b>Samsung Internet:</b> ☰ → Add page to → Home screen.<br><b>Computer (Chrome/Edge):</b> install icon in the address bar, or ⋮ → Cast, save and share → Install page as app.</p>
+    <p>Don't see the option? Make sure the address starts with <b>https://</b> and you're not in a private / incognito tab. In apps like Facebook, Messenger or Gmail, tap <b>⋮ → Open in browser</b> first.</p></details>
+   <div class="row" style="margin-top:12px"><button class="btn" id="inShare">📤 Send the link to the family</button></div>`, el => {
+    const g = $('#inGo', el); if (g) g.onclick = () => { $$('.modal-bg').forEach(m => m.remove()); doInstall(); };
+    $('#inShare', el).onclick = shareLink;
+  });
+}
+// the banner on the Now page
+function installBanner() {
+  if (isInstalled() || (S.manual.installHide && Date.now() - S.manual.installHide < 14 * 864e5)) return '';
+  return `<div class="installbar"><span style="font-size:1.6rem">📲</span><div class="grow"><b>Add Family Ready to your home screen</b><div class="small" style="opacity:.9">So it opens like an app and works with no internet.</div></div><button class="btn sm primary" id="inBar">${INSTALL_EVT ? 'Install' : 'Show me how'}</button><button class="btn sm ghost" id="inHide" style="color:#fff" aria-label="Not now">✕</button></div>`;
+}
+function wireInstallBanner(main) {
+  const b = $('#inBar', main); if (b) b.onclick = () => (INSTALL_EVT ? doInstall() : showInstall());
+  const h = $('#inHide', main); if (h) h.onclick = () => { S.manual.installHide = Date.now(); persist(false); render(); };
 }
 
 // ---------------------------------------------------------------------------

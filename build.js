@@ -16,7 +16,7 @@ let html = R('src/shell.html')
   .replace('/*MLLEAFLET_JS*/', () => safe(R('node_modules/@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js')))
   .replace('/*LEAFLET_JS*/', () => safe(R('node_modules/leaflet/dist/leaflet.js')))
   .replace('/*CONTENT_JS*/', () => safe(fs.readdirSync(path.join(__dirname, 'src/guides')).sort().map(f => R('src/guides/' + f)).join('\n') + '\n' + R('src/data.js')))
-  .replace('/*APP_JS*/', () => safe(['core.js', 'views.js', 'vector.js', 'map.js', 'excel.js', 'pack.js', 'boot.js'].map(f => R('src/' + f)).join('\n')));
+  .replace('/*APP_JS*/', () => safe(['core.js', 'views.js', 'radio.js', 'install.js', 'vector.js', 'map.js', 'excel.js', 'pack.js', 'boot.js'].map(f => R('src/' + f)).join('\n')));
 fs.writeFileSync(path.join(out, 'index.html'), html);
 const ver = 'ready-' + Date.now().toString(36);
 fs.writeFileSync(path.join(out, 'sw.js'), `// Keeps the app working with no internet. Map tiles and data live in IndexedDB, not here.
@@ -37,7 +37,7 @@ self.addEventListener('fetch', e => {
 });
 `);
 fs.writeFileSync(path.join(out, 'manifest.webmanifest'), JSON.stringify({
-  name: 'Family Ready', short_name: 'Ready', start_url: './', scope: './', display: 'standalone',
+  id: './', name: 'Family Ready', short_name: 'Family Ready', start_url: './', scope: './', display: 'standalone',
   background_color: '#16324f', theme_color: '#16324f', description: 'Our family emergency plan — works offline.',
   icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }],
 }, null, 2));

@@ -90,6 +90,7 @@ function migrate() {
   S.people.forEach(p => { if (!p.age) p.age = /daughter|son|child|kid/i.test(p.role || '') ? 'child4' : /mother|nana|grand|in-law/i.test(p.role || '') ? 'olderF' : 'woman'; });
   // v3: the LINZ street map becomes the main map; the old online-only street map is now 'osm'
   if ((S.v || 0) < 3) { if (S.set.base === 'street' || S.set.base === 'topo' || !S.set.base) S.set.base = 'street'; }
+  if (typeof radioMigrate === 'function') radioMigrate();
   S.v = 3;
 }
 function persist(changed = true) {
@@ -149,7 +150,7 @@ function tokens() {
     tankDays20: tank ? String(Math.floor(tank / (ppl * 20))) : '?', tankDays3: tank ? String(Math.floor(tank / (ppl * 3))) : '?',
     Oven: (h.oven || 'the pizza oven').replace(/^./, c => c.toUpperCase()), oven: h.oven || 'the pizza oven', bbq: h.bbq || 'the kamado', Bbq: (h.bbq || 'the kamado').replace(/^./, c => c.toUpperCase()),
     ovenGasLine: h.ovenGas === 'yes' ? '> We have the **gas burner** — the easiest way to use it. Wood steps are below for when the gas runs out.' : h.ovenGas === 'no' ? '> We don\'t have the gas burner — use the wood steps below.' : '> If we have the gas burner, use these steps. Otherwise skip to wood.',
-    radios: h.radios || 'our handheld radios', radioCh: h.radioCh || '(not set yet — add it in Our plan → Our home)',
+    radios: (h.radioList || []).length ? h.radioList.map(r => `${r.count > 1 ? r.count + ' × ' : 'a '}${r.model}${r.owner ? ' (' + r.owner + ')' : ''}`).join(', ') : h.radios || 'our handheld radios', radioCh: (typeof radioSummary === 'function' && radioSummary()) || h.radioCh || '(not set yet — set it in Guides → 📡 Radio converter)',
     gasMeter: h.gasMeter || 'add where it is in Our plan → Our home', waterToby: h.waterToby || 'add where it is in Our plan → Our home', switchboard: h.switchboard || 'add where it is in Our plan → Our home',
     pantryTable: ['| Food | Per adult per month | For us — ' + daysTarget() + ' days |', ...pantryRows].join('\n'),
   };
@@ -332,6 +333,7 @@ function render() {
   main.classList.toggle('mapmode', top === 'map');
   const views = { now: vNow, guides: vGuides, cat: vCat, g: vGuide, search: vSearch, plan: vPlan, kit: vKit, sources: vSources, tool: vTool, data: vData, pack: vPack, map: vMap };
   (views[top] || vNow)(main, ROUTE.split(':').slice(1).join(':'));
+  if (typeof fillManualLinks === 'function') fillManualLinks(main);
 }
 
 // ---------------------------------------------------------------------------
@@ -349,10 +351,9 @@ function showWelcome(force) {
    </ul>
    <p class="small muted">Guidance is drawn from NEMA / Get Ready, Auckland Emergency Management, Te Whatu Ora, St John and ANZCOR, MPI, SafeTravel and Smartraveller. Spotted a mistake? Each guide has a "Report a mistake" link.</p>
    <h3>Get started</h3>
-   <ol class="steps" style="padding-left:0"><li><span class="txt">Our plan → add your household and contacts</span></li><li><span class="txt">Map → save the maps around home (on Wi-Fi)</span></li><li><span class="txt">⚙️ → add to home screen, and print the A4 pack</span></li></ol>
-   <div class="actions"><button class="btn primary" id="wOk">I understand — let's start</button></div>`, (m, close) => { $('#wOk', m).onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); }; });
+   <ol class="steps" style="padding-left:0"><li><span class="txt">Our plan → add your household and contacts</span></li><li><span class="txt">Map → save the maps around home (on Wi-Fi)</span></li><li><span class="txt">Add it to the home screen (📲 on the Now page), and print the A4 pack</span></li></ol>
+   <div class="actions">${isInstalled() ? '' : '<button class="btn" id="wIn">📲 Add to home screen</button>'}<button class="btn primary" id="wOk">I understand — let's start</button></div>`, (m, close) => { $('#wOk', m).onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); }; const wi = $('#wIn', m); if (wi) wi.onclick = () => { S.manual.welcomed = Date.now(); persist(false); close(); doInstall(); }; });
 }
-function isInstalled() { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
 function readiness() {
   return [
     ['people', 'Add everyone in the family, with medicines and age group', S.people.length > 0, 'plan'],
@@ -382,6 +383,7 @@ function vNow(main) {
   const phones = [...S.people.filter(p => p.phone).map(p => ({ name: p.name, sub: p.role, phone: p.phone })), ...S.contacts.filter(c => c.phone).map(c => ({ name: c.name, sub: c.rel, phone: c.phone }))].slice(0, 10);
   main.innerHTML = `
   <button class="searchbar" data-go="search" aria-label="Search everything">🔍 <span>Search everything — e.g. "water", "eggs", "burns"</span></button>
+  ${installBanner()}
   <a class="call111" href="tel:111">📞 Call 111</a>
   <div class="card" style="padding-bottom:4px"><h2 style="margin-bottom:10px">What's happening?</h2>
   <div class="sos">${sc.map(s => `<button style="background:${s.colour || '#b91c1c'}" data-go="g:${s.id}"><span class="i">${s.icon}</span><b>${esc(guideTitle(s, T))}</b></button>`).join('')}
@@ -407,6 +409,7 @@ function vNow(main) {
    ${items.map(i => `<div class="check"><span class="tick ${i[2] ? 'on' : ''}" ${i[4] ? `data-manual="${i[0]}" role="checkbox" aria-checked="${!!i[2]}" tabindex="0"` : ''}>${i[2] ? '✓' : ''}</span><div class="grow">${esc(i[1])}${i[0] === 'practise' && S.manual.practise ? ` <span class="small muted">(last ${fmtDate(S.manual.practise)})</span>` : ''}</div>${!i[2] && i[3] ? `<button class="btn sm ghost" data-go="${i[3]}">Do it</button>` : ''}</div>`).join('')}
   </div>
   <p class="small muted" style="text-align:center">Everything you type is stored only on this device and works with no internet.<br>Version ${APP_VERSION}</p>`;
+  wireInstallBanner(main);
   $$('[data-manual]', main).forEach(el => el.onclick = () => {
     const k = el.dataset.manual; const it = items.find(i => i[0] === k); const now = !it[2];
     S.manual.ovr = S.manual.ovr || {};
@@ -428,7 +431,7 @@ function vGuides(main) {
   const hiddenCount = Object.keys(S.hiddenG).filter(k => S.hiddenG[k]).length;
   main.innerHTML = `
   <button class="searchbar" data-go="search">🔍 <span>Search all guides, contacts and supplies…</span></button>
-  <div class="row" style="margin-bottom:12px"><button class="btn primary" id="newG">＋ New guide</button><button class="btn" data-go="pack">📄 A4 pack</button><button class="btn" data-go="tool:power">🧮 Power calculator</button>${hiddenCount ? `<button class="btn ghost" id="unhide">Show ${hiddenCount} hidden</button>` : ''}</div>
+  <div class="row" style="margin-bottom:12px"><button class="btn primary" id="newG">＋ New guide</button><button class="btn" data-go="pack">📄 A4 pack</button><button class="btn" data-go="tool:power">🧮 Power calculator</button><button class="btn" data-go="tool:radio">📡 Radio converter</button>${hiddenCount ? `<button class="btn ghost" id="unhide">Show ${hiddenCount} hidden</button>` : ''}</div>
   <div class="catjump">${CATS.filter(c => (byCat[c[0]] || []).length || c[0] === 'ours').map(c => `<button class="chip" data-jump="${c[0]}" style="border:0;cursor:pointer">${c[2]} ${esc(c[1].split(' ')[0].replace(/,$/, ''))}</button>`).join('')}</div>
   ${CATS.map(c => { const arr = byCat[c[0]] || []; if (!arr.length && c[0] !== 'ours') return ''; return `<div class="card catcard" id="cat-${c[0]}"><div class="cathead" style="border-color:${c[3]}"><span style="font-size:1.4rem">${c[2]}</span><div class="grow"><h2 style="margin:0">${esc(c[0] === 'away' ? c[1] + ' — ' + AW() : c[1])}</h2><div class="small muted">${esc(c[4])}</div></div></div>
     <div class="gtiles">${arr.map(g => guideTile(g, T)).join('') || '<div class="empty">Nothing here yet — tap <b>＋ New guide</b> to add your own.</div>'}</div></div>`; }).join('')}`;
@@ -449,6 +452,14 @@ function checkinIn(tz) {
   const p = new Intl.DateTimeFormat('en-NZ', { timeZone: 'Pacific/Auckland', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(now).reduce((o, x) => (o[x.type] = x.value, o), {});
   return timeIn(tz, new Date(now.getTime() + ((hh * 60 + mm) - ((+p.hour % 24) * 60 + +p.minute)) * 60000));
 }
+const GUIDE_SYS = { 'car-power': 'car', 'tank-water': 'water', 'cook-options': 'cook', egg: 'cook', ooni: 'cook', charcoal: 'cook', radios: 'radio', shutoffs: 'shutoff' };
+function guideManuals(id) {
+  const sys = GUIDE_SYS[id]; if (!sys || typeof manualLinks !== 'function') return '';
+  const radios = sys === 'radio' ? (S.home.radioList || []) : [];
+  return `<div class="card"><div class="small"><b>📎 Our manuals & spec sheets</b></div><div class="mrow">${manualLinks(sys)}</div>
+   ${radios.map(r => `<div class="mrow"><span class="small"><b>${esc(r.model)}</b></span> ${manualLinks('radio:' + r.id, 'manual')}</div>`).join('')}
+   ${sys === 'radio' ? '<div class="mrow"><button class="btn sm primary" data-go="tool:radio">📡 What to set on each radio · channel ↔ MHz converter</button></div>' : ''}</div>`;
+}
 function vGuide(main, arg) {
   const [id, qs] = arg.split('?'); const g = getGuide(id); if (!g) return go('guides');
   const q = qs ? decodeURIComponent(qs).split(/\s+/).map(norm).filter(Boolean) : (SHOWQ || null); SHOWQ = null;
@@ -459,7 +470,7 @@ function vGuide(main, arg) {
   main.innerHTML = `
   <div class="gnav"><button class="btn sm ghost" data-go="guides">← Guides</button><span class="grow"></span><button class="btn sm ghost" data-go="search">🔍</button></div>
   <div class="sc-head" style="background:${colour}"><div class="small" style="opacity:.85">${c.icon} ${esc(c.name)}</div><div class="row" style="align-items:flex-start"><span style="font-size:2rem;line-height:1.2">${g.icon || '📄'}</span><h1 class="grow" style="margin:0">${esc(guideTitle(g, T))}</h1></div>${g.one ? `<div class="one">${inline(fill(g.one, T))}</div>` : ''}</div>
-  ${away}
+  ${away}${guideManuals(g.id)}
   ${secs.map((s, si) => `<section class="card gsec" id="sec${si}">${s.title ? `<div class="sechead"><h2>${inline(fill(s.title, T), opts)}</h2><button class="btn sm ghost secedit" data-sec="${si}" aria-label="Edit this section">✏️</button></div>` : `<div class="sechead" style="justify-content:flex-end;margin-bottom:-6px"><button class="btn sm ghost secedit" data-sec="${si}" aria-label="Edit">✏️</button></div>`}
     ${renderBlocks(blocks(s.lines), g, opts)}
     <details class="addline"><summary>＋ Add to this section</summary>
@@ -619,6 +630,7 @@ const APPLIANCES = [
 ];
 const PSEL = {};
 function vTool(main, which) {
+  if (which === 'radio') return vRadio(main);
   if (which !== 'power') return go('guides');
   const h = S.home, outlet = Number(h.carOutlet) || 1500, kwh = Number(h.carKwh) || 0;
   const sel = APPLIANCES.filter((a, i) => PSEL[i]);
